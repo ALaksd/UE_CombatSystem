@@ -12,6 +12,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "Interface/RL_CharacterAimInterface.h"
 
+
+
 // Sets default values
 ARL_BaseCharacter::ARL_BaseCharacter()
 {
@@ -93,6 +95,9 @@ void ARL_BaseCharacter::BeginPlay()
 			PlayerStateUI->AddToViewport();
 		}
 	}
+
+	PlayerState = Cast<ARL_PlayerState>(GetPlayerState());
+
 }
 
 
@@ -160,6 +165,32 @@ void ARL_BaseCharacter::Run(const FInputActionValue& Value)
 void ARL_BaseCharacter::Roll(const FInputActionValue& Value)
 {
 
+}
+
+void ARL_BaseCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	//初始化角色状态
+	InitAbilityActorInfo();
+
+}
+
+void ARL_BaseCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	//初始化角色状态
+	InitAbilityActorInfo();
+}
+
+void ARL_BaseCharacter::InitAbilityActorInfo()
+{
+	if(!PlayerState)
+		PlayerState = Cast<ARL_PlayerState>(GetPlayerState());
+	check(PlayerState);
+
+	PlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(PlayerState, this);
+	AbilitySystemComponent = PlayerState->GetAbilitySystemComponent();
+	AttributeSet = PlayerState->GetAttributeSet();
 }
 
 void ARL_BaseCharacter::UpdateMovementState(EMovementState State)

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -31,35 +31,35 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* FireAction;
-	//Ê±¼äÖá×é¼ş
+	//æ—¶é—´è½´ç»„ä»¶
 	UPROPERTY()
 	UTimelineComponent* AimTimeline;
 
-	//Ê±¼äÖáÇúÏß
+	//æ—¶é—´è½´æ›²çº¿
 	UPROPERTY(EditAnywhere, Category = "Timeline")
 	UCurveFloat* AimCurve;
 
-	//Ê±¼äÖá»Øµ÷º¯Êı
+	//æ—¶é—´è½´å›è°ƒå‡½æ•°
 	UFUNCTION()
 	void OnAimTimelineUpdate(float Value);
 
 protected:
-	//ÉèÖÃÃé×¼×´Ì¬ÉãÏñ»ú
+	//è®¾ç½®ç„å‡†çŠ¶æ€æ‘„åƒæœº
 	void SetAimCamera();
 
-	//»Ö¸´ÉãÏñ»ú
+	//æ¢å¤æ‘„åƒæœº
 	void ResetAimCamera();
 
-	//Éä¼ı
+	//å°„ç®­
 	void Fire();
 
 private:
-	//Ãé×¼ÉãÏñ»úÊÓÒ°
+	//ç„å‡†æ‘„åƒæœºè§†é‡
 	float AimFov;
-	//³õÊ¼ÉãÏñ»úÊÓÒ°
+	//åˆå§‹æ‘„åƒæœºè§†é‡
 	float InitialFov;
-	//Ãé×¼ÉãÏñ»úÆ«ÒÆ
+	//ç„å‡†æ‘„åƒæœºåç§»
 	FVector AimCameraOffest;
-	//³õÊ¼ÉãÏñ»úÆ«ÒÆ
+	//åˆå§‹æ‘„åƒæœºåç§»
 	FVector InitialCameraOffest;
 };

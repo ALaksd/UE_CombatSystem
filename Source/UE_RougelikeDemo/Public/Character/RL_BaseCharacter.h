@@ -1,11 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Data/RL_CharacterData.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
+#include "AttributeSet.h"
 #include "InputActionValue.h"
+#include "Player/RL_PlayerState.h"
 #include "RL_BaseCharacter.generated.h"
 
 class USpringArmComponent;
@@ -14,27 +18,18 @@ class UInputMappingContext;
 class UInputAction;
 class URL_PlayerStateWidget;
 
+
+
+
+
 UCLASS()
 class UE_ROUGELIKEDEMO_API ARL_BaseCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this character's properties
-	ARL_BaseCharacter();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	//FORCEINLINE ¶¨ÒåÇ¿ÖÆÄÚÁªº¯Êı£¬ÊÊÓÃÓÚ¶à´Îµ÷ÓÃµÄ¼òµ¥º¯Êı£¬¼õÉÙº¯Êıµ÷ÓÃ¿ªÏú£¬Ìá¸ß´úÂëĞ§ÂÊ
-	FORCEINLINE class USpringArmComponent* GetSpringArmComponent() { return CameraBoom; }
-	FORCEINLINE class UCameraComponent* GetCameraComponent() { return FllowCamera; }
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> CameraBoom;
@@ -45,7 +40,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|UI")
 	TSubclassOf<UUserWidget> PlayerStateUIClass;
 
-	///*ÍâÓÃ¹Ç÷À*/
+#pragma region
+
+	///*å¤–ç”¨éª¨éª¼*/
 	//UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category = "RLCharacter|Components")
 	//TObjectPtr<USkeletalMeshComponent> HeadConstant;
 
@@ -74,8 +71,12 @@ protected:
 	//TObjectPtr<USkeletalMeshComponent> Legs;
 
 	/**
-	 * ½ÇÉ«ÊäÈëÒÔ¼°ÒÆ¶¯Ïà¹ØµÄÉèÖÃ£¬ÕâĞ©ºóÃæ¿ÉÄÜ»áÓÅ»¯µ½Ò»¸ö×é¼şÀïÃæ
+	 * è§’è‰²è¾“å…¥ä»¥åŠç§»åŠ¨ç›¸å…³çš„è®¾ç½®ï¼Œè¿™äº›åé¢å¯èƒ½ä¼šä¼˜åŒ–åˆ°ä¸€ä¸ªç»„ä»¶é‡Œé¢
 	 */
+#pragma endregion //å¤–ç”¨éª¨éª¼
+
+#pragma region
+
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> BaseIMC;
@@ -89,22 +90,54 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> JumpAction;
 
-	//ÅÜ²½°´¼ü
+	//è·‘æ­¥æŒ‰é”®
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> RunAction;
 
-	//·­¹ö°´¼ü
+	//ç¿»æ»šæŒ‰é”®
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> RollAction;
+#pragma endregion //è¾“å…¥
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "RLCharacter|Settings")
-	//½ÇÉ«ÒÆ¶¯×´Ì¬Êı¾İ
+	//è§’è‰²ç§»åŠ¨çŠ¶æ€æ•°æ®
 	TMap<EMovementState, FMovementSetting> MovementSettingMap;
 
-	//½ÇÉ«µ±Ç°ÒÆ¶¯×´Ì¬
+	//è§’è‰²å½“å‰ç§»åŠ¨çŠ¶æ€
 	UPROPERTY(BlueprintReadWrite)
 	EMovementState CurrentMovmentState;
-	//¸üĞÂ½ÇÉ«ÒÆ¶¯×´Ì¬
+	
+
+private:
+	//è§’è‰²çŠ¶æ€UI
+	TObjectPtr<URL_PlayerStateWidget> PlayerStateUI;
+
+	TObjectPtr<ARL_PlayerState> PlayerState;
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+	TObjectPtr<UAttributeSet> AttributeSet;
+
+
+
+
+public:
+	// Sets default values for this character's properties
+	ARL_BaseCharacter();
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	//FORCEINLINE å®šä¹‰å¼ºåˆ¶å†…è”å‡½æ•°ï¼Œé€‚ç”¨äºå¤šæ¬¡è°ƒç”¨çš„ç®€å•å‡½æ•°ï¼Œå‡å°‘å‡½æ•°è°ƒç”¨å¼€é”€ï¼Œæé«˜ä»£ç æ•ˆç‡
+	FORCEINLINE class USpringArmComponent* GetSpringArmComponent() { return CameraBoom; }
+	FORCEINLINE class UCameraComponent* GetCameraComponent() { return FllowCamera; }
+
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	//æ›´æ–°è§’è‰²ç§»åŠ¨çŠ¶æ€
 	UFUNCTION(BlueprintCallable)
 	void UpdateMovementState(EMovementState State);
 	
@@ -116,8 +149,9 @@ protected:
 
 	void Roll(const FInputActionValue& Value);
 
-private:
-	//½ÇÉ«×´Ì¬UI
-	TObjectPtr<URL_PlayerStateWidget> PlayerStateUI;
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
+	void InitAbilityActorInfo();
+
 };
 
