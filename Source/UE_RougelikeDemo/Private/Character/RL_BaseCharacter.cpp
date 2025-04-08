@@ -191,6 +191,18 @@ void ARL_BaseCharacter::InitAbilityActorInfo()
 	PlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(PlayerState, this);
 	AbilitySystemComponent = PlayerState->GetAbilitySystemComponent();
 	AttributeSet = PlayerState->GetAttributeSet();
+
+	IniltializePrimaryAttribute();
+}
+
+void ARL_BaseCharacter::IniltializePrimaryAttribute() const
+{
+	if (GetAbilitySystemComponent() && DefaultPrimaryAttributes)
+	{
+		const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+		const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(DefaultPrimaryAttributes, 1.f, ContextHandle);
+		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
+	}
 }
 
 void ARL_BaseCharacter::UpdateMovementState(EMovementState State)

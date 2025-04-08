@@ -7,8 +7,15 @@
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
-
+#include "GameplayEffectTypes.h"
+#include "Data\RL_CharacterData.h"
 #include "RL_PlayerState.generated.h"
+
+
+
+
+class UDataTable;
+
 
 /**
  * 
@@ -24,9 +31,28 @@ public:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAttributeSet> AttributeSet;
 
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Data")
+	TObjectPtr<UDataTable> DT_ChracterAttribute;
 
+
+
+private:
+
+#pragma region 
+	//生命值
+	UPROPERTY(Replicated)
+	FGameplayAttributeData Health;
+	//耐力
+	UPROPERTY(Replicated)
+	FGameplayAttributeData Endurance;
+	//气势值
+	UPROPERTY(Replicated)
+	FGameplayAttributeData Momentum;
+
+#pragma endregion //属性
 
 
 /// <summary>
@@ -37,5 +63,15 @@ public:
 	inline UAttributeSet* GetAttributeSet() const{return AttributeSet;}
 
 
+protected:
+	virtual void PostInitializeComponents()override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+private:
+
+#pragma region 
+	void OnRep_Health(const FGameplayAttributeData& OldHealth);
+	void OnRep_Endurance(const FGameplayAttributeData& OldHealth);
+	void OnRep_Momentum(const FGameplayAttributeData& OldHealth);
+#pragma endregion //属性变换回调函数
 
 };

@@ -29,7 +29,7 @@ class UE_ROUGELIKEDEMO_API ARL_BaseCharacter : public ACharacter
 
 
 protected:
-	
+
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> CameraBoom;
@@ -99,14 +99,18 @@ protected:
 	TObjectPtr<UInputAction> RollAction;
 #pragma endregion //输入
 
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "RLCharacter|Settings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Settings")
 	//角色移动状态数据
 	TMap<EMovementState, FMovementSetting> MovementSettingMap;
 
 	//角色当前移动状态
 	UPROPERTY(BlueprintReadWrite)
 	EMovementState CurrentMovmentState;
-	
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attribute")
+	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+
 
 private:
 	//角色状态UI
@@ -134,6 +138,9 @@ public:
 	FORCEINLINE class UCameraComponent* GetCameraComponent() { return FllowCamera; }
 
 
+	inline UAbilitySystemComponent* GetAbilitySystemComponent() const { return AbilitySystemComponent; }
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -152,6 +159,6 @@ protected:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 	void InitAbilityActorInfo();
-
+	void IniltializePrimaryAttribute() const;
 };
 

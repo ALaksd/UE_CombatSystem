@@ -12,3 +12,31 @@ ARL_PlayerState::ARL_PlayerState()
 	AttributeSet = CreateDefaultSubobject<UAttributeSet>(TEXT("AttributeSet"));
 	NetUpdateFrequency = 100;
 }
+
+void ARL_PlayerState::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	//读取数据表，加载玩家属性
+
+}
+
+void ARL_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
+
+void ARL_PlayerState::OnRep_Health(const FGameplayAttributeData& OldHealth)
+{
+
+}
+
+void ARL_PlayerState::OnRep_Endurance(const FGameplayAttributeData& OldHealth)
+{
+
+}
+
+void ARL_PlayerState::OnRep_Momentum(const FGameplayAttributeData& OldHealth)
+{
+
+}
