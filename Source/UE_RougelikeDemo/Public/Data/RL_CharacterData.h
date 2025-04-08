@@ -9,7 +9,7 @@ UENUM(BlueprintType)
 enum class EEquipedWeapon : uint8
 {
 	None,             // 默认
-	Fists,            // 徒手
+	NoWeapon,            // 徒手
 	OneHandWeapon,    // 单手武器(剑，刀，盾)
 	TwoHandedWeapon,  // 双手武器（重型武器）
 	Spear,			  // 矛
