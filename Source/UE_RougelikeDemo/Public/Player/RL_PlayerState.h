@@ -22,6 +22,7 @@ class UE_ROUGELIKEDEMO_API ARL_PlayerState : public APlayerState, public IAbilit
 public:
 	ARL_PlayerState();
 	
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	TObjectPtr<UAttributeSet> AttributeSet;
 
