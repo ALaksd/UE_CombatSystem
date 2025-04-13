@@ -6,7 +6,7 @@
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemComponent.h"
-#include "AttributeSet.h"
+#include "GAS/AS/AS_Player.h"
 #include "GameplayEffectTypes.h"
 #include "Data\RL_CharacterData.h"
 #include "RL_PlayerState.generated.h"
@@ -32,7 +32,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UAttributeSet> AttributeSet;
+	TObjectPtr<UAS_Player> AttributeSet;
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Data")
 	TObjectPtr<UDataTable> DT_ChracterAttribute;
@@ -53,8 +53,8 @@ private:
 	FGameplayAttributeData Momentum;
 
 #pragma endregion //ÊôÐÔ
-
-
+	
+	
 /// <summary>
 /// º¯Êý
 /// </summary>

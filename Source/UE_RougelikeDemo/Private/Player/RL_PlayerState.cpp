@@ -2,14 +2,15 @@
 
 
 #include "Player/RL_PlayerState.h"
+#include <GAS/ASC_Base.h>
 
 ARL_PlayerState::ARL_PlayerState()
 {
-	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent = CreateDefaultSubobject<UASC_Base>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
-	AttributeSet = CreateDefaultSubobject<UAttributeSet>(TEXT("AttributeSet"));
+	AttributeSet = CreateDefaultSubobject<UAS_Player>(TEXT("AttributeSet"));
 	NetUpdateFrequency = 100;
 }
 

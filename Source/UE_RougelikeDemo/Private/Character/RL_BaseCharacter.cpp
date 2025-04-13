@@ -170,7 +170,7 @@ void ARL_BaseCharacter::Roll(const FInputActionValue& Value)
 void ARL_BaseCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	//初始化角色状态
+	//初始化角色状态 服务器
 	InitAbilityActorInfo();
 
 }
@@ -178,7 +178,7 @@ void ARL_BaseCharacter::PossessedBy(AController* NewController)
 void ARL_BaseCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-	//初始化角色状态
+	//初始化角色状态 本地
 	InitAbilityActorInfo();
 }
 
