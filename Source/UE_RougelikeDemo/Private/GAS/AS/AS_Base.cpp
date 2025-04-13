@@ -15,17 +15,17 @@ void UAS_Base::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(UAS_Base, Health);
+	//DATETIMEPICKER(UAS_Base, Health);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAS_Base, Health, COND_None, REPNOTIFY_OnChanged);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAS_Base, MaxHealth, COND_None, REPNOTIFY_OnChanged);
 }
 
-void UAS_Base::OnRep_Health(const FGameplayAttributeData OldHealth)
+void UAS_Base::OnRep_Health(const FGameplayAttributeData& OldHealth) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAS_Base, Health, OldHealth);
 }
 
-void UAS_Base::OnRep_MaxHealth(const FGameplayAttributeData OldMaxHealth)
+void UAS_Base::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAS_Base, MaxHealth, OldMaxHealth);
 }

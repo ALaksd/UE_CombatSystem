@@ -18,7 +18,7 @@ void ARL_PlayerState::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	//╤ах║йЩ╬щ╠Мё╛╪стьмФ╪рйТпт
+	//О©╫О©╫х║О©╫О©╫О©╫щ╠О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫
 
 }
 

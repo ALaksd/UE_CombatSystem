@@ -24,7 +24,7 @@ ARL_BaseCharacter::ARL_BaseCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	GetCharacterMovement()->bUseControllerDesiredRotation = true; //Ê¹ÓÃ¿ØÖÆÆ÷ËùÐèµÄÐý×ª
+	GetCharacterMovement()->bUseControllerDesiredRotation = true; //Ê¹ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ª
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
 	CameraBoom->SetupAttachment(RootComponent);
@@ -77,7 +77,7 @@ void ARL_BaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Ìí¼ÓÔöÇ¿ÊäÈëÏµÍ³
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ÏµÍ³
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* System = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -86,7 +86,7 @@ void ARL_BaseCharacter::BeginPlay()
 		}
 	}
 
-	//Ìí¼ÓUI
+	//ï¿½ï¿½ï¿½ï¿½UI
 	if (PlayerStateUIClass)
 	{
 		PlayerStateUI = CreateWidget<URL_PlayerStateWidget>(GetWorld(), PlayerStateUIClass);
@@ -170,7 +170,7 @@ void ARL_BaseCharacter::Roll(const FInputActionValue& Value)
 void ARL_BaseCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	//³õÊ¼»¯½ÇÉ«×´Ì¬ ·þÎñÆ÷
+	//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½É«×´Ì¬ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	InitAbilityActorInfo();
 
 }
@@ -178,7 +178,7 @@ void ARL_BaseCharacter::PossessedBy(AController* NewController)
 void ARL_BaseCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-	//³õÊ¼»¯½ÇÉ«×´Ì¬ ±¾µØ
+	//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½É«×´Ì¬ ï¿½ï¿½ï¿½ï¿½
 	InitAbilityActorInfo();
 }
 

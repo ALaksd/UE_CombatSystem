@@ -15,3 +15,4 @@ Content/__ExternalObjects__
 *.suo
 *.xcodeproj
 *.xcworkspace
+.idea

@@ -27,7 +27,7 @@ class UE_ROUGELIKEDEMO_API ARL_BaseCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-
+	
 protected:
 
 

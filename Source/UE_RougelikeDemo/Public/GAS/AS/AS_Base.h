@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,14 +8,13 @@
 #include "AS_Base.generated.h"
 
 
-//Ôö¼Ó¸÷ÖÖGetter£¬Setter·½·¨µÄºê
+//å®šä¹‰è‡ªåŠ¨Getterï¼ŒSetteræ–¹æ³•
 //attribute_accessors
 #define ATTRIBUTE_ACCESSORS(ClassName,PropertyName) \
 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName,PropertyName) \
-	GAMEPLAYATTRIBUTE_VALUE_GETTER(ProtertyName) \
+	GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
-
 
 /**
  * 
@@ -40,15 +39,15 @@ public:
 
 
 	UFUNCTION()
-	void OnRep_Health(const FGameplayAttributeData OldHealth); 
+	void OnRep_Health(const FGameplayAttributeData& OldHealth) const; 
 	UFUNCTION()
-	void OnRep_MaxHealth(const FGameplayAttributeData OldMaxHealth);
+	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const;
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps)const override;
-	//ÊôÐÔÐÞ¸ÄÇ°»Øµ÷
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½Ç°ï¿½Øµï¿½
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)override;
-	//ÊôÐÔÐÞ¸Äºó»Øµ÷
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸Äºï¿½Øµï¿½
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)override;
 
-
+	
 };
