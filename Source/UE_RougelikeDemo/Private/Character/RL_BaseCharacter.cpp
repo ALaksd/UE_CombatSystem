@@ -10,8 +10,8 @@
 #include "UI/RL_PlayerStateWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GAS/ASC_Base.h"
 #include "Interface/RL_CharacterAimInterface.h"
-#include <UI/RL_HUD.h>
 
 
 
@@ -71,6 +71,15 @@ ARL_BaseCharacter::ARL_BaseCharacter()
 	//Legs->SetupAttachment(GetMesh());
 	//Legs->SetLeaderPoseComponent(GetMesh());
 
+}
+
+void ARL_BaseCharacter::AddCharacterAbilities()
+{
+	//if (!HasAuthority()) return;
+	UASC_Base* ASC = CastChecked<UASC_Base>(AbilitySystemComponent);
+
+	ASC->AddCharacterAbilities(StartupAbilities);
+	
 }
 
 // Called when the game starts or when spawned
@@ -173,7 +182,7 @@ void ARL_BaseCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	//��ʼ����ɫ״̬ ������
 	InitAbilityActorInfo();
-
+	AddCharacterAbilities();
 }
 
 void ARL_BaseCharacter::OnRep_PlayerState()
@@ -191,21 +200,13 @@ void ARL_BaseCharacter::InitAbilityActorInfo()
 
 	PlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(PlayerState, this);
 	AbilitySystemComponent = PlayerState->GetAbilitySystemComponent();
+	Cast<UASC_Base>(PlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AttributeSet = PlayerState->GetAttributeSet();
 
-	//初始化HUD
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-	{
-		if (ARL_HUD* RLGHUD = Cast<ARL_HUD>(PlayerController->GetHUD()))
-		{
-			RLGHUD->InitOverlay(PlayerController, PlayerState, AbilitySystemComponent, AttributeSet);
-		}
-	}
-
-	IniltializePrimaryAttribute();
+	InitializePrimaryAttribute();
 }
 
-void ARL_BaseCharacter::IniltializePrimaryAttribute() const
+void ARL_BaseCharacter::InitializePrimaryAttribute() const
 {
 	if (GetAbilitySystemComponent() && DefaultPrimaryAttributes)
 	{

@@ -13,5 +13,13 @@ UCLASS()
 class UE_ROUGELIKEDEMO_API UASC_Base : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
+
+public:
+	void AbilityActorInfoSet();
+	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
+
+
+protected:
+	void EffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GamePlayEffectSpec, FActiveGameplayEffectHandle EffectHandle);
 	
 };

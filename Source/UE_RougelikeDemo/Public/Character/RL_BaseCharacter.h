@@ -120,7 +120,7 @@ private:
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	TObjectPtr<UAttributeSet> AttributeSet;
 
-
+	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
 
 public:
@@ -140,7 +140,9 @@ public:
 
 	inline UAbilitySystemComponent* GetAbilitySystemComponent() const { return AbilitySystemComponent; }
 
-
+	//初始化玩家技能列表
+	void AddCharacterAbilities();
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -159,6 +161,6 @@ protected:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 	void InitAbilityActorInfo();
-	void IniltializePrimaryAttribute() const;
+	void InitializePrimaryAttribute() const;
 };
 

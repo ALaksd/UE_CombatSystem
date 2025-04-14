@@ -43,11 +43,21 @@ public:
 	UFUNCTION()
 	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const;
 
+
+protected:
+	//属性将修改前调用
+	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
+
+private:
+	
+
+	//网络更新的，此项目不管
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps)const override;
-	//�����޸�ǰ�ص�
+	//属性修改前调用
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)override;
-	//�����޸ĺ�ص�
+	//属性修改后调用
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)override;
+
 
 	
 };
