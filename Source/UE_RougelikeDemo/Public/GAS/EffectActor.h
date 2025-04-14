@@ -18,14 +18,17 @@ public:
 	AEffectActor();
 
 protected:
+	//鐬棿鏁堟灉
 	TSubclassOf<UGameplayEffect> InstantGameplayEffectClass;
+	//鎸佺画Buff
+	TSubclassOf<UGameplayEffect> DurationGameplayEffectClass;
 
 
 
 protected:
 	virtual void BeginPlay() override;
 
-	//应用技能效果
+	//应锟矫硷拷锟斤拷效锟斤拷
 	UFUNCTION()
 	void ApplayEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> EffectClass);
 };

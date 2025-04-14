@@ -3,8 +3,7 @@
 
 #include "GAS/AS/AS_Base.h"
 #include "Net/UnrealNetwork.h"
-
-
+#include "GameplayEffectExtension.h"
 
 UAS_Base::UAS_Base()
 {
@@ -30,6 +29,16 @@ void UAS_Base::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAS_Base, MaxHealth, OldMaxHealth);
 }
 
+void UAS_Base::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
+{
+	Super::PreAttributeBaseChange(Attribute, NewValue);
+
+	//限制血量不能超过最大血量
+	if (Attribute == GetHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue,0.f,GetMaxHealth());
+	}
+}
 
 
 void UAS_Base::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -40,4 +49,7 @@ void UAS_Base::PreAttributeChange(const FGameplayAttribute& Attribute, float& Ne
 void UAS_Base::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
+
+	Data.EvaluatedData.Attribute = GetHealthAttribute();
+	
 }
