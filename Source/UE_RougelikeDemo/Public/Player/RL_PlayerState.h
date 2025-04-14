@@ -37,26 +37,24 @@ public:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Data")
 	TObjectPtr<UDataTable> DT_ChracterAttribute;
 
-
-
 private:
 
 #pragma region 
-	//ÉúÃüÖµ
+	//ï¿½ï¿½ï¿½ï¿½Öµ
 	UPROPERTY(Replicated)
 	FGameplayAttributeData Health;
-	//ÄÍÁ¦
+	//ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(Replicated)
 	FGameplayAttributeData Endurance;
-	//ÆøÊÆÖµ
+	//ï¿½ï¿½ï¿½ï¿½Öµ
 	UPROPERTY(Replicated)
 	FGameplayAttributeData Momentum;
 
-#pragma endregion //ÊôÐÔ
+#pragma endregion //ï¿½ï¿½ï¿½ï¿½
 	
 	
 /// <summary>
-/// º¯Êý
+/// ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public:
 	inline virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override{return AbilitySystemComponent;}
@@ -72,6 +70,6 @@ private:
 	void OnRep_Health(const FGameplayAttributeData& OldHealth);
 	void OnRep_Endurance(const FGameplayAttributeData& OldHealth);
 	void OnRep_Momentum(const FGameplayAttributeData& OldHealth);
-#pragma endregion //ÊôÐÔ±ä»»»Øµ÷º¯Êý
+#pragma endregion //ï¿½ï¿½ï¿½Ô±ä»»ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
 
 };

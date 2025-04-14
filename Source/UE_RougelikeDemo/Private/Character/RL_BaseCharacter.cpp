@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Interface/RL_CharacterAimInterface.h"
+#include <UI/RL_HUD.h>
 
 
 
@@ -191,6 +192,15 @@ void ARL_BaseCharacter::InitAbilityActorInfo()
 	PlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(PlayerState, this);
 	AbilitySystemComponent = PlayerState->GetAbilitySystemComponent();
 	AttributeSet = PlayerState->GetAttributeSet();
+
+	//初始化HUD
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		if (ARL_HUD* RLGHUD = Cast<ARL_HUD>(PlayerController->GetHUD()))
+		{
+			RLGHUD->InitOverlay(PlayerController, PlayerState, AbilitySystemComponent, AttributeSet);
+		}
+	}
 
 	IniltializePrimaryAttribute();
 }

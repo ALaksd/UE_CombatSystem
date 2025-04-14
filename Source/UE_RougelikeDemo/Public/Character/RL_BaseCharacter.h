@@ -23,7 +23,7 @@ class URL_PlayerStateWidget;
 
 
 UCLASS()
-class UE_ROUGELIKEDEMO_API ARL_BaseCharacter : public ACharacter
+class UE_ROUGELIKEDEMO_API ARL_BaseCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 

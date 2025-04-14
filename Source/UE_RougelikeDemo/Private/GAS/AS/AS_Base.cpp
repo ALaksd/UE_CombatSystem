@@ -8,7 +8,8 @@
 
 UAS_Base::UAS_Base()
 {
-	
+	InitHealth(100.f);
+	InitMaxHealth(100.f);
 }
 
 void UAS_Base::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
