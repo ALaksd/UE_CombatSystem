@@ -15,6 +15,10 @@ class UE_ROUGELIKEDEMO_API UGA_Base : public UGameplayAbility
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditDefaultsOnly)
+	FGameplayTag StartInputTag;
+	
+public:
 	//使用技能
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
