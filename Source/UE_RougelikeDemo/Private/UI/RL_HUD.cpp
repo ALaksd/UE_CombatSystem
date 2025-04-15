@@ -28,9 +28,9 @@ void ARL_HUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySyste
 
 	FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
 	URL_OverlayWidgetController* OverlayWidgetController = GetOverlayWidgetController(WidgetControllerParams);
-	OverlayWidgetController->BroadcastInitialValue();
 
 	OverlayWidget->SetWidgetController(OverlayWidgetController);
+	OverlayWidgetController->BroadcastInitialValue();
 
 	Widget->AddToViewport();
 }

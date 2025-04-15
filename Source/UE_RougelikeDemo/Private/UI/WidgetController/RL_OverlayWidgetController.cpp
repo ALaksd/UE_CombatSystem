@@ -6,10 +6,12 @@
 
 void URL_OverlayWidgetController::BroadcastInitialValue()
 {
-	const UAS_Player* PlayerAttributeSet = CastChecked<UAS_Player>(AttributeSet);
-
-	OnHealthChanged.Broadcast(PlayerAttributeSet->GetHealth());
-	OnMaxHealthChanged.Broadcast(PlayerAttributeSet->GetMaxHealth());
+	OnHealthChanged.Broadcast(GetPlayerAS()->GetHealth());
+	OnMaxHealthChanged.Broadcast(GetPlayerAS()->GetMaxHealth());
+	OnEnduranceChanged.Broadcast(GetPlayerAS()->GetEndurance());
+	OnMaxEnduranceChanged.Broadcast(GetPlayerAS()->GetMaxEndurance());
+	OnAttachResourceChanged.Broadcast(GetPlayerAS()->GetAttachResource());
+	OnMaxAttachResourceChanged.Broadcast(GetPlayerAS()->GetMaxAttachResource());
 }
 
 void URL_OverlayWidgetController::BindCallbacksToDependencies()
@@ -18,18 +20,46 @@ void URL_OverlayWidgetController::BindCallbacksToDependencies()
 
 	//绑定GAS属性变化的委托
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		PlayerAttributeSet->GetHealthAttribute()).AddUObject(this, &URL_OverlayWidgetController::HealthChanged);
+		PlayerAttributeSet->GetHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		PlayerAttributeSet->GetMaxHealthAttribute()).AddUObject(this, &URL_OverlayWidgetController::MaxHealthChanged);
-}
-
-void URL_OverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const
-{
-	OnHealthChanged.Broadcast(Data.NewValue);
-}
-
-void URL_OverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data) const
-{
-	OnMaxHealthChanged.Broadcast(Data.NewValue);
+		PlayerAttributeSet->GetMaxHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+		PlayerAttributeSet->GetMaxEnduranceAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnEnduranceChanged.Broadcast(Data.NewValue);
+			}
+		);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+		PlayerAttributeSet->GetMaxEnduranceAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxEnduranceChanged.Broadcast(Data.NewValue);
+			}
+		);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+		PlayerAttributeSet->GetAttachResourceAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnAttachResourceChanged.Broadcast(Data.NewValue);
+			}
+		);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+		PlayerAttributeSet->GetMaxAttachResourceAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxAttachResourceChanged.Broadcast(Data.NewValue);
+			}
+		);
 }

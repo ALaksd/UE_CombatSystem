@@ -3,6 +3,11 @@
 
 #include "GAS/AS/AS_Player.h"
 
+UAS_Player::UAS_Player()
+{
+	
+}
+
 void UAS_Player::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue);

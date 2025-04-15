@@ -8,8 +8,8 @@
 
 struct FOnAttributeChangeData;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, NewHealth);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChangedSignature, float, NewMaxHealth);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
+
 /**
  * 
  */
@@ -26,12 +26,20 @@ public:
 	virtual void BindCallbacksToDependencies() override;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnHealthChangedSignature OnHealthChanged;
+	FOnAttributeChangedSignature OnHealthChanged;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnMaxHealthChangedSignature OnMaxHealthChanged;
+	FOnAttributeChangedSignature OnMaxHealthChanged;
 
-	//»Øµ÷º¯Êý
-	void HealthChanged(const FOnAttributeChangeData& Data) const;
-	void MaxHealthChanged(const FOnAttributeChangeData& Data) const;
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
+	FOnAttributeChangedSignature OnEnduranceChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
+	FOnAttributeChangedSignature OnMaxEnduranceChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
+	FOnAttributeChangedSignature OnAttachResourceChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
+	FOnAttributeChangedSignature OnMaxAttachResourceChanged;
 };

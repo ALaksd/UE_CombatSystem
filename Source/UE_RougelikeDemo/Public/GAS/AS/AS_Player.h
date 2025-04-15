@@ -15,6 +15,8 @@ class UE_ROUGELIKEDEMO_API UAS_Player : public UAS_Base
 	GENERATED_BODY()
 
 public:
+	UAS_Player();
+
 	//当前耐力值
 	UPROPERTY(EditDefaultsOnly,Category="Attribute")
 	FGameplayAttributeData Endurance;
