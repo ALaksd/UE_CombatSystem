@@ -17,7 +17,7 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 class URL_PlayerStateWidget;
-
+class URL_InputBufferComponent;
 
 
 
@@ -36,6 +36,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FllowCamera;
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<URL_InputBufferComponent> InputBufferComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|UI")
 	TSubclassOf<UUserWidget> PlayerStateUIClass;

@@ -2,6 +2,7 @@
 
 
 #include "Animation/AnimNotifyState/ANS_InputEnableAll.h"
+#include <EnhancedInputSubsystems.h>
 
 void UANS_InputEnableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
@@ -9,4 +10,17 @@ void UANS_InputEnableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
 	AActor* Owner = MeshComp->GetOwner();
 
 	if (!Owner) return;
+
+	// ∆Ù∂Ø“∆∂Ø ‰»Î
+	if (APlayerController* PC = Cast<APlayerController>(Owner->GetInstigatorController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			if (InputSubsystem->HasMappingContext(DisableIMC))
+			{
+				InputSubsystem->RemoveMappingContext(DisableIMC);
+				InputSubsystem->AddMappingContext(DefaultIMC, 0);
+			}
+		}
+	}
 }

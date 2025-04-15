@@ -7,6 +7,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Component/RL_InputBufferComponent.h"
 #include "UI/RL_PlayerStateWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -35,6 +36,8 @@ ARL_BaseCharacter::ARL_BaseCharacter()
 	FllowCamera = CreateDefaultSubobject<UCameraComponent>("FollowCamera");
 	FllowCamera->SetupAttachment(CameraBoom);
 	FllowCamera->bUsePawnControlRotation = false;
+
+	InputBufferComponent = CreateDefaultSubobject<URL_InputBufferComponent>("InputBufferComponnet");
 
 	//HeadConstant->CreateDefaultSubobject<USkeletalMeshComponent>("HeadConstant");
 	//HeadConstant->SetupAttachment(GetMesh());

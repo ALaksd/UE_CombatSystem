@@ -6,6 +6,7 @@
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "ANS_InputDisableAll.generated.h"
 
+class UInputMappingContext;
 /**
  * 
  */
@@ -14,5 +15,11 @@ class UE_ROUGELIKEDEMO_API UANS_InputDisableAll : public UAnimNotifyState
 {
 	GENERATED_BODY()
 public:
-	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration) override;
+	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UInputMappingContext> DefaultIMC;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UInputMappingContext> DisableIMC;
 };

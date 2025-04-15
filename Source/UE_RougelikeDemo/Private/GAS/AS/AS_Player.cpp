@@ -5,7 +5,12 @@
 
 UAS_Player::UAS_Player()
 {
-	
+	InitHealth(200.f);
+	InitMaxHealth(200.f);
+	InitEndurance(100.f);
+	InitMaxEndurance(100.f);
+	InitAttachResource(10.f);
+	InitMaxAttachResource(10.f);
 }
 
 void UAS_Player::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
