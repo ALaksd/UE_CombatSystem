@@ -3,6 +3,8 @@
 
 #include "GAS/ASC_Base.h"
 
+#include "GAS/Abilities/GA_Base.h"
+
 void UASC_Base::AbilityActorInfoSet()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this,&UASC_Base::EffectApplied);
@@ -12,14 +14,38 @@ void UASC_Base::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>
 {
 	for (auto AbilityClass : StartupAbilities)
 	{
-		const FGameplayAbilitySpec& AbilitySpec = FGameplayAbilitySpec(AbilityClass,1);
-		GiveAbility(AbilitySpec);
-		
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass,1);
+		if (const UGA_Base* Ability = Cast<UGA_Base>(AbilitySpec.Ability))
+		{
+			AbilitySpec.DynamicAbilityTags.AddTag(Ability->StartInputTag);
+			GiveAbility(AbilitySpec);
+		}
 	}
 }
 
+void UASC_Base::AbilityInputTagHeld(const FGameplayTag& InputTag)
+{
+	if (!InputTag.IsValid()) return ;
+
+	for (FGameplayAbilitySpec AbilitySpec : GetActivatableAbilities())
+	{
+		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		{
+			if (!AbilitySpec.IsActive())
+			{
+				//执行Ability
+				TryActivateAbility(AbilitySpec.Handle);
+			}
+		}
+	}
+}
+
+void UASC_Base::AbilityInputTagReleased(const FGameplayTag& InputTag)
+{
+}
+
 void UASC_Base::EffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GamePlayEffectSpec,
-	FActiveGameplayEffectHandle EffectHandle)
+                              FActiveGameplayEffectHandle EffectHandle)
 {
 	
 }

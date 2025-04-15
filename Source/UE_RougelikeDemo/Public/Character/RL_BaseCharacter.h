@@ -12,6 +12,7 @@
 #include "Player/RL_PlayerState.h"
 #include "RL_BaseCharacter.generated.h"
 
+class URLInputConfig;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
@@ -115,7 +116,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attribute")
 	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
 
-
+	UPROPERTY(EditDefaultsOnly,Category = "Input")
+	TObjectPtr<URLInputConfig> InputConfig;
+	
 private:
 	//角色状态UI
 	TObjectPtr<URL_PlayerStateWidget> PlayerStateUI;

@@ -12,6 +12,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GAS/ASC_Base.h"
+#include "Input/RLInputComponent.h"
 #include "Interface/RL_CharacterAimInterface.h"
 #include "UI/RL_HUD.h"
 
@@ -125,15 +126,22 @@ void ARL_BaseCharacter::Tick(float DeltaTime)
 // Called to bind functionality to input
 void ARL_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	if (URLInputComponent* RLInputComponent = CastChecked<URLInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		RLInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		RLInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARL_BaseCharacter::Move);
+		RLInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARL_BaseCharacter::Move);
 
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARL_BaseCharacter::Look);
+		RLInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARL_BaseCharacter::Look);
+
+		//AbilityAction绑定示例   按下  ，松开  ，长按    别的情况可去到BindAbilityInputAction增加
+		//void 某个回调函数(FGameplayTag InputTag)
+		//{
+		//		AbilitySystemComponent->AbilityInputTagHeld();或者别的
+		//}
+		//RLInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::某个回调函数(3个，没有就是null))
 	}
 
 }
