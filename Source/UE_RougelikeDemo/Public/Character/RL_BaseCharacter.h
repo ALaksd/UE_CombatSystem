@@ -119,6 +119,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly,Category = "Input")
 	TObjectPtr<URLInputConfig> InputConfig;
 	
+	
+	
+	/***--------------------测试---------------------***/
+
+	void LMBInputPressedTest(FGameplayTag InputTag);
+	void LMBInputHeldTest(FGameplayTag InputTag);
+	void LMBInputReleasedTest(FGameplayTag InputTag);
+	
+	/***--------------------测试---------------------***/
+	
+	
+	
+	
 private:
 	//角色状态UI
 	TObjectPtr<URL_PlayerStateWidget> PlayerStateUI;
@@ -127,6 +140,7 @@ private:
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	TObjectPtr<UAttributeSet> AttributeSet;
 
+	UPROPERTY(EditDefaultsOnly , Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
 
