@@ -19,7 +19,7 @@ class UInputMappingContext;
 class UInputAction;
 class URL_PlayerStateWidget;
 class URL_InputBufferComponent;
-
+class UCloseCombatComponent;
 
 
 
@@ -38,6 +38,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FllowCamera;
 
+	//攻击组件
+	UPROPERTY(EditDefaultsOnly,Category = "Component")
+	TObjectPtr<UCloseCombatComponent> CloseCombatComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<URL_InputBufferComponent> InputBufferComponent;

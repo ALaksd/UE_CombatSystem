@@ -12,11 +12,11 @@ AEnemy_Base::AEnemy_Base()
 	PrimaryActorTick.bCanEverTick = false;
 	
 	//创建组件
-	Capsule=CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
-	SetRootComponent(Capsule);
-	
-	SkeletalMesh=CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMesh");
-	SkeletalMesh->SetupAttachment(GetRootComponent());
+	// Capsule=CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
+	// SetRootComponent(Capsule);
+	//
+	// SkeletalMesh=CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMesh");
+	// SkeletalMesh->SetupAttachment(GetRootComponent());
 	
 	AbilitySystemComponent=CreateDefaultSubobject<UASC_Base>("AbilitySystemComponent");
 

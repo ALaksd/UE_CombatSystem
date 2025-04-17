@@ -11,6 +11,7 @@
 #include "UI/RL_PlayerStateWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Component/CloseCombatComponent.h"
 #include "GAS/ASC_Base.h"
 #include "Input/RLInputComponent.h"
 #include "Interface/RL_CharacterAimInterface.h"
@@ -42,6 +43,8 @@ ARL_BaseCharacter::ARL_BaseCharacter()
 
 	InputBufferComponent = CreateDefaultSubobject<URL_InputBufferComponent>("InputBufferComponnet");
 
+	CloseCombatComponent = CreateDefaultSubobject<UCloseCombatComponent>(TEXT("CloseCombatComponent"));
+	
 	//HeadConstant->CreateDefaultSubobject<USkeletalMeshComponent>("HeadConstant");
 	//HeadConstant->SetupAttachment(GetMesh());
 	//HeadConstant->SetLeaderPoseComponent(GetMesh());
@@ -140,13 +143,6 @@ void ARL_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		RLInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARL_BaseCharacter::Move);
 
 		RLInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARL_BaseCharacter::Look);
-
-		//AbilityAction绑定示例   按下  ，松开  ，长按    别的情况可去到BindAbilityInputAction增加
-		//void 某个回调函数(FGameplayTag InputTag)
-		//{
-		//		AbilitySystemComponent->AbilityInputTagHeld();或者别的
-		//}
-		//RLInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::某个回调函数(3个，没有就是null))
 		
 		RLInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::LMBInputPressedTest,&ThisClass::LMBInputReleasedTest,&ThisClass::LMBInputHeldTest);
 
