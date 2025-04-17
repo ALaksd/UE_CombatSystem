@@ -4,6 +4,7 @@
 #include "Animation/AnimNotifyState/ANS_PreInputManage.h"
 #include "Component/RL_InputBufferComponent.h"
 #include "GameplayTagContainer.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 void UANS_PreInputManage::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
@@ -27,8 +28,12 @@ void UANS_PreInputManage::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSeque
 		Buffer->SetbAcceptingBufferedInput(false);
 		FGameplayTag InputTag = Buffer->ConsumeBufferedInput();
 		UE_LOG(LogTemp, Log, TEXT("Excute InputTag: %s"), *InputTag.ToString());
-		// 执行输入
-		//TriggerActionByTag(InputTag);
+		// 发送能力事件
+		FGameplayEventData EventData;
+		EventData.Instigator = Owner;
+		EventData.EventTag = InputTag;
+
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Owner, InputTag, EventData);
 	}
 }
 

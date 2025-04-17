@@ -4,23 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
-#include "ANS_InputDisableAll.generated.h"
+#include "GameplayTagContainer.h"
+#include "ANS_ComboWindow.generated.h"
 
-class UInputMappingContext;
+
 /**
  * 
  */
 UCLASS()
-class UE_ROUGELIKEDEMO_API UANS_InputDisableAll : public UAnimNotifyState
+class UE_ROUGELIKEDEMO_API UANS_ComboWindow : public UAnimNotifyState
 {
 	GENERATED_BODY()
 public:
 
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
+	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<UInputMappingContext> DefaultIMC;
+	FGameplayTagContainer ComboTag = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Window.ComboWindow")));
 
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UInputMappingContext> DisableIMC;
 };

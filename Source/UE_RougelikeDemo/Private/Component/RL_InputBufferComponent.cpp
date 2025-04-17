@@ -24,6 +24,8 @@ void URL_InputBufferComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void URL_InputBufferComponent::BufferInput(const FGameplayTag& InputTag)
 {
+	UE_LOG(LogTemp, Log, TEXT("bAcceptingBufferedInput: %s"), bAcceptingBufferedInput ? TEXT("true") : TEXT("false"));
+
 	if (bAcceptingBufferedInput)
 	{
 		FBufferedInput NewInput;
