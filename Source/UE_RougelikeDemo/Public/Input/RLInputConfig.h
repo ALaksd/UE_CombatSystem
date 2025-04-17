@@ -16,7 +16,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	const UInputAction* InputAction = nullptr;
 	UPROPERTY(EditDefaultsOnly)
-	FGameplayTag GameplayTage = FGameplayTag();
+	FGameplayTag InputTage = FGameplayTag();
 };
 
 

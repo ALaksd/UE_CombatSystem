@@ -7,7 +7,7 @@ const UInputAction* URLInputConfig::FindAbilityInputAction(const FGameplayTag Ta
 {
 	for (const auto& var : AbilityInputActions)
 	{
-		if (var.InputAction && Tag == var.GameplayTage)
+		if (var.InputAction && Tag == var.InputTage)
 		{
 			return var.InputAction;
 		}

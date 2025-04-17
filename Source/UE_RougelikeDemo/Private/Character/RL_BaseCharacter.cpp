@@ -14,7 +14,9 @@
 #include "GAS/ASC_Base.h"
 #include "Input/RLInputComponent.h"
 #include "Interface/RL_CharacterAimInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/RL_HUD.h"
+
 
 
 
@@ -113,6 +115,8 @@ void ARL_BaseCharacter::BeginPlay()
 
 	PlayerState = Cast<ARL_PlayerState>(GetPlayerState());
 
+
+	//SetupPlayerInputComponent(UGameplayStatics::GetPlayerController(GetWorld(),0)->InputComponent);
 }
 
 
@@ -126,6 +130,7 @@ void ARL_BaseCharacter::Tick(float DeltaTime)
 // Called to bind functionality to input
 void ARL_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	if (URLInputComponent* RLInputComponent = CastChecked<URLInputComponent>(PlayerInputComponent))
 	{
 		RLInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
@@ -142,9 +147,39 @@ void ARL_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		//		AbilitySystemComponent->AbilityInputTagHeld();或者别的
 		//}
 		//RLInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::某个回调函数(3个，没有就是null))
+		RLInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::LMBInputPressedTest,&ThisClass::LMBInputReleasedTest,&ThisClass::LMBInputHeldTest);
 	}
 
 }
+
+
+
+
+
+/***--------------------测试---------------------***/
+
+void ARL_BaseCharacter::LMBInputPressedTest(FGameplayTag InputTag)
+{
+	//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Pressed")));
+}
+
+void ARL_BaseCharacter::LMBInputHeldTest(FGameplayTag InputTag)
+{
+	//GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf(TEXT("Held")));
+	CastChecked<UASC_Base>(AbilitySystemComponent)->AbilityInputTagHeld(InputTag);
+}
+
+void ARL_BaseCharacter::LMBInputReleasedTest(FGameplayTag InputTag)
+{
+	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, FString::Printf(TEXT("Released")));
+	CastChecked<UASC_Base>(AbilitySystemComponent)->AbilityInputTagReleased(InputTag);
+}
+/***--------------------测试---------------------***/
+
+
+
+
+
 
 void ARL_BaseCharacter::Move(const FInputActionValue& Value)
 {

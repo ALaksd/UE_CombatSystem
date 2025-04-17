@@ -16,33 +16,34 @@ class UE_ROUGELIKEDEMO_API URLInputComponent : public UEnhancedInputComponent
 	GENERATED_BODY()
 
 public:
-	template<class UserClass,typename PressedFuncType,typename ReleasedFuncType,typename HeldFuncType>
-	void BindAbilityInputAction(const URLInputConfig* InputConfig,UserClass* Object,PressedFuncType PressedFunc,ReleasedFuncType ReleaceFunc,HeldFuncType HeledFunc);
-	
+	template<class UserClass, typename PressedFuncType, typename ReleasedFuncType, typename HoldFuncType>
+	void BindAbilityInputAction(const URLInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, HoldFuncType HoldFunc);
+
 };
 
-
-template <class UserClass, typename PressedFuncType, typename ReleasedFuncType, typename HeldFuncType>
+template <class UserClass, typename PressedFuncType, typename ReleasedFuncType, typename HoldFuncType>
 void URLInputComponent::BindAbilityInputAction(const URLInputConfig* InputConfig, UserClass* Object,
-	PressedFuncType PressedFunc, ReleasedFuncType ReleaceFunc, HeldFuncType HeledFunc)
+	PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, HoldFuncType HoldFunc)
 {
 	check(InputConfig);
 
-	for (const auto& Action:InputConfig->AbilityInputActions)
+	for(const auto& Action : InputConfig->AbilityInputActions)
 	{
-		if (Action.InputAction&&Action.GameplayTage.IsValid())
+		if(Action.InputAction && Action.InputTage.IsValid())
 		{
-			if (PressedFunc)
+			if(PressedFunc)
 			{
-				BindAction(Action.InputAction,ETriggerEvent::Started,Object,PressedFunc,Action.GameplayTage);
+				BindAction(Action.InputAction, ETriggerEvent::Started, Object, PressedFunc, Action.InputTage);
 			}
-			if (ReleaceFunc)
+			
+			if(ReleasedFunc)
 			{
-				BindAction(Action.InputAction,ETriggerEvent::Completed,Object,ReleaceFunc,Action.GameplayTage);
+				BindAction(Action.InputAction, ETriggerEvent::Completed, Object, ReleasedFunc, Action.InputTage);
 			}
-			if (HeledFunc)
+			
+			if(HoldFunc)
 			{
-				BindAction(Action.InputAction,ETriggerEvent::Triggered,Object,HeledFunc,Action.GameplayTage);
+				BindAction(Action.InputAction, ETriggerEvent::Triggered, Object, HoldFunc, Action.InputTage);
 			}
 		}
 	}
