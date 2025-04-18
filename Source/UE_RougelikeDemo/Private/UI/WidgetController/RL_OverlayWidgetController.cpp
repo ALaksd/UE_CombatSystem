@@ -3,6 +3,7 @@
 
 #include "UI/WidgetController/RL_OverlayWidgetController.h"
 #include "GAS/AS/AS_Player.h"
+#include <Player/RL_PlayerState.h>
 
 void URL_OverlayWidgetController::BroadcastInitialValue()
 {
@@ -62,4 +63,19 @@ void URL_OverlayWidgetController::BindCallbacksToDependencies()
 				OnMaxAttachResourceChanged.Broadcast(Data.NewValue);
 			}
 		);
+
+	ARL_PlayerState* RLPlayerState = CastChecked<ARL_PlayerState>(PlayerState);
+	RLPlayerState->OnSoulChanged.AddLambda(
+		[this](int32 NewSoul)
+		{
+			OnSoulChanged.Broadcast(NewSoul);
+		}
+	);
+
+	RLPlayerState->OnLevelChanged.AddLambda(
+		[this](int32 NewLevel)
+		{
+			OnLevelChanged.Broadcast(NewLevel);
+		}
+	);
 }

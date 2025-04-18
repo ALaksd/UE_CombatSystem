@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "ASC_Base.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /*AssetTags*/);
 /**
  * 
  */
@@ -20,6 +21,9 @@ public:
 
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
+
+	FEffectAssetTags EffecctTags;
+		
 	
 protected:
 	void EffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GamePlayEffectSpec, FActiveGameplayEffectHandle EffectHandle);

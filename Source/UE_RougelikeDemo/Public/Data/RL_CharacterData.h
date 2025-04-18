@@ -58,3 +58,12 @@ struct FMovementSetting
 		, bUseSeparateBrakingFriction(false)
 	{}
 };
+
+USTRUCT(BlueprintType)
+struct FLevelUpInfo:public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float LevelUpRequirement = 0;
+};

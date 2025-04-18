@@ -259,15 +259,22 @@ void ARL_BaseCharacter::InitAbilityActorInfo()
 		}
 	}
 
-	InitializePrimaryAttribute();
+	InitializeAttribute();
 }
 
-void ARL_BaseCharacter::InitializePrimaryAttribute() const
+void ARL_BaseCharacter::InitializeAttribute() const
 {
-	if (GetAbilitySystemComponent() && DefaultPrimaryAttributes)
+	ApplyGameEffect(DefaultPrimaryAttributes,1.f);
+	ApplyGameEffect(DefaultSecondaryAttributes, 1.f);
+	ApplyGameEffect(DefaultVitalAttributes, 1.f);
+}
+
+void ARL_BaseCharacter::ApplyGameEffect(TSubclassOf<UGameplayEffect> EffectClass, float Level) const
+{
+	if (GetAbilitySystemComponent() && EffectClass)
 	{
 		const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-		const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(DefaultPrimaryAttributes, 1.f, ContextHandle);
+		const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(EffectClass, Level, ContextHandle);
 		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
 	}
 }

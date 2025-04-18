@@ -57,5 +57,8 @@ void UASC_Base::AbilityInputTagReleased(const FGameplayTag& InputTag)
 void UASC_Base::EffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GamePlayEffectSpec,
                               FActiveGameplayEffectHandle EffectHandle)
 {
-	
+	FGameplayTagContainer TagContainer;
+	GamePlayEffectSpec.GetAllAssetTags(TagContainer);
+
+	EffecctTags.Broadcast(TagContainer);
 }

@@ -86,28 +86,28 @@ protected:
 #pragma region
 
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> BaseIMC;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> MoveAction;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> LookAction;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> JumpAction;
 
 	//跑步按键
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> RunAction;
 
 	//翻滚按键
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> RollAction;
 #pragma endregion //输入
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Settings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Settings")
 	//角色移动状态数据
 	TMap<EMovementState, FMovementSetting> MovementSettingMap;
 
@@ -116,10 +116,16 @@ protected:
 	EMovementState CurrentMovmentState;
 
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attribute")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Attribute")
 	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
 
-	UPROPERTY(EditDefaultsOnly,Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Attribute")
+	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Attribute")
+	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
+
+	UPROPERTY(EditDefaultsOnly,Category = "0_RLCharacter|Input")
 	TObjectPtr<URLInputConfig> InputConfig;
 	
 	
@@ -143,7 +149,7 @@ private:
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	TObjectPtr<UAttributeSet> AttributeSet;
 
-	UPROPERTY(EditDefaultsOnly , Category = "Abilities")
+	UPROPERTY(EditDefaultsOnly , Category = "0_RLCharacter|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
 
@@ -185,6 +191,7 @@ protected:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 	void InitAbilityActorInfo();
-	void InitializePrimaryAttribute() const;
+	void InitializeAttribute() const;
+	void ApplyGameEffect(TSubclassOf<UGameplayEffect> EffectClass,float Level) const;
 };
 

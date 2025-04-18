@@ -11,8 +11,8 @@
 #include "Data\RL_CharacterData.h"
 #include "RL_PlayerState.generated.h"
 
-
-
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSoulChanged, int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelChanged, int32);
 
 class UDataTable;
 
@@ -64,6 +64,7 @@ public:
 protected:
 	virtual void PostInitializeComponents()override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 private:
 
 #pragma region 
@@ -72,4 +73,33 @@ private:
 	void OnRep_Momentum(const FGameplayAttributeData& OldHealth);
 #pragma endregion //���Ա任�ص�����
 
+/// <summary>
+/// 玩家等级系统，数据暂时保存在PlayerState里
+/// </summary>
+public:
+	inline int32 GetSoul() const { return Soul; }
+	void AddSoul(int32 NewSoul);
+
+	UFUNCTION(BlueprintCallable)
+	void SetSoul(int32 NewSoul);
+
+	inline int32 GetLevel() const { return Level; }
+	void AddLevel();
+
+	inline int32 GetSpellPoints() const { return SpellPoints; }
+	void AddSpellPoints(int32 InSpellPoints);
+
+	int32 GetLevelRequirement(int32 InLevel);
+	FOnSoulChanged OnSoulChanged;
+	FOnLevelChanged OnLevelChanged;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")
+	TObjectPtr<UDataTable>LevelUpInfo;
+
+	
+
+	int32 Soul = 0;
+	int32 Level = 1;
+	int32 SpellPoints = 0;
 };
