@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "UI/WidgetController/RL_OverlayWidgetController.h"
+#include "UI/WidgetController/RL_AttributeWidgetController.h"
 #include "RL_HUD.generated.h"
 
 class URL_UserWidget;
@@ -19,6 +20,8 @@ class UE_ROUGELIKEDEMO_API ARL_HUD : public AHUD
 public:
 	//返回控件控制器
 	URL_OverlayWidgetController* GetOverlayWidgetController(FWidgetControllerParams& WCParams);
+
+	URL_AttributeWidgetController* GetAttributeWidgetController(FWidgetControllerParams& WCParams);
 
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
@@ -36,4 +39,11 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<URL_OverlayWidgetController> OverlayControllerClass;
+
+	//控制器
+	UPROPERTY()
+	TObjectPtr<URL_AttributeWidgetController> AttributeController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<URL_AttributeWidgetController> AttributeControllerClass;
 };

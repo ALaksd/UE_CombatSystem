@@ -46,6 +46,7 @@ public:
 	void SetWidgetControllerParams(FWidgetControllerParams& WCParams);
 
 	//广播属性变化
+	UFUNCTION(BlueprintCallable)
 	virtual void BroadcastInitialValue();
 
 	//GAS回调函数(用于GAS通知属的变化委托的回调函数)

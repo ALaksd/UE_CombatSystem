@@ -11,7 +11,7 @@ void UANS_InputEnableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
 
 	if (!Owner) return;
 
-	// Æô¶¯ÒÆ¶¯ÊäÈë
+	// ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (APlayerController* PC = Cast<APlayerController>(Owner->GetInstigatorController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
