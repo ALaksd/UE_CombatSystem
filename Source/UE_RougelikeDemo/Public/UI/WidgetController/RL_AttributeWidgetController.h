@@ -8,6 +8,8 @@
 #include "RL_AttributeWidgetController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeInfoSignature, const FRLAttributeInfo&, Info);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoulChangedInAttribute, int32, NewSoul);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelChangedInAttribute, int32, NewLevel);
 /**
  * 
  */
@@ -23,8 +25,21 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
 	FAttributeInfoSignature AttributeInfoDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
+	FOnSoulChangedInAttribute OnSoulChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
+	FOnLevelChangedInAttribute OnLevelChanged;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool CanUprade;
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<URL_AttributeData> AttributeInfo;
+
+
+	UFUNCTION(BlueprintCallable)
+	void UpgradeAttribute(const FGameplayTag& AttributeTag);
 };

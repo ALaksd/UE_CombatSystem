@@ -3,6 +3,7 @@
 
 #include "UI/WidgetController/RL_WidgetController.h"
 #include "GAS/AS/AS_Player.h"
+#include <Player/RL_PlayerState.h>
 
 void URL_WidgetController::SetWidgetControllerParams(FWidgetControllerParams& WCParams)
 {
@@ -25,4 +26,10 @@ UAS_Player* URL_WidgetController::GetPlayerAS() const
 	UAS_Player* PlayerAttributeSet = CastChecked<UAS_Player>(AttributeSet);
 
 	return PlayerAttributeSet;
+}
+
+inline ARL_PlayerState* URL_WidgetController::GetPlayerState() const
+{
+	ARL_PlayerState* RLPlayerState = CastChecked<ARL_PlayerState>(PlayerState);
+	return RLPlayerState;
 }

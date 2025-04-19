@@ -47,8 +47,6 @@ public:
 protected:
 	//属性将修改前调用
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
-
-private:
 	
 
 	//网络更新的，此项目不管

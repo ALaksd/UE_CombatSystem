@@ -9,6 +9,7 @@
 class UAbilitySystemComponent;
 class UAttributeSet;
 class UAS_Player;
+class ARL_PlayerState;
 
 USTRUCT(BlueprintType)
 struct FWidgetControllerParams
@@ -65,5 +66,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
 	TObjectPtr<UAttributeSet> AttributeSet;
 
+	UFUNCTION(BlueprintCallable)
 	inline UAS_Player* GetPlayerAS() const;
+
+	UFUNCTION(BlueprintCallable)
+	inline ARL_PlayerState* GetPlayerState() const;
 };

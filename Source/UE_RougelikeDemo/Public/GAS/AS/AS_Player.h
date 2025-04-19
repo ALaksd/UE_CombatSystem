@@ -55,7 +55,12 @@ public:
 	 //标签和属性对应的键值表
 	TMap<FGameplayTag, FAttributeSignature> TagsToAttribute;
 
-private:
+protected:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
-	
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
+private:
+	bool bLevelHealth;
+	bool bLevelEndurance;
+	bool bLevelAttachResource;
 };

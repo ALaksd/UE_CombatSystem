@@ -4,6 +4,8 @@
 #include "UI/WidgetController/RL_AttributeWidgetController.h"
 #include "GAS/AS/AS_Player.h"
 #include "RL_GameplayTags.h"
+#include <GAS/ASC_Base.h>
+#include <Player/RL_PlayerState.h>
 
 void URL_AttributeWidgetController::BroadcastInitialValue()
 {
@@ -22,6 +24,9 @@ void URL_AttributeWidgetController::BroadcastInitialValue()
 		AttributeInfoDelegate.Broadcast(Info);
 
 	}
+
+	OnLevelChanged.Broadcast(GetPlayerState()->GetLevel());
+	OnSoulChanged.Broadcast(GetPlayerState()->GetSoul());
 }
 
 void URL_AttributeWidgetController::BindCallbacksToDependencies()
@@ -39,4 +44,32 @@ void URL_AttributeWidgetController::BindCallbacksToDependencies()
 			}
 		);
 	}
+
+
+	GetPlayerState()->OnSoulChanged.AddLambda(
+		[this](int32 NewSoul)
+		{
+			OnSoulChanged.Broadcast(NewSoul);
+		}
+	);
+
+	GetPlayerState()->OnLevelChanged.AddLambda(
+		[this](int32 NewLevel)
+		{
+			OnLevelChanged.Broadcast(NewLevel);
+		}
+	);
+}
+
+void URL_AttributeWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	UASC_Base* ASC = CastChecked<UASC_Base>(AbilitySystemComponent);
+	int32 CurrentLevel = GetPlayerState()->GetLevel();
+	int32 CurrentSoul = GetPlayerState()->GetSoul();
+	int32 Need = GetPlayerState()->GetLevelRequirement(CurrentLevel);
+	if (CurrentSoul > Need)
+	{
+		ASC->UpgradeAttribute(AttributeTag);
+	}
+	
 }

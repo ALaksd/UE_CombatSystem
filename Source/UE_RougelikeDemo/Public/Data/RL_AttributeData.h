@@ -22,9 +22,11 @@ struct FRLAttributeInfo
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FText AttributeDescription = FText();
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 MaxAttributeValue = 0;
+
 	UPROPERTY(BlueprintReadOnly)
 	float AttributeValue = 0.f;
-
 };
 
 /**

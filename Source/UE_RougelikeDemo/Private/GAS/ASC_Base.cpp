@@ -4,6 +4,7 @@
 #include "GAS/ASC_Base.h"
 
 #include "GAS/Abilities/GA_Base.h"
+#include <AbilitySystemBlueprintLibrary.h>
 
 void UASC_Base::AbilityActorInfoSet()
 {
@@ -20,6 +21,15 @@ void UASC_Base::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>
 			AbilitySpec.DynamicAbilityTags.AddTag(Ability->StartInputTag);
 			GiveAbility(AbilitySpec);
 		}
+	}
+}
+
+void UASC_Base::AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbilities)
+{
+	for (auto AbilityClass : StartupPassiveAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		GiveAbilityAndActivateOnce(AbilitySpec);
 	}
 }
 
@@ -52,6 +62,16 @@ void UASC_Base::AbilityInputTagReleased(const FGameplayTag& InputTag)
 			AbilitySpecInputReleased(AbilitySpec);
 		}
 	}
+}
+
+void UASC_Base::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	//发送事件
+	FGameplayEventData PayLoad;
+	PayLoad.EventTag = AttributeTag;
+	PayLoad.EventMagnitude = 1.f;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(), AttributeTag, PayLoad);
 }
 
 void UASC_Base::EffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GamePlayEffectSpec,

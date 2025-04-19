@@ -89,6 +89,7 @@ public:
 	inline int32 GetSpellPoints() const { return SpellPoints; }
 	void AddSpellPoints(int32 InSpellPoints);
 
+	UFUNCTION(BlueprintCallable)
 	int32 GetLevelRequirement(int32 InLevel);
 	FOnSoulChanged OnSoulChanged;
 	FOnLevelChanged OnLevelChanged;
