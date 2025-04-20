@@ -3,3 +3,5 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#define ECC_Enemy ECollisionChannel::ECC_GameTraceChannel1

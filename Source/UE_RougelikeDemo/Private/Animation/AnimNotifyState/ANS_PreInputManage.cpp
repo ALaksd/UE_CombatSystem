@@ -28,7 +28,7 @@ void UANS_PreInputManage::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSeque
 		Buffer->SetbAcceptingBufferedInput(false);
 		FGameplayTag InputTag = Buffer->ConsumeBufferedInput();
 		UE_LOG(LogTemp, Log, TEXT("Excute InputTag: %s"), *InputTag.ToString());
-		// ·¢ËÍÄÜÁ¦ÊÂ¼ş
+		// å‘é€èƒ½åŠ›äº‹ä»¶
 		FGameplayEventData EventData;
 		EventData.Instigator = Owner;
 		EventData.EventTag = InputTag;
