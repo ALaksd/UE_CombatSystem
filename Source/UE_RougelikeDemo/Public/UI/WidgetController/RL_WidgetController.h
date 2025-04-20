@@ -9,6 +9,7 @@
 class UAbilitySystemComponent;
 class UAttributeSet;
 class UAS_Player;
+class ARL_PlayerState;
 
 USTRUCT(BlueprintType)
 struct FWidgetControllerParams
@@ -46,6 +47,7 @@ public:
 	void SetWidgetControllerParams(FWidgetControllerParams& WCParams);
 
 	//广播属性变化
+	UFUNCTION(BlueprintCallable)
 	virtual void BroadcastInitialValue();
 
 	//GAS回调函数(用于GAS通知属的变化委托的回调函数)
@@ -64,5 +66,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
 	TObjectPtr<UAttributeSet> AttributeSet;
 
+	UFUNCTION(BlueprintCallable)
 	inline UAS_Player* GetPlayerAS() const;
+
+	UFUNCTION(BlueprintCallable)
+	inline ARL_PlayerState* GetPlayerState() const;
 };

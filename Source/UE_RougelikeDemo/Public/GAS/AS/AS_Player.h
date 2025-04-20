@@ -6,6 +6,8 @@
 #include "GAS/AS/AS_Base.h"
 #include "AS_Player.generated.h"
 
+//声明一个返回 FGameplayAttribute，不带参数的委托类型
+DECLARE_DELEGATE_RetVal(FGameplayAttribute, FAttributeSignature)
 /**
  * 
  */
@@ -19,13 +21,16 @@ public:
 	/*主要属性，实时*/
 	UPROPERTY(EditDefaultsOnly, Category = "Attribute")
 	FGameplayAttributeData Life;  //生命，影响最大生命上限
+	ATTRIBUTE_ACCESSORS(UAS_Player, Life); //最大耐力值
 
 	UPROPERTY(EditDefaultsOnly, Category = "Attribute")
 	FGameplayAttributeData Vigor;  //活力，影响最大耐力上限
+	ATTRIBUTE_ACCESSORS(UAS_Player, Vigor); //最大耐力值
 
 	UPROPERTY(EditDefaultsOnly, Category = "Attribute")
 	FGameplayAttributeData Power;  //气势，影响最大气势上限
-	
+	ATTRIBUTE_ACCESSORS(UAS_Player, Power); //最大耐力值
+
 	/*次要属性，无限,受主要属性影响*/
 	UPROPERTY(EditDefaultsOnly, Category = "Attribute")
 	FGameplayAttributeData MaxEndurance;
@@ -46,7 +51,16 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category="Attribute")
 	FGameplayAttributeData AttachResource;
 	ATTRIBUTE_ACCESSORS(UAS_Player,AttachResource);
-private:
+
+	 //标签和属性对应的键值表
+	TMap<FGameplayTag, FAttributeSignature> TagsToAttribute;
+
+protected:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
-	
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
+private:
+	bool bLevelHealth;
+	bool bLevelEndurance;
+	bool bLevelAttachResource;
 };

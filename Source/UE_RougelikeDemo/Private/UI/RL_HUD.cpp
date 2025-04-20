@@ -18,6 +18,19 @@ URL_OverlayWidgetController* ARL_HUD::GetOverlayWidgetController(FWidgetControll
 	return OverlayController;
 }
 
+URL_AttributeWidgetController* ARL_HUD::GetAttributeWidgetController(FWidgetControllerParams& WCParams)
+{
+	if (AttributeController == nullptr)
+	{
+		AttributeController = NewObject<URL_AttributeWidgetController>(this, AttributeControllerClass);
+		AttributeController->SetWidgetControllerParams(WCParams);
+		AttributeController->BindCallbacksToDependencies();
+
+		return AttributeController;
+	}
+	return AttributeController;
+}
+
 void ARL_HUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
 	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class unintialized"));

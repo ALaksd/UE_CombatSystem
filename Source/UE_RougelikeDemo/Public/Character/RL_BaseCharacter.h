@@ -10,6 +10,7 @@
 #include "AttributeSet.h"
 #include "InputActionValue.h"
 #include "Player/RL_PlayerState.h"
+#include "Interface/RL_PlayerInterface.h"
 #include "RL_BaseCharacter.generated.h"
 
 class URLInputConfig;
@@ -24,11 +25,22 @@ class UCloseCombatComponent;
 
 
 UCLASS()
-class UE_ROUGELIKEDEMO_API ARL_BaseCharacter : public ACharacter, public IAbilitySystemInterface
+class UE_ROUGELIKEDEMO_API ARL_BaseCharacter : public ACharacter, public IAbilitySystemInterface,public IRL_PlayerInterface
 {
 	GENERATED_BODY()
 
+#pragma region //PlayerInterfece
+public:
+	virtual int32 GetSoul_Implementation() const override;
+	virtual void SetSoul_Implementation(int32 NewSoul) override;
+	virtual int32 GetLevel_Implementation() const override;
+	virtual void AddLevel_Implementation() override;
+	virtual int32 GetSpellPoints_Implementation() const override;
+	virtual void AddSpellPoints_Implementation(int32 InSpellPoints) override;
+	virtual int32 GetLevelRequirement_Implementation(int32 InLevel) const override;
 	
+
+#pragma endregion //End PlayerInterfece
 protected:
 
 
@@ -151,6 +163,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly , Category = "0_RLCharacter|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+
+	//用于存放一些开始状态激活一次永久存在的技能
+	UPROPERTY(EditDefaultsOnly, Category = "0_RLCharacter|Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> StartupPassiveAbilities;
 
 
 public:

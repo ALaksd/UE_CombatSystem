@@ -89,6 +89,7 @@ void ARL_BaseCharacter::AddCharacterAbilities()
 	UASC_Base* ASC = CastChecked<UASC_Base>(AbilitySystemComponent);
 
 	ASC->AddCharacterAbilities(StartupAbilities);
+	ASC->AddCharacterPassiveAbilities(StartupPassiveAbilities);
 	
 }
 
@@ -297,4 +298,39 @@ void ARL_BaseCharacter::UpdateMovementState(EMovementState State)
 			IRL_CharacterAimInterface::Execute_ReciveMovementState(GetMesh()->GetAnimInstance(),State);
 		}
 	}
+}
+
+int32 ARL_BaseCharacter::GetSoul_Implementation() const
+{
+	return PlayerState->GetSoul();
+}
+
+void ARL_BaseCharacter::SetSoul_Implementation(int32 NewSoul)
+{
+	PlayerState->SetSoul(NewSoul);
+}
+
+int32 ARL_BaseCharacter::GetLevel_Implementation() const
+{
+	return PlayerState->GetLevel();
+}
+
+void ARL_BaseCharacter::AddLevel_Implementation()
+{
+	PlayerState->AddLevel();
+}
+
+int32 ARL_BaseCharacter::GetSpellPoints_Implementation() const
+{
+	return PlayerState->GetSpellPoints();
+}
+
+void ARL_BaseCharacter::AddSpellPoints_Implementation(int32 InSpellPoints)
+{
+	PlayerState->AddSpellPoints(InSpellPoints);
+}
+
+int32 ARL_BaseCharacter::GetLevelRequirement_Implementation(int32 InLevel) const
+{
+	return PlayerState->GetLevelRequirement(InLevel);
 }

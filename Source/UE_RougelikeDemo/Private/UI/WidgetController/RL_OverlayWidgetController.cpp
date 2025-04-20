@@ -36,7 +36,7 @@ void URL_OverlayWidgetController::BindCallbacksToDependencies()
 			}
 		);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		PlayerAttributeSet->GetMaxEnduranceAttribute()).AddLambda(
+		PlayerAttributeSet->GetEnduranceAttribute()).AddLambda(
 			[this](const FOnAttributeChangeData& Data)
 			{
 				OnEnduranceChanged.Broadcast(Data.NewValue);
@@ -64,15 +64,15 @@ void URL_OverlayWidgetController::BindCallbacksToDependencies()
 			}
 		);
 
-	ARL_PlayerState* RLPlayerState = CastChecked<ARL_PlayerState>(PlayerState);
-	RLPlayerState->OnSoulChanged.AddLambda(
+
+	GetPlayerState()->OnSoulChanged.AddLambda(
 		[this](int32 NewSoul)
 		{
 			OnSoulChanged.Broadcast(NewSoul);
 		}
 	);
 
-	RLPlayerState->OnLevelChanged.AddLambda(
+	GetPlayerState()->OnLevelChanged.AddLambda(
 		[this](int32 NewLevel)
 		{
 			OnLevelChanged.Broadcast(NewLevel);
