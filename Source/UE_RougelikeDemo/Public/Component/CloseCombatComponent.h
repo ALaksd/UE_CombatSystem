@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Weapon/RL_BaseWeapon.h"
 #include "CloseCombatComponent.generated.h"
 
 
@@ -19,23 +20,18 @@ public:
 private:
 	UPROPERTY()
 	TObjectPtr<ACharacter> User = nullptr;
+
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<USkeletalMeshComponent> SkeletalMesh = nullptr;
+	TSubclassOf<ARL_BaseWeapon> BP_CloseWeapon;
 
-	TArray<FVector> Points;
-
-	// 启动射线检测
-	bool bCombat = false;
-
-
-
+	UPROPERTY()
+	TObjectPtr<ARL_BaseWeapon> CloseWeapon;
 	
 protected:
 	virtual void BeginPlay() override;
 
 public:	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void StartCombat();
-	void EndCombat();
+	void StartCombat(TSubclassOf<UGameplayEffect> DamageEffet) const;
+	void EndCombat() const;
 		
 };

@@ -27,5 +27,10 @@ private:
 
 private:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
+
+	//属性修改前调用
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)override;
+	//属性修改后调用
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)override;
 	
 };

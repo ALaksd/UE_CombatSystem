@@ -15,7 +15,7 @@ class UE_ROUGELIKEDEMO_API UANS_InputEnableAll : public UAnimNotifyState
 {
 	GENERATED_BODY()
 public:
-	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration) override;
+	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UInputMappingContext> DefaultIMC;

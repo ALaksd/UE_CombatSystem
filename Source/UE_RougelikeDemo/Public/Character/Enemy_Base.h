@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
-#include "Components/CapsuleComponent.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "Enemy_Base.generated.h"
 
 UCLASS()
-class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter
+class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -18,13 +18,6 @@ public:
 
 
 private:
-	// //胶囊碰撞体组件
-	// UPROPERTY(EditDefaultsOnly,Category="Components")
-	// TObjectPtr<UCapsuleComponent> Capsule;
-	// //骨骼网格体组件
-	// UPROPERTY(EditDefaultsOnly,Category="Components")
-	// TObjectPtr<USkeletalMeshComponent> SkeletalMesh;
-
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	//属性
@@ -35,7 +28,7 @@ private:
 
 
 public:
-	inline UAbilitySystemComponent* GetAbilitySystemComponent() const { return AbilitySystemComponent; }
+	inline  virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override {return AbilitySystemComponent;}
 
 	
 protected:
@@ -43,5 +36,9 @@ protected:
 
 private:
 	void InitAbilityActorInfo();
+
+	UPROPERTY(EditDefaultsOnly,Category="Initialize")
+	TSubclassOf<UGameplayEffect> PrimariAttribute;
+	void InitializeAttribute();
 	
 };

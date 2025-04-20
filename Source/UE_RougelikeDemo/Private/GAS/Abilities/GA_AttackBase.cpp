@@ -6,20 +6,20 @@
 
 UGA_AttackBase::UGA_AttackBase()
 {
-	//¼àÌıÒ»¸öTag,µ±SendGameplayEventÊ±¿É´¥·¢¼àÌıTagµÄÄÜÁ¦
+	//ç›‘å¬ä¸€ä¸ªTag,å½“SendGameplayEventæ—¶å¯è§¦å‘ç›‘å¬Tagçš„èƒ½åŠ›
 	FAbilityTriggerData TriggerData;
 	TriggerData.TriggerTag = TirggerTag;
 	TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
 
 	AbilityTriggers.Add(TriggerData);
 
-	 InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
 void UGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	//ÔİÊ±Ö»²¥·Å¶¯»­
+	//æš‚æ—¶åªæ’­æ”¾åŠ¨ç”»
 	if (UAnimMontage* MontageToPlay = AttackMontage)
 	{
 		UAbilityTask_PlayMontageAndWait* Task = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(

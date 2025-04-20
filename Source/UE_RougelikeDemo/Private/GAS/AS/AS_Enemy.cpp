@@ -11,3 +11,13 @@ void UAS_Enemy::PreAttributeBaseChange(const FGameplayAttribute& Attribute, floa
 		NewValue = FMath::Clamp(NewValue,0.f,GetMaxResilience());
 	
 }
+
+void UAS_Enemy::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	GEngine->AddOnScreenDebugMessage(-1,2,FColor::Blue,FString::Printf(TEXT("Health will decrease to %f"),NewValue));
+}
+
+void UAS_Enemy::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
+{
+	
+}

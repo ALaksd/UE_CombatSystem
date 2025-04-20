@@ -32,7 +32,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void BufferInput(const FGameplayTag& InputTag);
 	void SetbAcceptingBufferedInput(bool Newbool) { bAcceptingBufferedInput = Newbool; }
-	//Íâ²¿µ÷ÓÃ£¬ÔÚÍ¨Öª½áÊøÊ±µ÷ÓÃ
+	//å¤–éƒ¨è°ƒç”¨ï¼Œåœ¨é€šçŸ¥ç»“æŸæ—¶è°ƒç”¨
 	FGameplayTag ConsumeBufferedInput();
 
 protected:

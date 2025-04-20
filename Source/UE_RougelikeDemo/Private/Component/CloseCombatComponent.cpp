@@ -3,20 +3,14 @@
 
 #include "Component/CloseCombatComponent.h"
 
-#include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/Character.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 
 UCloseCombatComponent::UCloseCombatComponent()
 {
 
-	PrimaryComponentTick.bCanEverTick = true;
-
-	//创建组件
-	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
-	//SkeletalMesh->SetupAttachment(this);
-
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 
@@ -26,67 +20,30 @@ void UCloseCombatComponent::BeginPlay()
 
 	User = Cast<ACharacter>(GetOwner());
 
-	if (User && SkeletalMesh)
+	if (User)
 	{
-		//将武器绑到使用者手上
-		FAttachmentTransformRules AttachmentTransformRules = FAttachmentTransformRules(
-			EAttachmentRule::SnapToTarget,
-			EAttachmentRule::SnapToTarget,
-			EAttachmentRule::KeepRelative,true);
-		SkeletalMesh->AttachToComponent(User->GetMesh(),AttachmentTransformRules,FName("Socket_Weapon_Sword"));
-		
-		// TArray<FName> SoketeNames = SkeletalMesh->GetAllSocketNames();
-		// for (int i =0; i < SoketeNames.Num(); i++)
-		// {
-		// 	Points.Add(SkeletalMesh->GetSocketByName(SoketeNames[i])->GetSocketLocation(SkeletalMesh));
-		// }
+		//生成武器
+		CloseWeapon = GetWorld()->SpawnActorDeferred<ARL_BaseWeapon>(BP_CloseWeapon,FTransform(),User);
+		CloseWeapon->WeaponOwner = User;
+		CloseWeapon = Cast<ARL_BaseWeapon>(UGameplayStatics::FinishSpawningActor(CloseWeapon,FTransform()));
+
+		//将武器绑到使用者的骨骼上
+		EAttachmentRule LocationRule = EAttachmentRule::SnapToTarget;
+		EAttachmentRule RotationRule = EAttachmentRule::SnapToTarget;
+		EAttachmentRule ScaleRule = EAttachmentRule::KeepRelative;
+		FAttachmentTransformRules AttachmentTransformRules = FAttachmentTransformRules(LocationRule,RotationRule,ScaleRule,true);
+		CloseWeapon->AttachToComponent(User->GetMesh(),AttachmentTransformRules,FName("Socket_Weapon_Sword"));
 	}
 	
 }
 
-void UCloseCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UCloseCombatComponent::StartCombat(TSubclassOf<UGameplayEffect> DamageEffet) const
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (bCombat)
-	{
-		for (int i = 0; i < Points.Num() - 1; i++)
-		{
-			FVector Start = Points[i];
-			FVector End =  Points[i + 1];
-			//可见通道
-			ETraceTypeQuery TraceChannel = TraceTypeQuery1;
-			TArray<AActor*> ActorsToIgnore;
-			EDrawDebugTrace::Type DrawDebugType = EDrawDebugTrace::None;
-			FHitResult OutHit;
-			FLinearColor TraceColor = FLinearColor::Red;
-			FLinearColor TraceHitColor = FLinearColor::Green;
-			float DrawTime = 0;
-
-			//忽略攻击者
-			ActorsToIgnore.Add(User);
-			UKismetSystemLibrary::LineTraceSingle(GetWorld(),Start,End,TraceChannel,false,ActorsToIgnore,DrawDebugType,OutHit,true,TraceColor,TraceHitColor,DrawTime);
-
-			//射线检测判定成功
-			if (OutHit.bBlockingHit)
-			{
-				//TODO:执行伤害逻辑
-			}
-		}
-		
-	}
-
-
-	
+	CloseWeapon->StartCombat(DamageEffet);
 }
 
-void UCloseCombatComponent::StartCombat()
+void UCloseCombatComponent::EndCombat() const
 {
-	bCombat=true;
-}
-
-void UCloseCombatComponent::EndCombat()
-{
-	bCombat=false;
+	CloseWeapon->EndCombat();
 }
 

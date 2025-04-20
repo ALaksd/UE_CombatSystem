@@ -38,12 +38,16 @@ void AEnemy_Base::InitAbilityActorInfo()
 	AbilitySystemComponent->InitAbilityActorInfo(this,this);
 	Cast<UASC_Base>(AbilitySystemComponent)->AbilityActorInfoSet();
 
-	// if (GetAbilitySystemComponent() && DefaultPrimaryAttributes)
-	// {
-	// 	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-	// 	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(DefaultPrimaryAttributes, 1.f, ContextHandle);
-	// 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
-	// }
+	InitializeAttribute();
 	
+}
+
+void AEnemy_Base::InitializeAttribute()
+{
+	if (PrimariAttribute && AbilitySystemComponent)
+	{
+		FGameplayEffectSpecHandle GameplayEffect = AbilitySystemComponent->MakeOutgoingSpec(PrimariAttribute,1,AbilitySystemComponent->MakeEffectContext());
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*GameplayEffect.Data.Get());
+	}
 }
 

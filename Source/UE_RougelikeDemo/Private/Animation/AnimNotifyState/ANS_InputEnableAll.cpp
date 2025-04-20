@@ -4,9 +4,9 @@
 #include "Animation/AnimNotifyState/ANS_InputEnableAll.h"
 #include <EnhancedInputSubsystems.h>
 
-void UANS_InputEnableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
+void UANS_InputEnableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration ,const FAnimNotifyEventReference& EventReference)
 {
-	Super::NotifyBegin(MeshComp, Animation, TotalDuration);
+	Super::NotifyBegin(MeshComp, Animation, TotalDuration,EventReference);
 	AActor* Owner = MeshComp->GetOwner();
 
 	if (!Owner) return;
