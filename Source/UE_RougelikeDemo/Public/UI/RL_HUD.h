@@ -18,7 +18,7 @@ class UE_ROUGELIKEDEMO_API ARL_HUD : public AHUD
 	GENERATED_BODY()
 
 public:
-	//·µ»Ø¿Ø¼þ¿ØÖÆÆ÷
+	//è¿”å›žæŽ§ä»¶æŽ§åˆ¶å™¨
 	URL_OverlayWidgetController* GetOverlayWidgetController(FWidgetControllerParams& WCParams);
 
 	URL_AttributeWidgetController* GetAttributeWidgetController(FWidgetControllerParams& WCParams);
@@ -26,21 +26,21 @@ public:
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
 protected:
-	//¿Ø¼þ²¿¼þ
+	//æŽ§ä»¶éƒ¨ä»¶
 	UPROPERTY()
 	TObjectPtr<URL_UserWidget> OverlayWidget;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<URL_UserWidget> OverlayWidgetClass;
 
-	//¿ØÖÆÆ÷
+	//æŽ§åˆ¶å™¨
 	UPROPERTY()
 	TObjectPtr<URL_OverlayWidgetController> OverlayController;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<URL_OverlayWidgetController> OverlayControllerClass;
 
-	//¿ØÖÆÆ÷
+	//æŽ§åˆ¶å™¨
 	UPROPERTY()
 	TObjectPtr<URL_AttributeWidgetController> AttributeController;
 

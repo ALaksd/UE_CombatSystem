@@ -46,14 +46,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetControllerParams(FWidgetControllerParams& WCParams);
 
-	//¹ã²¥ÊôĞÔ±ä»¯
+	//å¹¿æ’­å±æ€§å˜åŒ–
 	UFUNCTION(BlueprintCallable)
 	virtual void BroadcastInitialValue();
 
-	//GAS»Øµ÷º¯Êı(ÓÃÓÚGASÍ¨ÖªÊôµÄ±ä»¯Î¯ÍĞµÄ»Øµ÷º¯Êı)
+	//GASå›è°ƒå‡½æ•°(ç”¨äºGASé€šçŸ¥å±çš„å˜åŒ–å§”æ‰˜çš„å›è°ƒå‡½æ•°)
 	virtual void BindCallbacksToDependencies();
 
-	//ÔÚ¿Õ¼äÏú»ÙÊ±µ÷ÓÃ
+	//åœ¨ç©ºé—´é”€æ¯æ—¶è°ƒç”¨
 	UFUNCTION(BlueprintCallable)
 	virtual void UnbindAllDelegate();
 protected:
