@@ -8,21 +8,21 @@
 UENUM(BlueprintType)
 enum class EEquipedWeapon : uint8
 {
-	None,             // Ä¬ÈÏ
-	NoWeapon,            // Í½ÊÖ
-	OneHandWeapon,    // µ¥ÊÖÎäÆ÷(½££¬µ¶£¬¶Ü)
-	TwoHandedWeapon,  // Ë«ÊÖÎäÆ÷£¨ÖØĞÍÎäÆ÷£©
-	Spear,			  // Ã¬
-	Bow,              // ¹­
-	Magic,            // ·¨Êõ
+	None,             // é»˜è®¤
+	NoWeapon,            // å¾’æ‰‹
+	OneHandWeapon,    // å•æ‰‹æ­¦å™¨(å‰‘ï¼Œåˆ€ï¼Œç›¾)
+	TwoHandedWeapon,  // åŒæ‰‹æ­¦å™¨ï¼ˆé‡å‹æ­¦å™¨ï¼‰
+	Spear,			  // çŸ›
+	Bow,              // å¼“
+	Magic,            // æ³•æœ¯
 };
 
 UENUM(BlueprintType)
 enum class EMovementState : uint8
 {
-	Walking,          // ĞĞ×ß
-	Jogging,          // ÂıÅÜ
-	Running,          // ¼²ÅÜ		    
+	Walking,          // è¡Œèµ°
+	Jogging,          // æ…¢è·‘
+	Running,          // ç–¾è·‘		    
 };
 
 USTRUCT(BlueprintType)
@@ -48,7 +48,7 @@ struct FMovementSetting
 	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite, Category = "Movement")
 	bool bUseSeparateBrakingFriction;
 
-	// ¹¹Ôìº¯ÊıÉèÖÃÄ¬ÈÏÖµ
+	// æ„é€ å‡½æ•°è®¾ç½®é»˜è®¤å€¼
 	FMovementSetting()
 		: MaxWalkSpeed(0.f)
 		, MaxAcceleration(0.f)

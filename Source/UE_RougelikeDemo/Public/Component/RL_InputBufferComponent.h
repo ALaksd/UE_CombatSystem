@@ -13,10 +13,10 @@ struct FBufferedInput
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly)
-	FGameplayTag InputTag;
+	FGameplayTag InputTag = FGameplayTag();
 
 	UPROPERTY(BlueprintReadOnly)
-	float TimeStamp;
+	float TimeStamp = 0.f;
 };
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBufferedInputConsumed,FGameplayTag,ConsumeTag)
