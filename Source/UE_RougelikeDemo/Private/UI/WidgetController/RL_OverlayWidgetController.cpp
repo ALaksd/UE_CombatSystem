@@ -79,3 +79,15 @@ void URL_OverlayWidgetController::BindCallbacksToDependencies()
 		}
 	);
 }
+
+void URL_OverlayWidgetController::UnbindAllDelegate()
+{
+	OnHealthChanged.Clear();
+	OnMaxHealthChanged.Clear();
+	OnEnduranceChanged.Clear();
+	OnMaxEnduranceChanged.Clear();
+	OnAttachResourceChanged.Clear();
+	OnMaxAttachResourceChanged.Clear();
+	OnLevelChanged.Clear();
+	OnSoulChanged.Clear();
+}

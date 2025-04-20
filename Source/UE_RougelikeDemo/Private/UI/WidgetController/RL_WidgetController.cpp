@@ -21,6 +21,10 @@ void URL_WidgetController::BindCallbacksToDependencies()
 {
 }
 
+void URL_WidgetController::UnbindAllDelegate()
+{
+}
+
 UAS_Player* URL_WidgetController::GetPlayerAS() const
 {
 	UAS_Player* PlayerAttributeSet = CastChecked<UAS_Player>(AttributeSet);

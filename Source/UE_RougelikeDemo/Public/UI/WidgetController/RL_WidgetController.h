@@ -53,6 +53,9 @@ public:
 	//GAS回调函数(用于GAS通知属的变化委托的回调函数)
 	virtual void BindCallbacksToDependencies();
 
+	//在空间销毁时调用
+	UFUNCTION(BlueprintCallable)
+	virtual void UnbindAllDelegate();
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
 	TObjectPtr<APlayerController> PlayerController;

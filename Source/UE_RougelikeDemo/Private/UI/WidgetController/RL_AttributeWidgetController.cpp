@@ -61,6 +61,13 @@ void URL_AttributeWidgetController::BindCallbacksToDependencies()
 	);
 }
 
+void URL_AttributeWidgetController::UnbindAllDelegate()
+{
+	AttributeInfoDelegate.Clear();
+	OnLevelChanged.Clear();
+	OnSoulChanged.Clear();
+}
+
 void URL_AttributeWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
 {
 	UASC_Base* ASC = CastChecked<UASC_Base>(AbilitySystemComponent);
@@ -69,6 +76,7 @@ void URL_AttributeWidgetController::UpgradeAttribute(const FGameplayTag& Attribu
 	int32 Need = GetPlayerState()->GetLevelRequirement(CurrentLevel);
 	if (CurrentSoul > Need)
 	{
+		GetPlayerState()->AddSoul(-Need);
 		ASC->UpgradeAttribute(AttributeTag);
 	}
 	

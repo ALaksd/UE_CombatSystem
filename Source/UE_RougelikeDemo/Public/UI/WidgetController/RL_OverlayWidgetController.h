@@ -27,6 +27,9 @@ public:
 	//GAS回调函数(用于GAS通知属的变化委托的回调函数)
 	virtual void BindCallbacksToDependencies() override;
 
+	//蓝图调用
+	virtual void UnbindAllDelegate() override;
+
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
 	FOnAttributeChangedSignature OnHealthChanged;
 

@@ -28,9 +28,6 @@ void ARL_PlayerState::AddSoul(int32 NewSoul)
 
 void ARL_PlayerState::AddLevel()
 {
-	//需要确保已有的灵魂大于所需灵魂
-	int32 Need = GetLevelRequirement(Level);
-	AddSoul(-Need);
 	Level += 1;
 	OnLevelChanged.Broadcast(Level);
 }
@@ -51,6 +48,18 @@ int32 ARL_PlayerState::GetLevelRequirement(int32 InLevel)
 	}
 
 	return 0;
+}
+
+void ARL_PlayerState::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	UnBindAllDelegates();
+	Super::EndPlay(EndPlayReason);
+}
+
+void ARL_PlayerState::UnBindAllDelegates()
+{
+	OnLevelChanged.RemoveAll(this);
+	OnSoulChanged.RemoveAll(this);
 }
 
 void ARL_PlayerState::PostInitializeComponents()

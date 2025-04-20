@@ -98,6 +98,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")
 	TObjectPtr<UDataTable>LevelUpInfo;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	void UnBindAllDelegates();
 	
 
 	int32 Soul = 0;
