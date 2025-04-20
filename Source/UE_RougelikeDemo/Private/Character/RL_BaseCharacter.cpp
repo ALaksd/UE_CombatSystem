@@ -31,7 +31,7 @@ ARL_BaseCharacter::ARL_BaseCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	GetCharacterMovement()->bUseControllerDesiredRotation = true; //Ê¹ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ª
+	GetCharacterMovement()->bUseControllerDesiredRotation = true; //0¶0„1¤70‹7„1¤7„1¤7„1¤7„1¤7„1¤7„1¤7„1¤7„1¤7„1¤7„1¤7„1¤7„1¤70û8
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
 	CameraBoom->SetupAttachment(RootComponent);
@@ -98,7 +98,7 @@ void ARL_BaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ÏµÍ³
+	//„1¤7„1¤7„1¤7„1¤7„1¤7„1¤70£6„1¤7„1¤7„1¤7„1¤70Ğ30È1
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* System = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -107,7 +107,7 @@ void ARL_BaseCharacter::BeginPlay()
 		}
 	}
 
-	//ï¿½ï¿½ï¿½ï¿½UI
+	//„1¤7„1¤7„1¤7„1¤7UI
 	if (PlayerStateUIClass)
 	{
 		PlayerStateUI = CreateWidget<URL_PlayerStateWidget>(GetWorld(), PlayerStateUIClass);
@@ -155,7 +155,7 @@ void ARL_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 
 
-/***--------------------æµ‹è¯•---------------------***/
+/***--------------------²âÊÔ---------------------***/
 
 void ARL_BaseCharacter::LMBInputPressedTest(FGameplayTag InputTag)
 {
@@ -167,7 +167,7 @@ void ARL_BaseCharacter::LMBInputHeldTest(FGameplayTag InputTag)
 	//GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf(TEXT("Held")));
 	CastChecked<UASC_Base>(AbilitySystemComponent)->AbilityInputTagHeld(InputTag);
 
-	//ç¼“å­˜é¢„è¾“å…¥
+	//»º´æÔ¤ÊäÈë
 	InputBufferComponent->BufferInput(InputTag);
 }
 
@@ -176,7 +176,7 @@ void ARL_BaseCharacter::LMBInputReleasedTest(FGameplayTag InputTag)
 	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, FString::Printf(TEXT("Released")));
 	CastChecked<UASC_Base>(AbilitySystemComponent)->AbilityInputTagReleased(InputTag);
 }
-/***--------------------æµ‹è¯•---------------------***/
+/***--------------------²âÊÔ---------------------***/
 
 
 
@@ -229,7 +229,7 @@ void ARL_BaseCharacter::Roll(const FInputActionValue& Value)
 void ARL_BaseCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½É«×´Ì¬ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//„1¤7„1¤70¶3„1¤7„1¤7„1¤7„1¤70®20ü80Á0 „1¤7„1¤7„1¤7„1¤7„1¤7„1¤7
 	InitAbilityActorInfo();
 	AddCharacterAbilities();
 }
@@ -237,7 +237,7 @@ void ARL_BaseCharacter::PossessedBy(AController* NewController)
 void ARL_BaseCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-	//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½É«×´Ì¬ ï¿½ï¿½ï¿½ï¿½
+	//„1¤7„1¤70¶3„1¤7„1¤7„1¤7„1¤70®20ü80Á0 „1¤7„1¤7„1¤7„1¤7
 	InitAbilityActorInfo();
 }
 
@@ -251,7 +251,7 @@ void ARL_BaseCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent = PlayerState->GetAbilitySystemComponent();
 	Cast<UASC_Base>(PlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AttributeSet = PlayerState->GetAttributeSet();
-	//åˆå§‹åŒ–HUD
+	//³õÊ¼»¯HUD
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
 		if (ARL_HUD* RLGHUD = Cast<ARL_HUD>(PlayerController->GetHUD()))
