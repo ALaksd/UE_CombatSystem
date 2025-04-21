@@ -16,6 +16,8 @@ class UE_ROUGELIKEDEMO_API UCloseCombatComponent : public UActorComponent
 public:	
 	UCloseCombatComponent();
 
+	UPROPERTY()
+	TObjectPtr<ARL_BaseWeapon> CloseWeapon;
 
 private:
 	UPROPERTY()
@@ -24,14 +26,13 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ARL_BaseWeapon> BP_CloseWeapon;
 
-	UPROPERTY()
-	TObjectPtr<ARL_BaseWeapon> CloseWeapon;
+	
 	
 protected:
 	virtual void BeginPlay() override;
 
 public:	
-	void StartCombat(TSubclassOf<UGameplayEffect> DamageEffet) const;
+	void StartCombat() const;
 	void EndCombat() const;
 		
 };

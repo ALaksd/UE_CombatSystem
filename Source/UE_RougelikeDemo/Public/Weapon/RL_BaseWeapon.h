@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayEffect.h"
 #include "GameFramework/Actor.h"
+#include "GAS/AS/AS_Weapon.h"
 #include "RL_BaseWeapon.generated.h"
 
 UCLASS()
@@ -18,6 +19,8 @@ public:
 	UPROPERTY()
 	TObjectPtr<AActor> WeaponOwner;
 	
+	//武器等级
+	int32 WeaponLevel=1;
 
 
 protected:
@@ -27,6 +30,17 @@ protected:
 
 	
 private:
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> WeaponASC;
+	UPROPERTY()
+	TObjectPtr<UAS_Weapon> WeaponAttribute;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> DamageEffet;
+	
+	//武器伤害曲线
+	// UPROPERTY(EditDefaultsOnly,Category="AttackCurve")
+	// TSubclassOf<UGameplayEffect> DamageCurve;
+	
 	bool bCombat = false;
 
 	//储存当前帧插槽位置
@@ -47,7 +61,7 @@ private:
 
 	FGameplayEffectSpecHandle DamageSpecHandle;
 public:
-	void StartCombat(TSubclassOf<UGameplayEffect> DamageEffet);
+	void StartCombat();
 	void EndCombat();
 	
 protected:

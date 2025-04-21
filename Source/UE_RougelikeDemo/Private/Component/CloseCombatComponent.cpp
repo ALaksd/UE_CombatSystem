@@ -37,9 +37,9 @@ void UCloseCombatComponent::BeginPlay()
 	
 }
 
-void UCloseCombatComponent::StartCombat(TSubclassOf<UGameplayEffect> DamageEffet) const
+void UCloseCombatComponent::StartCombat() const
 {
-	CloseWeapon->StartCombat(DamageEffet);
+	CloseWeapon->StartCombat();
 }
 
 void UCloseCombatComponent::EndCombat() const

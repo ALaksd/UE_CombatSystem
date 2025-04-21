@@ -16,6 +16,12 @@ ARL_BaseWeapon::ARL_BaseWeapon()
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
+	
+	WeaponASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+
+	WeaponAttribute = CreateDefaultSubobject<UAS_Weapon>(TEXT("AttributeSet"));
+	WeaponAttribute->InitDamage(10);
+	
 }
 
 void ARL_BaseWeapon::BeginPlay()
@@ -69,19 +75,13 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 	}
 }
 
-void ARL_BaseWeapon::StartCombat(TSubclassOf<UGameplayEffect> DamageEffet)
+void ARL_BaseWeapon::StartCombat()
 {
 	bCombat = true;
 	//创建GameplayEffect
 	if (WeaponOwner)
 	{
-		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(WeaponOwner))
-		{
-			TSubclassOf<UGameplayEffect> GameplayEffectClass;
-			FGameplayEffectContextHandle Context;
-
-			DamageSpecHandle = TargetASC->MakeOutgoingSpec(DamageEffet,1,TargetASC->MakeEffectContext());
-		}
+		DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet,WeaponLevel,WeaponASC->MakeEffectContext());
 	}
 }
 
