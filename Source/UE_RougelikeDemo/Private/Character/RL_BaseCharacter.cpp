@@ -134,20 +134,20 @@ void ARL_BaseCharacter::Tick(float DeltaTime)
 // Called to bind functionality to input
 void ARL_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	if (URLInputComponent* RLInputComponent = CastChecked<URLInputComponent>(PlayerInputComponent))
-	{
-		RLInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-
-		RLInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
-		RLInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARL_BaseCharacter::Move);
-
-		RLInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARL_BaseCharacter::Look);
-		
-		RLInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::LMBInputPressedTest,&ThisClass::LMBInputReleasedTest,&ThisClass::LMBInputHeldTest);
-
-	}
+	// Super::SetupPlayerInputComponent(PlayerInputComponent);
+	// if (URLInputComponent* RLInputComponent = CastChecked<URLInputComponent>(PlayerInputComponent))
+	// {
+	// 	RLInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+	//
+	// 	RLInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+	//
+	// 	RLInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARL_BaseCharacter::Move);
+	//
+	// 	RLInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARL_BaseCharacter::Look);
+	// 	
+	// 	RLInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::LMBInputPressedTest,&ThisClass::LMBInputReleasedTest,&ThisClass::LMBInputHeldTest);
+	//
+	// }
 
 }
 

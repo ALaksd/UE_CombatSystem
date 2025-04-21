@@ -23,31 +23,31 @@ class UE_ROUGELIKEDEMO_API IRL_PlayerInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	// »ñÈ¡µ±Ç°Áé»ê
+	// è·å–å½“å‰çµé­‚
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
 	int32 GetSoul() const;
 
-	// ÉèÖÃÁé»ê
+	// è®¾ç½®çµé­‚
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
 	void SetSoul(int32 NewSoul);
 
-	// »ñÈ¡µ±Ç°µÈ¼¶
+	// è·å–å½“å‰ç­‰çº§
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
 	int32 GetLevel() const;
 
-	// Ôö¼ÓµÈ¼¶
+	// å¢åŠ ç­‰çº§
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
 	void AddLevel();
 
-	// »ñÈ¡¼¼ÄÜµã
+	// è·å–æŠ€èƒ½ç‚¹
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
 	int32 GetSpellPoints() const;
 
-	// Ôö¼Ó¼¼ÄÜµã
+	// å¢åŠ æŠ€èƒ½ç‚¹
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
 	void AddSpellPoints(int32 InSpellPoints);
 
-	// »ñÈ¡ÏÂÒ»¼¶ËùĞèµÄÁé»ê
+	// è·å–ä¸‹ä¸€çº§æ‰€éœ€çš„çµé­‚
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
 	int32 GetLevelRequirement(int32 InLevel) const;
 };
