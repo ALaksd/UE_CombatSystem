@@ -98,34 +98,34 @@ protected:
 #pragma region
 
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputMappingContext> BaseIMC;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> MoveAction;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> LookAction;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> JumpAction;
-
-	//跑步按键
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> RunAction;
-
-	//翻滚按键
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> RollAction;
-#pragma endregion //输入
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Settings")
-	//角色移动状态数据
-	TMap<EMovementState, FMovementSetting> MovementSettingMap;
-
-	//角色当前移动状态
-	UPROPERTY(BlueprintReadWrite)
-	EMovementState CurrentMovmentState;
+// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+// 	TObjectPtr<UInputMappingContext> BaseIMC;
+//
+// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+// 	TObjectPtr<UInputAction> MoveAction;
+//
+// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+// 	TObjectPtr<UInputAction> LookAction;
+//
+// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+// 	TObjectPtr<UInputAction> JumpAction;
+//
+// 	//跑步按键
+// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+// 	TObjectPtr<UInputAction> RunAction;
+//
+// 	//翻滚按键
+// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+// 	TObjectPtr<UInputAction> RollAction;
+// #pragma endregion //输入
+//
+// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Settings")
+// 	//角色移动状态数据
+// 	TMap<EMovementState, FMovementSetting> MovementSettingMap;
+//
+// 	//角色当前移动状态
+// 	UPROPERTY(BlueprintReadWrite)
+// 	EMovementState CurrentMovmentState;
 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Attribute")
@@ -144,9 +144,9 @@ protected:
 	
 	/***--------------------测试---------------------***/
 
-	void LMBInputPressedTest(FGameplayTag InputTag);
-	void LMBInputHeldTest(FGameplayTag InputTag);
-	void LMBInputReleasedTest(FGameplayTag InputTag);
+	// void LMBInputPressedTest(FGameplayTag InputTag);
+	// void LMBInputHeldTest(FGameplayTag InputTag);
+	// void LMBInputReleasedTest(FGameplayTag InputTag);
 	
 	/***--------------------测试---------------------***/
 	
@@ -193,16 +193,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	//更新角色移动状态
-	UFUNCTION(BlueprintCallable)
-	void UpdateMovementState(EMovementState State);
-	
-	void Move(const FInputActionValue& Value);
-
-	void Look(const FInputActionValue& Value);
-
-	void Run(const FInputActionValue& Value);
-
-	void Roll(const FInputActionValue& Value);
+	// UFUNCTION(BlueprintCallable)
+	// void UpdateMovementState(EMovementState State);
+	//
+	// void Move(const FInputActionValue& Value);
+	//
+	// void Look(const FInputActionValue& Value);
+	//
+	// void Run(const FInputActionValue& Value);
+	//
+	// void Roll(const FInputActionValue& Value);
 
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;

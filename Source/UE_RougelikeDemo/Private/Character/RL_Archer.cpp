@@ -67,7 +67,7 @@ void ARL_Archer::SetAimCamera()
 	{
 		AimTimeline->Play();  // 正向播放时间轴
 	}
-	UpdateMovementState(EMovementState::Walking);
+	//UpdateMovementState(EMovementState::Walking);
 }
 
 void ARL_Archer::ResetAimCamera()
@@ -77,7 +77,7 @@ void ARL_Archer::ResetAimCamera()
 	{
 		AimTimeline->Reverse();  // 反向播放时间轴
 	}
-	UpdateMovementState(EMovementState::Jogging);
+	//UpdateMovementState(EMovementState::Jogging);
 }
 
 void ARL_Archer::Fire()
