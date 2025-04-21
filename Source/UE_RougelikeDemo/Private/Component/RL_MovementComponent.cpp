@@ -1,9 +1,14 @@
 #include "Component/RL_MovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Component/RL_InputBufferComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "GameFramework/PlayerState.h"
+#include "GAS/ASC_Base.h"
+#include "Input/RLInputComponent.h"
+#include "Interface/RL_CharacterAimInterface.h"
 
 URL_MovementComponent::URL_MovementComponent()
 {
@@ -22,9 +27,9 @@ void URL_MovementComponent::BeginPlay()
 	// 将输入映射上下文添加到本地玩家子系统
 	UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
-	if (InputSubsystem && InputMappingContext)
+	if (InputSubsystem && BaseIMC)
 	{
-		InputSubsystem->AddMappingContext(InputMappingContext, 0);
+		InputSubsystem->AddMappingContext(BaseIMC, 0);
 	}
 
 	characterMovement = ownerCharacter->GetCharacterMovement();
@@ -38,28 +43,13 @@ void URL_MovementComponent::BeginPlay()
 	}
 
 	// 绑定输入动作
-	if (UEnhancedInputComponent* EnhancedInputComponent = 
-		Cast<UEnhancedInputComponent>(ownerCharacter->InputComponent))
+	if (URLInputComponent* RLInputComponent = CastChecked<URLInputComponent>(ownerCharacter->InputComponent))
 	{
-		if (MoveAction)
-		{
-			EnhancedInputComponent->BindAction(
-				MoveAction,
-				ETriggerEvent::Triggered,
-				this,
-				&URL_MovementComponent::Move
-			);
-		}
+		RLInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::Move);
 
-		if (LookAction)
-		{
-			EnhancedInputComponent->BindAction(
-				LookAction,
-				ETriggerEvent::Triggered,
-				this,
-				&URL_MovementComponent::Look
-			);
-		}
+		RLInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::Look);
+		
+		RLInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::LMBInputPressedTest,&ThisClass::LMBInputReleasedTest,&ThisClass::LMBInputHeldTest);
 	}
 }
 
@@ -88,9 +78,48 @@ void URL_MovementComponent::Look(const FInputActionValue& Value)
 	playerController->AddPitchInput(LookAxis.Y);
 }
 
+void URL_MovementComponent::UpdateMovementState(EMovementState State)
+{
+	FMovementSetting* MovementSettingPtr = MovementSettingMap.Find(State);
+	if(MovementSettingPtr)
+	{
+		CurrentMovementState = State;
+		ownerCharacter->GetCharacterMovement()->MaxWalkSpeed = MovementSettingPtr->MaxWalkSpeed;
+		ownerCharacter->GetCharacterMovement()->MaxAcceleration = MovementSettingPtr->MaxAcceleration;
+		ownerCharacter->GetCharacterMovement()->BrakingDecelerationWalking = MovementSettingPtr->BrakingDeceleration;
+		ownerCharacter->GetCharacterMovement()->BrakingFrictionFactor = MovementSettingPtr->BrakingFrictionFactor;
+		ownerCharacter->GetCharacterMovement()->BrakingFriction = MovementSettingPtr->BrakingFriction;
+		ownerCharacter->GetCharacterMovement()->bUseSeparateBrakingFriction = MovementSettingPtr->bUseSeparateBrakingFriction;
+
+		if (ownerCharacter->GetMesh()->GetAnimInstance()->Implements<URL_CharacterAimInterface>())
+		{
+			IRL_CharacterAimInterface::Execute_ReciveMovementState(ownerCharacter->GetMesh()->GetAnimInstance(),State);
+		}
+	}
+}
+
 void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 }
 
+void URL_MovementComponent::LMBInputPressedTest(FGameplayTag InputTag)
+{
+	//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Pressed")));
+}
+
+void URL_MovementComponent::LMBInputHeldTest(FGameplayTag InputTag)
+{
+	//GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf(TEXT("Held")));
+	CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityInputTagHeld(InputTag);
+
+	//缓存预输入
+	ownerCharacter->FindComponentByClass<URL_InputBufferComponent>()->BufferInput(InputTag);
+}
+
+void URL_MovementComponent::LMBInputReleasedTest(FGameplayTag InputTag)
+{
+	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, FString::Printf(TEXT("Released")));
+	CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityInputTagReleased(InputTag);
+}
