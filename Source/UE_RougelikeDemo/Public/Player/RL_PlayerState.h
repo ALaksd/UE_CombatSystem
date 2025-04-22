@@ -15,7 +15,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnSoulChanged, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelChanged, int32);
 
 class UDataTable;
-
+class URL_InventoryComponent;
 
 /**
  * 
@@ -31,6 +31,8 @@ public:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<URL_InventoryComponent> InventoryComponent;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAS_Player> AttributeSet;
 
