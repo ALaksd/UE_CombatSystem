@@ -29,7 +29,7 @@ protected:
 	float TickInterval = 1.f; //恢复间隔
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> RestoreEnduranceEffectClass;
+	TSubclassOf<UGameplayEffect> RestoreEnduranceEffectClass; //恢复值，需要在GE_RestoreEndurance配置
 
 	void OnEnduranceChanged(const FOnAttributeChangeData& Data);
 	void StartRestore();
