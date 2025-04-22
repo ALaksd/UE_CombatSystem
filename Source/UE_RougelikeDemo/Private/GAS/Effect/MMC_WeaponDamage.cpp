@@ -12,11 +12,11 @@ UMMC_WeaponDamage::UMMC_WeaponDamage()
 	WeaponDamageDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Source;
 	WeaponDamageDef.bSnapshot = false;
 
-	SkillMultiplierDef.AttributeToCapture = UAS_Weapon::GetSkillAmplificationAttribute();
+	SkillMultiplierDef.AttributeToCapture = UAS_Weapon::GetDamageMultiplierAttribute();
 	SkillMultiplierDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Source;
 	SkillMultiplierDef.bSnapshot = false;
 
-	BuffDamageDef.AttributeToCapture = UAS_Weapon::GetDamageMultiplierAttribute();
+	BuffDamageDef.AttributeToCapture = UAS_Weapon::GetSkillAmplificationAttribute();
 	BuffDamageDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Source;
 	BuffDamageDef.bSnapshot = false;
 
