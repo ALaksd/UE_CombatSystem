@@ -13,7 +13,8 @@
 				"UMG",
 				"GameplayAbilities",
 				"EnhancedInput",
-				"FunctionalTesting"
+				"FunctionalTesting",
+				"CoreUObject"
 			]
 		}
 	],

@@ -13,19 +13,32 @@ struct FRLGameplayTags
 {
 public:
 	static const FRLGameplayTags Get() { return GameplayTags; }
-	//³õÊ¼»¯ÓÎÏ·±êÇ©
+	//åˆå§‹åŒ–æ¸¸æˆæ ‡ç­¾
 	static void InitializedNativeGameplayTags();
 
-	/*Ö÷ÒªÊôĞÔ*/
+	/*ä¸»è¦å±æ€§*/
 	FGameplayTag Attribute_Primary_Life;              
 	FGameplayTag Attribute_Primary_Vigor;               
 	FGameplayTag Attribute_Primary_Power;               
 
 
-	/*´ÎÒªÊôĞÔ*/
+	/*æ¬¡è¦å±æ€§*/
 	FGameplayTag Attribute_Secondary_MaxHealth;
 	FGameplayTag Attribute_Secondary_MaxEndurance;
 	FGameplayTag Attribute_Secondary_MaxAttachResource;
+
+	/*Itemæ ‡ç­¾*/
+	//æ­¦å™¨
+	FGameplayTag Weapon_OneHand_Sword_1;
+	FGameplayTag Weapon_OneHand_Sword_2;
+	FGameplayTag Weapon_TwoHand_Sword_1;
+	FGameplayTag Weapon_TwoHand_Sword_2;
+
+	//é˜²å…·
+	FGameplayTag Equip_Head_1;
+
+	//é“å…·
+	FGameplayTag Use_1;
 
 private:
 	static FRLGameplayTags GameplayTags;
