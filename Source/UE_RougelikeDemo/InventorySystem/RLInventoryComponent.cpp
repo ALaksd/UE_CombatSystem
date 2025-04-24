@@ -44,7 +44,8 @@ bool URLInventoryComponent::PlaceItemSlot(URLInventoryItemInstance* Item, const 
 	URLInventoryItemInstance* PreItem = Slot.ItemInstance;	
 	Slot.ItemInstance = Item;
 
-	//TODO: OnInventoryUpdate和OnItemSlotUpdate为背包内物品发生变化的消息委托
+	OnItemSlotUpdate.Broadcast(this,ItemHandle,Slot.ItemInstance,PreItem);
+
 	return true;
 }
 
@@ -57,8 +58,7 @@ bool URLInventoryComponent::RemoveItemFromInventory(const FRLInventoryItemSlotHa
 
 	ItemSlot.ItemInstance = nullptr;
 
-	//OnInventoryUpdate.Broadcast(this);  
-	//OnItemSlotUpdate.Broadcast(this, SlotHandle, ItemSlot.ItemInstance, PreviousItem);
+	OnItemSlotUpdate.Broadcast(this, SlotHandle, ItemSlot.ItemInstance, PreviousItem);
 
 	return true;
 }

@@ -37,7 +37,6 @@ public:
 		return (ResultClass*)(FindFragmentByClass(ResultClass::StaticClass()));
 	}
 
-protected:
 	UPROPERTY(EditDefaultsOnly)
 	URLInventoryItemDefinition* ItemDefinition;
 

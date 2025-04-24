@@ -28,7 +28,6 @@ public:
 
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
-protected:
 	//用于安全地组合父蓝图和子蓝图中的标签的结构
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory")
 	FInheritedTagContainer ItemTags;

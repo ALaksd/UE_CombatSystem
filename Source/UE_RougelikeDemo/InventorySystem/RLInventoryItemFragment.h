@@ -4,8 +4,74 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "GAS/ASC_Base.h"
 #include "RLInventoryItemFragment.generated.h"
 
+
+class UGA_Base;
+class UASC_Base;
+/**
+ * 技能结构体，暂时放在这里
+ */
+USTRUCT(BlueprintType)
+struct UE_ROUGELIKEDEMO_API FRLAbilitySet_GameplayAbility
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
+	TSubclassOf<UGA_Base> Ability = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	int32 AbilityLevel = 1;
+};
+
+USTRUCT(BlueprintType)
+struct UE_ROUGELIKEDEMO_API FRLAbilitySet_GameplayEffect
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> GameplayEffect = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	float EffectLevel = 1.0f;
+};
+
+/**
+ * 用于管理和储存AbilitySet给予的Handles
+ */
+USTRUCT(BlueprintType)
+struct UE_ROUGELIKEDEMO_API FRLAbilitySet_GrantHandles
+{
+	GENERATED_BODY()
+
+public:
+	void AddAbilitySpecHandle(const FGameplayAbilitySpecHandle& AbilityHandle);
+	void AddGameplayEffectHandle(const FActiveGameplayEffectHandle& EffectHandle);
+	void TakeFromAbilitySystem(UASC_Base* ASC);
+protected:
+	UPROPERTY()
+	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
+
+	UPROPERTY()
+	TArray<FActiveGameplayEffectHandle> GameplayEffectHandles;
+};
+
+/**
+ * 技能集和属性集
+ */
+
+USTRUCT(BlueprintType)
+struct UE_ROUGELIKEDEMO_API FRL_ItemDefinition_AbilitySet
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly,Category = "Inventory")
+	TArray<FRLAbilitySet_GameplayAbility> GrantAbilities;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory")
+	TArray<FRLAbilitySet_GameplayEffect> GrantEffects;
+};
 class URLInventoryItemInstance;
 /**
  * 定义抽象的基类fragment来决定物品的属性，物品的属性由组件来决定

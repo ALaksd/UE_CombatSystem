@@ -7,7 +7,6 @@
 #include "GameplayTagContainer.h"
 #include "RLInventoryComponent.generated.h"
 
-
 class URLInventoryItemInstance;
 /**
  * 存放物品的数据结构,暂时放在InventoryComponent
@@ -126,6 +125,12 @@ public:
 	URLInventoryComponent* ParentInventory;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnItemSlotUpdate,
+	URLInventoryComponent*, InventoryComponent,
+	const FRLInventoryItemSlotHandle&, SlotHandle,
+	URLInventoryItemInstance*, NewItem,
+	URLInventoryItemInstance*, OldItem);
+
 /**
  * 背包系统需要增加，可堆叠物品的存放
  * 背包自动扩容
@@ -138,6 +143,12 @@ class UE_ROUGELIKEDEMO_API URLInventoryComponent : public UActorComponent
 
 public:	
 	URLInventoryComponent();
+
+	/**
+	 * 委托
+	 */
+	UPROPERTY(BlueprintAssignable,Category = "Inventory")
+	FOnItemSlotUpdate OnItemSlotUpdate;
 
 	/**
 	 * 增删改查
