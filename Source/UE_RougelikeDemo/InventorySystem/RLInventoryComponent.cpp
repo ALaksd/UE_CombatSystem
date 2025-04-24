@@ -1,34 +1,173 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "UE_RougelikeDemo\InventorySystem\RLInventoryComponent.h"
 
-// Sets default values for this component's properties
 URLInventoryComponent::URLInventoryComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
 }
 
-
-// Called when the game starts
 void URLInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	CreateInventorySlot(20);
 }
 
-
-// Called every frame
-void URLInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (!Item) return false;
 
-	// ...
+	//找到第一个空的slot放入Item
+	for (auto& Slot : Inventory.Slots)
+	{
+		FRLInventoryItemSlotHandle SlotHandle(Slot, this);
+		if (AcceptsItem(Item, SlotHandle))
+		{
+			if (PlaceItemSlot(Item, SlotHandle))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
+
+bool URLInventoryComponent::PlaceItemSlot(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle)
+{
+	if (!Item) return false;
+
+	FRLInventoryItemSlot& Slot = GetItemSlot(ItemHandle);
+	URLInventoryItemInstance* PreItem = Slot.ItemInstance;	
+	Slot.ItemInstance = Item;
+
+	//TODO: OnInventoryUpdate和OnItemSlotUpdate为背包内物品发生变化的消息委托
+	return true;
+}
+
+bool URLInventoryComponent::RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle)
+{
+	FRLInventoryItemSlot& ItemSlot = GetItemSlot(SlotHandle);
+	URLInventoryItemInstance* PreviousItem = ItemSlot.ItemInstance;
+
+	if (!ItemSlot.ItemInstance) return false;
+
+	ItemSlot.ItemInstance = nullptr;
+
+	//OnInventoryUpdate.Broadcast(this);  
+	//OnItemSlotUpdate.Broadcast(this, SlotHandle, ItemSlot.ItemInstance, PreviousItem);
+
+	return true;
+}
+
+bool URLInventoryComponent::RemoveAllItemsFromInventory(TArray<URLInventoryItemInstance*>& OutItemsRemoved)
+{
+	for (FRLInventoryItemSlot& ItemSlot : Inventory.Slots)
+	{
+		if (!ItemSlot.ItemInstance) continue;
+
+		OutItemsRemoved.Add(ItemSlot.ItemInstance);
+		RemoveItemFromInventory(FRLInventoryItemSlotHandle(ItemSlot, this));
+	}
+	return true;
+}
+
+TArray<FRLInventoryItemSlotHandle> URLInventoryComponent::GetAllSlotHandles()
+{
+	return AllSlotHandles;
+}
+
+URLInventoryItemInstance* URLInventoryComponent::GetItemInstanceInSlot(const FRLInventoryItemSlotHandle& Handle)
+{
+	if (!IsVaildItemSlot(Handle))
+		return nullptr;
+
+	FRLInventoryItemSlot& Slot = GetItemSlot(Handle);
+	return Slot.ItemInstance;
+}
+
+bool URLInventoryComponent::IsVaildItemSlot(const FRLInventoryItemSlotHandle& Handle)
+{
+	for (const auto& Item : AllSlotHandles)
+	{
+		if (Item == Handle)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+FRLInventoryItemSlot& URLInventoryComponent::GetItemSlot(const FRLInventoryItemSlotHandle& Handle)
+{
+	if (IsVaildItemSlot(Handle))
+	{
+		for (auto& Slot : Inventory.Slots)
+		{
+			if (Slot.SlotId == Handle.SlotId)
+			{
+				return Slot;
+			}
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Handle is not Vaild"));
+
+	return Inventory.Slots[0];
+}
+
+bool URLInventoryComponent::AcceptsItem(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle)
+{
+	if (GetItemSlot(ItemHandle).ItemInstance == nullptr && GetItemSlot(ItemHandle).ItemInstance != Item)
+	{
+		return true;
+	}
+	return false;
+}
+
+void URLInventoryComponent::CreateInventorySlot(int32 Count)
+{
+	for (int32 i = 0; i < Count; i++)
+	{
+		FRLInventoryItemSlot NewSlot;
+		NewSlot.ItemInstance = nullptr;
+		NewSlot.SlotId = IdCounter;
+		NewSlot.Onwer = this;
+
+		IdCounter++;
+		Inventory.Slots.Add(NewSlot);
+	}
+
+
+	PostInventoryUpdate();
+}
+
+void URLInventoryComponent::RemoveInventorySlot(const FRLInventoryItemSlotHandle& Handle)
+{
+	if (!IsVaildItemSlot(Handle)) return;
+
+	FRLInventoryItemSlot& RemovedSlot = GetItemSlot(Handle);
+	Inventory.Slots.Remove(RemovedSlot);
+
+	PostInventoryUpdate();
+}
+
+void URLInventoryComponent::PostInventoryUpdate()
+{
+	//首先清空存放钥匙的数组，然后重新生成
+	AllSlotHandles.Empty(AllSlotHandles.Num() + 1);
+	PopulateSlotReferenceArray(AllSlotHandles);
+}
+
+void URLInventoryComponent::PopulateSlotReferenceArray(TArray<FRLInventoryItemSlotHandle>& Handles)
+{
+	//按照当前的插槽重新生成钥匙数组
+	for (int i = 0; i < Inventory.Slots.Num(); i++)
+	{
+		FRLInventoryItemSlotHandle Handle(Inventory.Slots[i], this);
+		AllSlotHandles.Add(Handle);
+	}
+}
