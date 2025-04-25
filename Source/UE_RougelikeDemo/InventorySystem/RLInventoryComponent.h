@@ -214,4 +214,9 @@ protected:
 	//插槽Id生成器，背包每生成一次插槽，计数器+1，确保所有插槽的Id都不相同
 	int32 IdCounter;
 
+	// 扩容增长因子（每次扩容增加当前容量的50%，类似std::vector）
+	float CapacityGrowthFactor = 0.5f;
+	// 最小扩容数量（保证每次至少增加这个数量）
+	int MinGrowthAmount = 5;
+
 };

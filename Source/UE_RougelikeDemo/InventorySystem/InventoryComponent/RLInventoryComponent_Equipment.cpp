@@ -20,6 +20,7 @@ void URLInventoryComponent_Equipment::InitializeComponent()
 void URLInventoryComponent_Equipment::BeginPlay()
 {
 	Super::BeginPlay();
+
 	OnItemSlotUpdate.AddDynamic(this, &URLInventoryComponent_Equipment::OnEquipSlotUpdate);
 
 }

@@ -31,14 +31,28 @@ public:
 	//武器
 	FGameplayTag Weapon_OneHand_Sword_1;
 	FGameplayTag Weapon_OneHand_Sword_2;
+	FGameplayTag Weapon_OneHand_Sword_3;
 	FGameplayTag Weapon_TwoHand_Sword_1;
 	FGameplayTag Weapon_TwoHand_Sword_2;
-
+	FGameplayTag Weapon_TwoHand_Sword_3;
 	//防具
 	FGameplayTag Equip_Head_1;
+	FGameplayTag Equip_Head_2;
+	FGameplayTag Equip_Head_3;
+	FGameplayTag Equip_Head_4;
+
+	FGameplayTag Equip_Body_1;
+	FGameplayTag Equip_Body_2;
+	FGameplayTag Equip_Body_3;
+	FGameplayTag Equip_Body_4;
 
 	//道具
 	FGameplayTag Use_1;
+	FGameplayTag Use_2;
+	FGameplayTag Use_3;
+	FGameplayTag Use_4;
+	FGameplayTag Use_5;
+	FGameplayTag Use_6;
 
 private:
 	static FRLGameplayTags GameplayTags;
