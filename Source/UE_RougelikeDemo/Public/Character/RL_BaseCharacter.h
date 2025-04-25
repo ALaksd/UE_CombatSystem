@@ -13,6 +13,7 @@
 #include "Interface/RL_PlayerInterface.h"
 #include "RL_BaseCharacter.generated.h"
 
+class URL_MovementComponent;
 class URLInputConfig;
 class USpringArmComponent;
 class UCameraComponent;
@@ -41,6 +42,13 @@ public:
 	
 
 #pragma endregion //End PlayerInterfece
+
+
+public:
+	//输入组件
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Component")
+	TObjectPtr<URL_MovementComponent> MovementComponent;
+	
 protected:
 
 
@@ -49,7 +57,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FllowCamera;
-
+	
 	//攻击组件
 	UPROPERTY(EditDefaultsOnly,Category = "Component")
 	TObjectPtr<UCloseCombatComponent> CloseCombatComponent;
@@ -117,7 +125,7 @@ protected:
 // 	//翻滚按键
 // 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 // 	TObjectPtr<UInputAction> RollAction;
-// #pragma endregion //输入
+#pragma endregion //输入
 //
 // 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Settings")
 // 	//角色移动状态数据

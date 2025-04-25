@@ -9,6 +9,7 @@
 #include "GAS/ASC_Base.h"
 #include "Input/RLInputComponent.h"
 #include "Interface/RL_CharacterAimInterface.h"
+#include "Item/Item_Pickup.h"
 
 URL_MovementComponent::URL_MovementComponent()
 {
@@ -48,6 +49,8 @@ void URL_MovementComponent::BeginPlay()
 		RLInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::Move);
 
 		RLInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::Look);
+
+		RLInputComponent->BindAction(CollectAction, ETriggerEvent::Started, this, &URL_MovementComponent::Collect);
 		
 		RLInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::LMBInputPressedTest,&ThisClass::LMBInputReleasedTest,&ThisClass::LMBInputHeldTest);
 	}
@@ -98,10 +101,84 @@ void URL_MovementComponent::UpdateMovementState(EMovementState State)
 	}
 }
 
+void URL_MovementComponent::Collect(const FInputActionValue& Value)
+{
+	if (ItemToPickup)
+	{
+		// 物品加入背包
+		
+		// 销毁地上的物品
+	}
+}
+
 void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (ItemsCanPickup.Num()>0)
+	{
+		// 计算角色正前方30度范围内距离角色最近的一个可拾取物品
+		FVector ForwardVector = ownerCharacter->GetActorForwardVector();
+		for (AItem_Pickup* Item : ItemsCanPickup)
+		{
+			// 物品与玩家之间的向量
+			FVector Dir = Item->GetActorLocation()-ownerCharacter->GetActorLocation();
+			float Angle = CalculateAngleBetweenVectors(ForwardVector,Dir);
+			if (Angle<40)
+			{
+				// 计算离玩家最近的Actor
+				if (ItemToPickup)
+				{
+					// 当前可拾取物品与玩家之间的向量 
+					FVector Dis = ItemToPickup->GetActorLocation()-ownerCharacter->GetActorLocation();
+					if (Dis.Length()>Dir.Length())
+					{
+						ItemToPickup=Item;
+					}
+				}
+				else
+					ItemToPickup=Item;
+			}
+		}
+
+		// TODO:将可拾取物品相关信息显示
+		if (ItemToPickup)
+			GEngine->AddOnScreenDebugMessage(-1, 0.8f, FColor::Red, FString::Printf(TEXT("The actor's name is: %s"), *ItemToPickup->GetName()));
+
+
+		
+	}
+}
+
+void URL_MovementComponent::AddItemCanPickup(AItem_Pickup* ItemToPickup_T)
+{
+	ItemsCanPickup.Add(ItemToPickup_T);
+}
+
+void URL_MovementComponent::RemoveItemCanPickup(AItem_Pickup* ItemToPickup_T)
+{
+	ItemsCanPickup.Remove(ItemToPickup_T);
+}
+
+float URL_MovementComponent::CalculateAngleBetweenVectors(const FVector& VectorA, const FVector& VectorB)
+{
+	// 计算两个向量之间的夹角
+	// 归一化向量（确保是单位向量）
+	FVector NormalizedA = VectorA.GetSafeNormal();
+	FVector NormalizedB = VectorB.GetSafeNormal();
+	
+	// 计算点积
+	float DotProduct = FVector::DotProduct(NormalizedA, NormalizedB);
+
+	// 处理浮点精度问题（确保点积在 [-1, 1] 范围内）
+	DotProduct = FMath::Clamp(DotProduct, -1.0f, 1.0f);
+
+	// 计算反余弦得到弧度值
+	float AngleRadians = FMath::Acos(DotProduct);
+	// 计算角度值
+	float AngleDegrees = FMath::RadiansToDegrees(AngleRadians);
+
+	return AngleDegrees;
 }
 
 void URL_MovementComponent::LMBInputPressedTest(FGameplayTag InputTag)

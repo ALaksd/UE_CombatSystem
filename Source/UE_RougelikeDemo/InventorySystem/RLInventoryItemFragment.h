@@ -85,4 +85,7 @@ class UE_ROUGELIKEDEMO_API URLInventoryItemFragment : public UObject
 	GENERATED_BODY()
 public:
 	virtual void OnInstancedCreate(URLInventoryItemInstance* Instance) const;
+
+	UPROPERTY()
+	mutable TObjectPtr<URLInventoryItemInstance> Owner;
 };

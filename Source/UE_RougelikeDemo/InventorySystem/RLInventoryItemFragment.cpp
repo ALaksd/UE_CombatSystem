@@ -5,7 +5,7 @@
 
 void URLInventoryItemFragment::OnInstancedCreate(URLInventoryItemInstance* Instance) const
 {
-
+	Owner=Instance;
 }
 
 void FRLAbilitySet_GrantHandles::AddAbilitySpecHandle(const FGameplayAbilitySpecHandle& AbilityHandle)

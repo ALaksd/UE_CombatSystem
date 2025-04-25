@@ -8,6 +8,7 @@
 #include "GameplayTagContainer.h"
 #include "RL_MovementComponent.generated.h"
 
+class AItem_Pickup;
 class UInputMappingContext;
 class UInputAction;
 class URL_InputBufferComponent;
@@ -40,6 +41,10 @@ public:
 	//翻滚按键
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> RollAction;
+
+	//拾取按键
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> CollectAction;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Settings")
 	//角色移动状态数据
@@ -77,6 +82,8 @@ protected:
 	void Run(const FInputActionValue& Value);
 
 	void Roll(const FInputActionValue& Value);
+	
+	void Collect(const FInputActionValue& Value);
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -85,5 +92,19 @@ public:
 	APlayerController* playerController;
 	// 角色移动组件
 	UCharacterMovementComponent* characterMovement;
-		
+
+	/***--------------------物品拾取---------------------***/
+	
+	// 进入物品可拾取回调
+	void AddItemCanPickup(AItem_Pickup* ItemToPickup_T);
+	// 退出物品可拾取范围回调函数
+	void RemoveItemCanPickup(AItem_Pickup* ItemToPickup_T);
+private:
+	TArray<AItem_Pickup*> ItemsCanPickup;
+	AItem_Pickup* ItemToPickup;
+	// 计算两个向量间的夹角,返回角度
+	float CalculateAngleBetweenVectors(const FVector& VectorA, const FVector& VectorB);
+
+	/***--------------------物品拾取---------------------***/
+
 };
