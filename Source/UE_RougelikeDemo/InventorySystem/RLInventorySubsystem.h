@@ -17,4 +17,12 @@ class UE_ROUGELIKEDEMO_API URLInventorySubsystem : public UGameInstanceSubsystem
 public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	URLInventoryItemInstance* GenerateItemInstance(URLInventoryItemDefinition *ItemDefinition);
+
+
+	//生成ItemIntance的物理表示，可用于在World生成可拾取物品，附加到角色身上等
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	AActor* SpawnItemActorFromInstance(URLInventoryItemInstance* ItemInstance, const FVector& Location);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	AActor* SpawnItemActorFromDefinition(URLInventoryItemDefinition* ItemDefinition, const FVector& Location);
 };

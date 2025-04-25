@@ -32,8 +32,6 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<URL_InventoryComponent> InventoryComponent;
-	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAS_Player> AttributeSet;
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Data")

@@ -40,7 +40,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	URLInventoryItemDefinition* ItemDefinition;
 
-	//可动态修改的fragment
+	//可动态修改的fragment,暂时没有用到
 	UPROPERTY()
 	TArray<URLInventoryItemFragment*> DynamicFragments;
 };

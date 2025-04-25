@@ -3,15 +3,12 @@
 
 #include "Player/RL_PlayerState.h"
 #include <GAS/ASC_Base.h>
-#include <Component/RL_InventoryComponent.h>
 
 ARL_PlayerState::ARL_PlayerState()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UASC_Base>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
-
-	InventoryComponent = CreateDefaultSubobject<URL_InventoryComponent>(TEXT("InventoryComponent"));
 
 	AttributeSet = CreateDefaultSubobject<UAS_Player>(TEXT("AttributeSet"));
 	NetUpdateFrequency = 100;
