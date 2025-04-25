@@ -36,6 +36,8 @@ public:
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipUpdate,URLInventoryItemInstance*, NewItem,URLInventoryItemInstance*, OldItem);
+
 UCLASS(BlueprintType, Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UE_ROUGELIKEDEMO_API URLInventoryComponent_Equipment : public URLInventoryComponent
 {
@@ -44,6 +46,12 @@ class UE_ROUGELIKEDEMO_API URLInventoryComponent_Equipment : public URLInventory
 public:
 	URLInventoryComponent_Equipment(const FObjectInitializer& ObjectInitializer);
 	virtual void InitializeComponent() override;
+
+	/**
+	 * 委托
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnEquipUpdate OnEquipUpdate;
 protected:
 	virtual void BeginPlay() override;
 	//回调函数，绑定父类的OnItemSlotUpdated

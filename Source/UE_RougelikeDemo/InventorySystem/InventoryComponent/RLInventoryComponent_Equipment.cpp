@@ -35,6 +35,7 @@ void URLInventoryComponent_Equipment::OnEquipSlotUpdate(URLInventoryComponent* I
 	{
 		MakeItemEquipped_Internal(SlotHandle, ItemInstance);
 	}
+	OnEquipUpdate.Broadcast(ItemInstance, PreviousItemInstance);
 }
 
 bool URLInventoryComponent_Equipment::MakeItemEquipped_Internal(const FRLInventoryItemSlotHandle& SlotHandle, URLInventoryItemInstance* ItemInstance)
