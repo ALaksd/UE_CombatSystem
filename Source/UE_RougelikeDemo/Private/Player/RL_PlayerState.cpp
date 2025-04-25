@@ -3,6 +3,7 @@
 
 #include "Player/RL_PlayerState.h"
 #include <GAS/ASC_Base.h>
+#include "UE_RougelikeDemo/InventorySystem/InventoryComponent/RLInventoryComponent_Equipment.h"
 
 ARL_PlayerState::ARL_PlayerState()
 {
@@ -12,6 +13,8 @@ ARL_PlayerState::ARL_PlayerState()
 
 	AttributeSet = CreateDefaultSubobject<UAS_Player>(TEXT("AttributeSet"));
 	NetUpdateFrequency = 100;
+
+	EquipmentInventoryComponnet = CreateDefaultSubobject<URLInventoryComponent_Equipment>("EquipmentInventoryComponnet");
 }
 
 void ARL_PlayerState::SetSoul(int32 NewSoul)
