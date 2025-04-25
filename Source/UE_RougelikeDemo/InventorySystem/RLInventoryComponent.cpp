@@ -13,14 +13,14 @@ void URLInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CreateInventorySlot(20);
+	//CreateInventorySlot(20);
 }
 
 bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
 {
 	if (!Item) return false;
 
-	//找到第一个空的slot放入Item
+	// 第一次尝试放入
 	for (auto& Slot : Inventory.Slots)
 	{
 		FRLInventoryItemSlotHandle SlotHandle(Slot, this);
@@ -32,6 +32,31 @@ bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
 			}
 		}
 	}
+
+	// 如果所有格子已满则自动扩容
+	const int CurrentCapacity = Inventory.Slots.Num();
+	const int GrowthAmount = FMath::Max(
+		static_cast<int>(CurrentCapacity * CapacityGrowthFactor),
+		MinGrowthAmount
+	);
+
+	CreateInventorySlot(GrowthAmount);
+
+	// 尝试放入新扩容的格子（只需检查新增的格子）
+	for (int32 i = CurrentCapacity; i < Inventory.Slots.Num(); ++i)
+	{
+		FRLInventoryItemSlotHandle SlotHandle(Inventory.Slots[i], this);
+		if (AcceptsItem(Item, SlotHandle))
+		{
+			if (PlaceItemSlot(Item, SlotHandle))
+			{
+				return true;
+			}
+		}
+	}
+
+	// 极端情况：扩容后仍然无法放入（理论上不应该发生）
+	UE_LOG(LogTemp, Warning, TEXT("Failed to place item after inventory expansion!"));
 	return false;
 }
 
