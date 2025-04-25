@@ -10,6 +10,9 @@
 #include "Input/RLInputComponent.h"
 #include "Interface/RL_CharacterAimInterface.h"
 #include "Item/Item_Pickup.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/RL_PlayerState.h"
+#include "UE_RougelikeDemo/InventorySystem/RLInventoryComponent.h"
 
 URL_MovementComponent::URL_MovementComponent()
 {
@@ -106,8 +109,15 @@ void URL_MovementComponent::Collect(const FInputActionValue& Value)
 	if (ItemToPickup)
 	{
 		// 物品加入背包
-		
+		ARL_PlayerState* PlayerState = Cast<ARL_PlayerState>(UGameplayStatics::GetPlayerState(GetWorld(),0));
+		URLInventoryComponent* BackpComponent = Cast<URLInventoryComponent>(PlayerState->FindComponentByClass(URLInventoryComponent::StaticClass()));
+
+		if (BackpComponent)
+		{
+			BackpComponent->LootItem(ItemToPickup->ItemInstance);
+		}
 		// 销毁地上的物品
+		ItemToPickup->Destroy();
 	}
 }
 
@@ -144,9 +154,11 @@ void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		// TODO:将可拾取物品相关信息显示
 		if (ItemToPickup)
 			GEngine->AddOnScreenDebugMessage(-1, 0.8f, FColor::Red, FString::Printf(TEXT("The actor's name is: %s"), *ItemToPickup->GetName()));
-
-
 		
+	}
+	else
+	{
+		ItemToPickup=nullptr;
 	}
 }
 

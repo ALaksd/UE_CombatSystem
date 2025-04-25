@@ -3,7 +3,7 @@
 
 #include "UE_RougelikeDemo/InventorySystem/Fragments/RLItemFragment_Attached.h"
 
-AActor* URLItemFragment_Attached::AttachToActor(AActor* Owner) const
+AActor* URLItemFragment_Attached::AttachToActor(AActor* Owner_T) const
 {
 	// 检查是否指定了正确的 AttachedActorClass
 	if (!AttachedActorClass)
@@ -12,7 +12,7 @@ AActor* URLItemFragment_Attached::AttachToActor(AActor* Owner) const
 		return nullptr;
 	}
 
-	AActor* AttachedActor = Owner->GetWorld()->SpawnActor<AActor>(AttachedActorClass, Owner->GetActorLocation(), FRotator::ZeroRotator);
+	AActor* AttachedActor = Owner_T->GetWorld()->SpawnActor<AActor>(AttachedActorClass, Owner_T->GetActorLocation(), FRotator::ZeroRotator);
 	if (!AttachedActor)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn attached actor."));
@@ -20,7 +20,7 @@ AActor* URLItemFragment_Attached::AttachToActor(AActor* Owner) const
 	}
 
 	// 尝试获取目标插槽，附加到物体上
-	USkeletalMeshComponent* SkeletalMeshComp = Cast<USkeletalMeshComponent>(Owner->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
+	USkeletalMeshComponent* SkeletalMeshComp = Cast<USkeletalMeshComponent>(Owner_T->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
 	if (SkeletalMeshComp && !AttchedSokectName.IsNone())
 	{
 		// 使用 AttachToComponent 将附加的 Actor 绑定到插槽上
