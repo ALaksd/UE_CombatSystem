@@ -65,7 +65,8 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 				 	//执行伤害逻辑
 				 	if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor))
 				 	{
-				 		TargetASC->ApplyGameplayEffectSpecToSelf(*DamageSpecHandle.Data.Get());
+				 		if (DamageSpecHandle.IsValid())
+				 			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageSpecHandle.Data.Get());
 				 	}
 				 }
 			}
@@ -78,15 +79,13 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 void ARL_BaseWeapon::StartCombat()
 {
 	bCombat = true;
+	
 	//创建GameplayEffect
-	if (WeaponOwner)
-	{
-		// GEngine->AddOnScreenDebugMessage(3,1,FColor::Red,FString::Printf(TEXT("Weapon: %f"),WeaponAttribute->GetDamage()));
-		// GEngine->AddOnScreenDebugMessage(4,1,FColor::Blue,FString::Printf(TEXT("Multiple %f"),WeaponAttribute->GetDamageMultiplier()));
-		// GEngine->AddOnScreenDebugMessage(5,1,FColor::Green,FString::Printf(TEXT("Buff: %f"),WeaponAttribute->GetSkillAmplification()));
-		//
-		DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet,WeaponLevel,WeaponASC->MakeEffectContext());
-	}
+	GEngine->AddOnScreenDebugMessage(3,1,FColor::Red,FString::Printf(TEXT("Weapon: %f"),WeaponAttribute->GetDamage()));
+	GEngine->AddOnScreenDebugMessage(4,1,FColor::Blue,FString::Printf(TEXT("Multiple %f"),WeaponAttribute->GetDamageMultiplier()));
+	GEngine->AddOnScreenDebugMessage(5,1,FColor::Green,FString::Printf(TEXT("Buff: %f"),WeaponAttribute->GetSkillAmplification()));
+	
+	DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet,WeaponLevel,WeaponASC->MakeEffectContext());
 }
 
 void ARL_BaseWeapon::EndCombat()

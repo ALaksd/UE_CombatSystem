@@ -92,9 +92,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetSoul(int32 NewSoul);
 
+	//等级
 	inline int32 GetLevel() const { return Level; }
 	void AddLevel();
 
+	//技能点
 	inline int32 GetSpellPoints() const { return SpellPoints; }
 	void AddSpellPoints(int32 InSpellPoints);
 

@@ -41,7 +41,7 @@ private:
 	// UPROPERTY(EditDefaultsOnly,Category="AttackCurve")
 	// TSubclassOf<UGameplayEffect> DamageCurve;
 	
-	bool bCombat = false;
+	bool bCombat = false;	
 
 	//储存当前帧插槽位置
 	TArray<FVector> CurrentPoints;

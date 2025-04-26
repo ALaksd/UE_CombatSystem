@@ -17,15 +17,15 @@ void UANS_AttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
 		if (UCloseCombatComponent* CloseCombatComponent = Player->FindComponentByClass<UCloseCombatComponent>())
 		{
 			//向武器应用增幅
-			UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(CloseCombatComponent->CloseWeapon);
-			FGameplayEffectSpecHandle Handle = SourceASC->MakeOutgoingSpec(GameEffect,1,SourceASC->MakeEffectContext());
-			SourceASC->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
-
-			CloseCombatComponent->StartCombat();
+			if (UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(CloseCombatComponent->CloseWeapon))
+			{
+				FGameplayEffectSpecHandle Handle = SourceASC->MakeOutgoingSpec(GameEffect,1,SourceASC->MakeEffectContext());
+				SourceASC->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+				
+				CloseCombatComponent->StartCombat();
+			}
 		}
-		
 	}
-	
 }
 
 void UANS_AttackDecision::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,

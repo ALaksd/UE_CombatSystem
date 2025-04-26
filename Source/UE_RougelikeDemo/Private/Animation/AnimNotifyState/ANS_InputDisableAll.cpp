@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Animation/AnimNotifyState/ANS_InputDisableAll.h"
@@ -12,7 +12,7 @@ void UANS_InputDisableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSe
 
 	if (!Owner) return;
 
-	// ÒÆ³ýÊäÈë
+	// ç§»é™¤è¾“å…¥
 	if (APlayerController* PC = Cast<APlayerController>(Owner->GetInstigatorController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))

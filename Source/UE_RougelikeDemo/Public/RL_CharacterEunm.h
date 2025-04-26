@@ -1,13 +1,13 @@
 #pragma once
 #include "CoreMinimal.h"
 
-// ¶¨Òå½ÇÉ«ÀàĞÍµÄÃ¶¾Ù
-UENUM(BlueprintType)  // ÈÃÃ¶¾ÙÔÚÀ¶Í¼ÖĞ¿ÉÓÃ
+// å®šä¹‰è§’è‰²ç±»å‹çš„æšä¸¾
+UENUM(BlueprintType)  // è®©æšä¸¾åœ¨è“å›¾ä¸­å¯ç”¨
 enum class ECharacterType : uint8
 {
-	Warrior     UMETA(DisplayName = "Warrior"), //Õ½Ê¿
-	Caster      UMETA(DisplayName = "Caster"), //·¨Ê¦
-	Archer      UMETA(DisplayName = "Archer"), //¹­¼ıÊÖ
+	Warrior     UMETA(DisplayName = "Warrior"), //æˆ˜å£«
+	Caster      UMETA(DisplayName = "Caster"), //æ³•å¸ˆ
+	Archer      UMETA(DisplayName = "Archer"), //å¼“ç®­æ‰‹
 	Assassin    UMETA(DisplayName = "Assassin"),
 	Healer      UMETA(DisplayName = "Healer")
 };

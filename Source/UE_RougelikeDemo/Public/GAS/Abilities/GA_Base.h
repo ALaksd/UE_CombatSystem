@@ -15,6 +15,7 @@ class UE_ROUGELIKEDEMO_API UGA_Base : public UGameplayAbility
 	GENERATED_BODY()
 
 public:
+	//触发技能的输入Tag
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag StartInputTag;
 	
