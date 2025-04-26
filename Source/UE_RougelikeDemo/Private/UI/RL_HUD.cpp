@@ -31,6 +31,32 @@ URL_AttributeWidgetController* ARL_HUD::GetAttributeWidgetController(FWidgetCont
 	return AttributeController;
 }
 
+URL_InventoryWidgetController* ARL_HUD::GetInventoryWidgetController(FWidgetControllerParams& WCParams)
+{
+	if (InventoryWidgetController == nullptr)
+	{
+		InventoryWidgetController = NewObject<URL_InventoryWidgetController>(this, InventoryWidgetControllerClass);
+		InventoryWidgetController->SetWidgetControllerParams(WCParams);
+		InventoryWidgetController->BindCallbacksToDependencies();
+
+		return InventoryWidgetController;
+	}
+	return InventoryWidgetController;
+}
+
+URL_EquipWidgetController* ARL_HUD::GetEquipWidgetController(FWidgetControllerParams& WCParams)
+{
+	if (EquipWidgetController == nullptr)
+	{
+		EquipWidgetController = NewObject<URL_EquipWidgetController>(this, EquipWidgetControllerClass);
+		EquipWidgetController->SetWidgetControllerParams(WCParams);
+		EquipWidgetController->BindCallbacksToDependencies();
+
+		return EquipWidgetController;
+	}
+	return EquipWidgetController;
+}
+
 void ARL_HUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
 	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class unintialized"));

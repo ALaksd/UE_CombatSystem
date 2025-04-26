@@ -2,6 +2,8 @@
 
 
 #include "UE_RougelikeDemo\InventorySystem\RLInventoryComponent.h"
+#include "RLInventoryItemInstance.h"
+#include "RLInventoryItemDefinition.h"
 
 URLInventoryComponent::URLInventoryComponent()
 {
@@ -68,6 +70,15 @@ bool URLInventoryComponent::PlaceItemSlot(URLInventoryItemInstance* Item, const 
 	FRLInventoryItemSlot& Slot = GetItemSlot(ItemHandle);
 	URLInventoryItemInstance* PreItem = Slot.ItemInstance;	
 	Slot.ItemInstance = Item;
+	// 正确赋值SlotTags
+	if (Item->GetItemDefinition())
+	{
+		Slot.SlotTags = Item->GetItemDefinition()->ItemTags.CombinedTags;
+	}
+	else
+	{
+		Slot.SlotTags.Reset(); // 没有ItemDefinition则清空
+	}
 
 	OnItemSlotUpdate.Broadcast(this,ItemHandle,Slot.ItemInstance,PreItem);
 
@@ -82,6 +93,7 @@ bool URLInventoryComponent::RemoveItemFromInventory(const FRLInventoryItemSlotHa
 	if (!ItemSlot.ItemInstance) return false;
 
 	ItemSlot.ItemInstance = nullptr;
+	ItemSlot.SlotTags.Reset();
 
 	OnItemSlotUpdate.Broadcast(this, SlotHandle, ItemSlot.ItemInstance, PreviousItem);
 
@@ -103,6 +115,20 @@ bool URLInventoryComponent::RemoveAllItemsFromInventory(TArray<URLInventoryItemI
 TArray<FRLInventoryItemSlotHandle> URLInventoryComponent::GetAllSlotHandles()
 {
 	return AllSlotHandles;
+}
+
+FRLInventoryItemSlotHandle URLInventoryComponent::GetSlotHandleByTags(FGameplayTagContainer Tags)
+{
+	for (const FRLInventoryItemSlot& Slot : Inventory.Slots)
+	{
+		if (Slot.ItemInstance && Slot.SlotTags.HasAll(Tags))
+		{
+			return FRLInventoryItemSlotHandle(Slot, this);
+		}
+	}
+
+	// 没找到返回空Handle（SlotId = -1）
+	return FRLInventoryItemSlotHandle();
 }
 
 URLInventoryItemInstance* URLInventoryComponent::GetItemInstanceInSlot(const FRLInventoryItemSlotHandle& Handle)

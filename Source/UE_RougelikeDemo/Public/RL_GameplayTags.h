@@ -46,7 +46,7 @@ public:
 	FGameplayTag Equip_Body_3;
 	FGameplayTag Equip_Body_4;
 
-	//道具
+	//道具u kl,
 	FGameplayTag Use_1;
 	FGameplayTag Use_2;
 	FGameplayTag Use_3;
