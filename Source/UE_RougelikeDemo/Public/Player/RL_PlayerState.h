@@ -16,6 +16,8 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelChanged, int32);
 
 class UDataTable;
 class URLInventoryComponent_Equipment;
+class URLInventoryComponent;
+
 
 /**
  * 
@@ -28,10 +30,14 @@ class UE_ROUGELIKEDEMO_API ARL_PlayerState : public APlayerState, public IAbilit
 
 public:
 	ARL_PlayerState();
+
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-
+	//大背包
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Components")
+	TObjectPtr<URLInventoryComponent> InventoryComponent;
+	
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TObjectPtr<URLInventoryComponent_Equipment> EquipmentInventoryComponnet;
 	UPROPERTY(VisibleAnywhere)

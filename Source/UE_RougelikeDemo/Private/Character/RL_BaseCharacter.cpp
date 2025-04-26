@@ -12,6 +12,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Component/CloseCombatComponent.h"
+#include "Component/RL_MovementComponent.h"
 #include "GAS/ASC_Base.h"
 #include "Input/RLInputComponent.h"
 #include "Interface/RL_CharacterAimInterface.h"
@@ -44,6 +45,10 @@ ARL_BaseCharacter::ARL_BaseCharacter()
 	InputBufferComponent = CreateDefaultSubobject<URL_InputBufferComponent>("InputBufferComponnet");
 
 	CloseCombatComponent = CreateDefaultSubobject<UCloseCombatComponent>(TEXT("CloseCombatComponent"));
+
+	//创建玩家输入组件
+	MovementComponent = CreateDefaultSubobject<URL_MovementComponent>(TEXT("PlayerInputComponent"));
+
 	
 	//HeadConstant->CreateDefaultSubobject<USkeletalMeshComponent>("HeadConstant");
 	//HeadConstant->SetupAttachment(GetMesh());

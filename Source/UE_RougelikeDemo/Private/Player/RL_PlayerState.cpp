@@ -14,6 +14,7 @@ ARL_PlayerState::ARL_PlayerState()
 	AttributeSet = CreateDefaultSubobject<UAS_Player>(TEXT("AttributeSet"));
 	NetUpdateFrequency = 100;
 
+	InventoryComponent = CreateDefaultSubobject<URLInventoryComponent>(TEXT("InventoryComponent"));
 	EquipmentInventoryComponnet = CreateDefaultSubobject<URLInventoryComponent_Equipment>("EquipmentInventoryComponnet");
 }
 

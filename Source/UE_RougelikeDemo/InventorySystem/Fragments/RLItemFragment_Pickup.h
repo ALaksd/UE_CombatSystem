@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryItemFragment.h"
-#include "RLItemFragment_PhysicalDisplay.generated.h"
+#include "RLItemFragment_Pickup.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_ROUGELIKEDEMO_API URLItemFragment_PhysicalDisplay : public URLInventoryItemFragment
+class UE_ROUGELIKEDEMO_API URLItemFragment_Pickup : public URLInventoryItemFragment
 {
 	GENERATED_BODY()
 	

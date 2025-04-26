@@ -4,7 +4,8 @@
 #include "RLInventorySubsystem.h"
 #include "RLInventoryItemInstance.h"
 #include "RLInventoryItemDefinition.h"
-#include "Fragments/RLItemFragment_PhysicalDisplay.h"
+#include "Fragments/RLItemFragment_Pickup.h"
+#include "Item/Item_Pickup.h"
 
 
 URLInventoryItemInstance* URLInventorySubsystem::GenerateItemInstance(URLInventoryItemDefinition* ItemDefinition)
@@ -23,21 +24,23 @@ URLInventoryItemInstance* URLInventorySubsystem::GenerateItemInstance(URLInvento
 	return NewInstance;
 }
 
-AActor* URLInventorySubsystem::SpawnItemActorFromInstance(URLInventoryItemInstance* ItemInstance, const FVector& Location)
+AItem_Pickup* URLInventorySubsystem::SpawnItemActorFromInstance(URLInventoryItemInstance* ItemInstance, const FVector& Location)
 {
 	if (!ItemInstance || !ItemInstance->GetItemDefinition())
 		return nullptr;
 
-	const URLItemFragment_PhysicalDisplay* Fragment =
-		Cast<URLItemFragment_PhysicalDisplay>(
-			ItemInstance->GetItemDefinition()->FindFragmentByClass(URLItemFragment_PhysicalDisplay::StaticClass())
+	const URLItemFragment_Pickup* Fragment =
+		Cast<URLItemFragment_Pickup>(
+			ItemInstance->GetItemDefinition()->FindFragmentByClass(URLItemFragment_Pickup::StaticClass())
 		);
-
+	
 	if (!Fragment || !Fragment->ItemActorClass)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No valid ItemActorClass in Fragment."));
 		return nullptr;
 	}
+
+	Fragment->OnInstancedCreate(ItemInstance);
 
 	UWorld* World = GetWorld();
 	if (!World) return nullptr;
@@ -45,7 +48,8 @@ AActor* URLInventorySubsystem::SpawnItemActorFromInstance(URLInventoryItemInstan
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	AActor* SpawnedActor = World->SpawnActor<AActor>(Fragment->ItemActorClass, Location, FRotator::ZeroRotator, SpawnParams);
+	AItem_Pickup* SpawnedActor = World->SpawnActor<AItem_Pickup>(Fragment->ItemActorClass, Location, FRotator::ZeroRotator, SpawnParams);
+	SpawnedActor->ItemInstance = ItemInstance;
 	return SpawnedActor;
 }
 
