@@ -7,6 +7,10 @@
 #include "RL_AbilitySystemLibrary.generated.h"
 
 class URL_OverlayWidgetController;
+class URL_AttributeWidgetController;
+class URL_InventoryWidgetController;
+class URL_EquipWidgetController;
+
 /**
  * 
  */
@@ -21,4 +25,10 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	static URL_AttributeWidgetController* GetAttributeMeauController(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure)
+	static URL_InventoryWidgetController* GetInventoryWidgetController(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure)
+	static URL_EquipWidgetController* GetEquipWidgetController(const UObject* WorldContextObject);
 };

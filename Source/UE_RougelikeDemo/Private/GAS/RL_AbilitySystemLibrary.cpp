@@ -42,3 +42,37 @@ URL_AttributeWidgetController* URL_AbilitySystemLibrary::GetAttributeMeauControl
 	}
 	return nullptr;
 }
+
+URL_InventoryWidgetController* URL_AbilitySystemLibrary::GetInventoryWidgetController(const UObject* WorldContextObject)
+{
+	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
+	{
+		if (ARL_HUD* HUD = Cast<ARL_HUD>(PC->GetHUD()))
+		{
+			ARL_PlayerState* PS = PC->GetPlayerState<ARL_PlayerState>();
+			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+			UAttributeSet* AS = PS->GetAttributeSet();
+
+			FWidgetControllerParams WidgetControllerParam(PC, PS, ASC, AS);
+			return HUD->GetInventoryWidgetController(WidgetControllerParam);
+		}
+	}
+	return nullptr;
+}
+
+URL_EquipWidgetController* URL_AbilitySystemLibrary::GetEquipWidgetController(const UObject* WorldContextObject)
+{
+	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
+	{
+		if (ARL_HUD* HUD = Cast<ARL_HUD>(PC->GetHUD()))
+		{
+			ARL_PlayerState* PS = PC->GetPlayerState<ARL_PlayerState>();
+			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+			UAttributeSet* AS = PS->GetAttributeSet();
+
+			FWidgetControllerParams WidgetControllerParam(PC, PS, ASC, AS);
+			return HUD->GetEquipWidgetController(WidgetControllerParam);
+		}
+	}
+	return nullptr;
+}

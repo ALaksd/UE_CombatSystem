@@ -174,6 +174,10 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "Inventory")
 	virtual TArray<FRLInventoryItemSlotHandle> GetAllSlotHandles();
 
+	/** 根据Tag返回插槽钥匙 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Inventory")
+	virtual FRLInventoryItemSlotHandle GetSlotHandleByTags(FGameplayTagContainer Tags);
+
 	/** 获取指定插槽内存放的物品 */
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	virtual URLInventoryItemInstance* GetItemInstanceInSlot(const FRLInventoryItemSlotHandle& Handle);

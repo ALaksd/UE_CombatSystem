@@ -6,6 +6,8 @@
 #include "GameFramework/HUD.h"
 #include "UI/WidgetController/RL_OverlayWidgetController.h"
 #include "UI/WidgetController/RL_AttributeWidgetController.h"
+#include "UI/WidgetController/RL_InventoryWidgetController.h"
+#include "UI/WidgetController/RL_EquipWidgetController.h"
 #include "RL_HUD.generated.h"
 
 class URL_UserWidget;
@@ -22,6 +24,10 @@ public:
 	URL_OverlayWidgetController* GetOverlayWidgetController(FWidgetControllerParams& WCParams);
 
 	URL_AttributeWidgetController* GetAttributeWidgetController(FWidgetControllerParams& WCParams);
+
+	URL_InventoryWidgetController* GetInventoryWidgetController(FWidgetControllerParams& WCParams);
+
+	URL_EquipWidgetController* GetEquipWidgetController(FWidgetControllerParams& WCParams);
 
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
@@ -46,4 +52,18 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<URL_AttributeWidgetController> AttributeControllerClass;
+
+	//控制器
+	UPROPERTY()
+	TObjectPtr<URL_InventoryWidgetController> InventoryWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<URL_InventoryWidgetController> InventoryWidgetControllerClass;
+
+	//控制器
+	UPROPERTY()
+	TObjectPtr<URL_EquipWidgetController> EquipWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<URL_EquipWidgetController> EquipWidgetControllerClass;
 };
