@@ -11,10 +11,10 @@ void URL_EquipWidgetController::BroadcastInitialValue()
 
 void URL_EquipWidgetController::BindCallbacksToDependencies()
 {
-	URLInventoryComponent_Equipment* EquipmentInventoryComponnet = PlayerState->FindComponentByClass<URLInventoryComponent_Equipment>();
-	if (EquipmentInventoryComponnet)
+	EquipmentInventory = PlayerState->FindComponentByClass<URLInventoryComponent_Equipment>();
+	if (EquipmentInventory)
 	{
-		EquipmentInventoryComponnet->OnEquipUpdate.AddDynamic(this, &URL_EquipWidgetController::HandleEquipUpdate);
+		EquipmentInventory->OnEquipUpdate.AddDynamic(this, &URL_EquipWidgetController::HandleEquipUpdate);
 	}
 }
 

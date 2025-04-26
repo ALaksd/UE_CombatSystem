@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Player/RL_PlayerState.h"
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryComponent.h"
+#include "UE_RougelikeDemo/InventorySystem/InventoryComponent/RLInventoryComponent_Equipment.h"
 
 URL_MovementComponent::URL_MovementComponent()
 {
@@ -110,11 +111,14 @@ void URL_MovementComponent::Collect(const FInputActionValue& Value)
 	{
 		// 物品加入背包
 		ARL_PlayerState* PlayerState = Cast<ARL_PlayerState>(UGameplayStatics::GetPlayerState(GetWorld(),0));
-		URLInventoryComponent* BackpComponent = Cast<URLInventoryComponent>(PlayerState->FindComponentByClass(URLInventoryComponent::StaticClass()));
 
-		if (BackpComponent)
+		//这里先暂时加入装备背包
+		//URLInventoryComponent* BackpComponent = Cast<URLInventoryComponent>(PlayerState->FindComponentByClass(URLInventoryComponent::StaticClass()));
+		URLInventoryComponent_Equipment* EquipComponent = PlayerState->FindComponentByClass<URLInventoryComponent_Equipment>();
+
+		if (EquipComponent)
 		{
-			BackpComponent->LootItem(ItemToPickup->ItemInstance);
+			EquipComponent->LootItem(ItemToPickup->ItemInstance);
 		}
 		// 销毁地上的物品
 		ItemToPickup->Destroy();

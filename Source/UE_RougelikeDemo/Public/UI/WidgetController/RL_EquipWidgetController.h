@@ -6,6 +6,7 @@
 #include "UI/WidgetController/RL_WidgetController.h"
 #include "RL_EquipWidgetController.generated.h"
 
+class URLInventoryComponent_Equipment;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipItemSlotUpdate,URLInventoryItemInstance*, NewItem, URLInventoryItemInstance*, OldItem);
 /**
  * 
@@ -23,6 +24,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnEquipItemSlotUpdate OnEquipItemSlotUpdate;
+
+	UPROPERTY(BlueprintReadOnly)
+	URLInventoryComponent_Equipment* EquipmentInventory;
 
 	UFUNCTION()
 	void HandleEquipUpdate(URLInventoryItemInstance* NewItem, URLInventoryItemInstance* OldItem);
