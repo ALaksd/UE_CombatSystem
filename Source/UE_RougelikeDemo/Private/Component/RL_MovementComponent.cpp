@@ -11,6 +11,7 @@
 #include "Interface/RL_CharacterAimInterface.h"
 #include "Item/Item_Pickup.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Player/RL_PlayerState.h"
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryComponent.h"
 #include "UE_RougelikeDemo/InventorySystem/InventoryComponent/RLInventoryComponent_Equipment.h"
@@ -18,6 +19,8 @@
 URL_MovementComponent::URL_MovementComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	bIsLockedOn = false;
+	CurrentTarget = nullptr;
 }
 
 void URL_MovementComponent::BeginPlay()
@@ -55,6 +58,12 @@ void URL_MovementComponent::BeginPlay()
 		RLInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::Look);
 
 		RLInputComponent->BindAction(CollectAction, ETriggerEvent::Started, this, &URL_MovementComponent::Collect);
+
+		RLInputComponent->BindAction(LockAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::ToggleLockOn);
+		
+		RLInputComponent->BindAction(STLAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::SwitchTargetLeft);
+		
+		RLInputComponent->BindAction(STRAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::SwitchTargetRight);
 		
 		RLInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::LMBInputPressedTest,&ThisClass::LMBInputReleasedTest,&ThisClass::LMBInputHeldTest);
 	}
@@ -83,6 +92,112 @@ void URL_MovementComponent::Look(const FInputActionValue& Value)
 	FVector2D LookAxis = Value.Get<FVector2D>();
 	playerController->AddYawInput(LookAxis.X);
 	playerController->AddPitchInput(LookAxis.Y);
+}
+
+void URL_MovementComponent::ToggleLockOn(const FInputActionValue& Value)
+{
+	if (bIsLockedOn)
+	{
+		bIsLockedOn = false;
+		CurrentTarget = nullptr;
+	}
+	else
+	{
+		FindLockOnTarget();
+	}
+}
+
+void URL_MovementComponent::SwitchTargetLeft(const FInputActionValue& Value)
+{
+	if (!bIsLockedOn || LockableTargets.Num() <= 1) return;
+
+	CurrentTargetIndex = (CurrentTargetIndex - 1 + LockableTargets.Num()) % LockableTargets.Num();
+	CurrentTarget = LockableTargets[CurrentTargetIndex];
+}
+
+void URL_MovementComponent::SwitchTargetRight(const FInputActionValue& Value)
+{
+	if (!bIsLockedOn || LockableTargets.Num() <= 1) return;
+
+	CurrentTargetIndex = (CurrentTargetIndex + 1) % LockableTargets.Num();
+	CurrentTarget = LockableTargets[CurrentTargetIndex];
+}
+
+void URL_MovementComponent::FindLockOnTarget()
+{
+	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
+	if (!OwnerCharacter) return;
+
+	APlayerController* PlayerController = Cast<APlayerController>(OwnerCharacter->GetController());
+	if (!PlayerController) return;
+
+	TArray<AActor*> PotentialTargets;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Enemy"), PotentialTargets);
+
+	FVector2D ScreenCenter;
+	int32 ViewportX, ViewportY;
+	PlayerController->GetViewportSize(ViewportX, ViewportY);
+	ScreenCenter = FVector2D(ViewportX * 0.5f, ViewportY * 0.5f);
+
+	LockableTargets.Empty();
+
+	TArray<TPair<AActor*, float>> TargetScreenDistances;
+
+	for (AActor* Target : PotentialTargets)
+	{
+		FVector WorldLocation = Target->GetActorLocation();
+		FVector2D ScreenPosition;
+		bool bIsOnScreen = PlayerController->ProjectWorldLocationToScreen(WorldLocation, ScreenPosition);
+
+		if (bIsOnScreen)
+		{
+			float DistanceToCenter = FVector2D::Distance(ScreenPosition, ScreenCenter);
+			TargetScreenDistances.Add(TPair<AActor*, float>(Target, DistanceToCenter));
+		}
+	}
+
+	if (TargetScreenDistances.Num() > 0)
+	{
+		// 按屏幕中心距离排序
+		TargetScreenDistances.Sort([](const TPair<AActor*, float>& A, const TPair<AActor*, float>& B)
+		{
+			return A.Value < B.Value;
+		});
+
+		for (auto& Pair : TargetScreenDistances)
+		{
+			LockableTargets.Add(Pair.Key);
+		}
+
+		CurrentTargetIndex = 0; // 锁定离中心最近的敌人
+		CurrentTarget = LockableTargets[CurrentTargetIndex];
+		bIsLockedOn = true;
+	}
+	else
+	{
+		CurrentTarget = nullptr;
+		bIsLockedOn = false;
+	}
+}
+
+void URL_MovementComponent::UpdateLockOnRotation(float DeltaTime)
+{
+	if (!bIsLockedOn || !CurrentTarget) return;
+
+	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
+	if (!OwnerCharacter) return;
+
+	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(OwnerCharacter->GetActorLocation(), CurrentTarget->GetActorLocation());
+	FRotator TargetRotation(0.f, LookAtRotation.Yaw, 0.f);
+
+	FRotator NewRotation = FMath::RInterpTo(OwnerCharacter->GetActorRotation(), TargetRotation, DeltaTime, 10.f);
+	OwnerCharacter->SetActorRotation(NewRotation);
+	
+	AController* Controller = OwnerCharacter->GetController();
+	if (Controller)
+	{
+		Controller->SetControlRotation(TargetRotation);
+	}
 }
 
 void URL_MovementComponent::UpdateMovementState(EMovementState State)
@@ -128,6 +243,7 @@ void URL_MovementComponent::Collect(const FInputActionValue& Value)
 void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	UpdateLockOnRotation(DeltaTime);
 
 	if (ItemsCanPickup.Num()>0)
 	{

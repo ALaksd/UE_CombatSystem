@@ -46,6 +46,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> CollectAction;
 
+	//锁定敌人按键
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> LockAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> STLAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> STRAction;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Settings")
 	//角色移动状态数据
 	TMap<EMovementState, FMovementSetting> MovementSettingMap;
@@ -85,6 +95,19 @@ protected:
 	
 	void Collect(const FInputActionValue& Value);
 
+	//切换锁定敌人（可能需要更改）
+	void SwitchTargetLeft(const FInputActionValue& Value);
+
+	void SwitchTargetRight(const FInputActionValue& Value);
+
+	/** 锁定/取消锁定目标 */
+	void ToggleLockOn(const FInputActionValue& Value);
+
+	void UpdateLockOnRotation(float DeltaTime);
+
+	/** 搜索锁定目标 */
+	void FindLockOnTarget();
+
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	// 角色和控制器
@@ -106,5 +129,23 @@ private:
 	float CalculateAngleBetweenVectors(const FVector& VectorA, const FVector& VectorB);
 
 	/***--------------------物品拾取---------------------***/
+
+	/*** 锁定镜头相关 ***/
+	UPROPERTY(EditAnywhere, Category = "LockOn")
+	AActor* CurrentTarget;
+
+	/** 当前可切换的锁定目标列表 */
+	UPROPERTY(EditAnywhere, Category = "LockOn")
+	TArray<AActor*> LockableTargets;
+
+	/** 当前锁定目标在列表中的索引 */
+	int32 CurrentTargetIndex;
+
+	/** 搜索半径 */
+	UPROPERTY(EditAnywhere, Category = "LockOn")
+	float LockOnRadius = 1000.f;
+
+	/** 锁定状态 */
+	bool bIsLockedOn;
 
 };
