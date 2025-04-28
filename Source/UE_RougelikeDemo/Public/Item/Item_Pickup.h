@@ -24,7 +24,6 @@ public:
 	TObjectPtr<UNiagaraComponent> NiagaraCom;
 
 	//背包需要的数据
-
 	URLInventoryItemInstance* ItemInstance;
 	
 protected:

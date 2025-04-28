@@ -29,10 +29,11 @@ public:
 	UAS_Base();
 
 
+	//生命值
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_Health,Category = "Attribute")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UAS_Base, Health);
-
+	//最大生命值
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxHealth,Category = "Attribute")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UAS_Base, MaxHealth);

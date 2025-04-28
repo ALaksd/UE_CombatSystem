@@ -38,11 +38,14 @@ void UANS_AttackDecision::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSeque
 		if (UCloseCombatComponent* CloseCombatComponent = Player->FindComponentByClass<UCloseCombatComponent>())
 		{
 			//向武器应用增幅
-			UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(CloseCombatComponent->CloseWeapon);
-			FGameplayEffectSpecHandle Handle = SourceASC->MakeOutgoingSpec(GameEffect,0,SourceASC->MakeEffectContext());
-			SourceASC->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+			if (UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(CloseCombatComponent->CloseWeapon))
+			{
+				FGameplayEffectSpecHandle Handle = SourceASC->MakeOutgoingSpec(GameEffect,0,SourceASC->MakeEffectContext());
+				SourceASC->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
 
-			CloseCombatComponent->EndCombat();
+				CloseCombatComponent->EndCombat();
+			}
+
 		}
 		
 	}

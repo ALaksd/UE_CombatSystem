@@ -8,6 +8,7 @@
 #include "GameplayTagContainer.h"
 #include "RL_MovementComponent.generated.h"
 
+class AInteractable_Base;
 class AItem_Pickup;
 class UInputMappingContext;
 class UInputAction;
@@ -116,19 +117,23 @@ public:
 	// 角色移动组件
 	UCharacterMovementComponent* characterMovement;
 
-	/***--------------------物品拾取---------------------***/
+	/***--------------------交互相关---------------------***/
 	
 	// 进入物品可拾取回调
 	void AddItemCanPickup(AItem_Pickup* ItemToPickup_T);
 	// 退出物品可拾取范围回调函数
 	void RemoveItemCanPickup(AItem_Pickup* ItemToPickup_T);
+
+	void AddInteractableActor(AInteractable_Base* InteractableActor_T);
+	void RemoveInteractableActor();
 private:
 	TArray<AItem_Pickup*> ItemsCanPickup;
 	AItem_Pickup* ItemToPickup;
 	// 计算两个向量间的夹角,返回角度
 	float CalculateAngleBetweenVectors(const FVector& VectorA, const FVector& VectorB);
 
-	/***--------------------物品拾取---------------------***/
+	AInteractable_Base* InteractableActor;
+	/***--------------------交互相关---------------------***/
 
 	/*** 锁定镜头相关 ***/
 	UPROPERTY(EditAnywhere, Category = "LockOn")

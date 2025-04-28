@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "RLInventoryComponent.generated.h"
 
+class UMessageSubsystem;
 class URLInventoryItemInstance;
 /**
  * 存放物品的数据结构,暂时放在InventoryComponent
@@ -222,5 +223,16 @@ protected:
 	float CapacityGrowthFactor = 0.5f;
 	// 最小扩容数量（保证每次至少增加这个数量）
 	int MinGrowthAmount = 5;
+
+private:
+	/*
+	 *  消息系统
+	 *  
+	 *  没用上
+	 */
+	// UPROPERTY()
+	// TObjectPtr<UMessageSubsystem> MsgSystem;
+	//
+	// void SendGetItemMessage(URLInventoryItemInstance* Item,const FRLInventoryItemSlotHandle& Handle);
 
 };

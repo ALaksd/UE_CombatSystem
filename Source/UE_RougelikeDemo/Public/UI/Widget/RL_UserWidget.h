@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -17,11 +17,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetController(UObject* InWidgetConller);
 
-	//¿ØÖÆÆ÷£¨Î¨Ò»£©
+	//æ§åˆ¶å™¨ï¼ˆå”¯ä¸€ï¼‰
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UObject> WidgetController;
 
-	//ÉèÖÃºÃ¿ØÖÆÆ÷ºóÖ´ĞĞµ÷ÊÔ»òÆäËû¹¦ÄÜ
+	//è®¾ç½®å¥½æ§åˆ¶å™¨åæ‰§è¡Œè°ƒè¯•æˆ–å…¶ä»–åŠŸèƒ½
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetControllerSet();
 };

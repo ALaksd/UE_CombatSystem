@@ -6,6 +6,7 @@
 #include "UI/WidgetController/RL_WidgetController.h"
 #include "RL_EquipWidgetController.generated.h"
 
+class UMessageSubsystem;
 class URLInventoryComponent_Equipment;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipItemSlotUpdate,URLInventoryItemInstance*, NewItem, URLInventoryItemInstance*, OldItem);
 /**
@@ -30,4 +31,10 @@ public:
 
 	UFUNCTION()
 	void HandleEquipUpdate(URLInventoryItemInstance* NewItem, URLInventoryItemInstance* OldItem);
+
+
+private:
+	UPROPERTY()
+	TObjectPtr<UMessageSubsystem> MsgSystem;
+
 };

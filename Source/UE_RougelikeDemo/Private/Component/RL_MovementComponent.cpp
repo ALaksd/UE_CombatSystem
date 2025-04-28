@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerState.h"
 #include "GAS/ASC_Base.h"
 #include "Input/RLInputComponent.h"
+#include "InteractableActor/Interactable_Base.h"
 #include "Interface/RL_CharacterAimInterface.h"
 #include "Item/Item_Pickup.h"
 #include "Kismet/GameplayStatics.h"
@@ -238,6 +239,13 @@ void URL_MovementComponent::Collect(const FInputActionValue& Value)
 		// 销毁地上的物品
 		ItemToPickup->Destroy();
 	}
+	else
+	{
+		if (InteractableActor)
+		{
+			InteractableActor->TryInteract();
+		}
+	}
 }
 
 void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -311,6 +319,16 @@ float URL_MovementComponent::CalculateAngleBetweenVectors(const FVector& VectorA
 	float AngleDegrees = FMath::RadiansToDegrees(AngleRadians);
 
 	return AngleDegrees;
+}
+
+void URL_MovementComponent::AddInteractableActor(AInteractable_Base* InteractableActor_T)
+{
+	InteractableActor=InteractableActor_T;
+}
+
+void URL_MovementComponent::RemoveInteractableActor()
+{
+	InteractableActor=nullptr;
 }
 
 void URL_MovementComponent::LMBInputPressedTest(FGameplayTag InputTag)

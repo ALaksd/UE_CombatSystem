@@ -15,7 +15,7 @@ class UE_ROUGELIKEDEMO_API UAS_Enemy : public UAS_Base
 	GENERATED_BODY()
 
 private:
-	//韧性
+	//韧性  对应于策划案里怪物体力值
 	UPROPERTY(EditDefaultsOnly,Category = "Attribute")
 	FGameplayAttributeData Resilience;
 	ATTRIBUTE_ACCESSORS(UAS_Enemy, Resilience);

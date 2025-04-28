@@ -4,6 +4,9 @@
 #include "UE_RougelikeDemo\InventorySystem\RLInventoryComponent.h"
 #include "RLInventoryItemInstance.h"
 #include "RLInventoryItemDefinition.h"
+#include "Kismet/GameplayStatics.h"
+#include "MessagSystem/MessageSubsystem.h"
+#include "MessagSystem/Message_GetItem.h"
 
 URLInventoryComponent::URLInventoryComponent()
 {
@@ -30,6 +33,8 @@ bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
 		{
 			if (PlaceItemSlot(Item, SlotHandle))
 			{
+				//向UI广播放入事件
+				OnItemSlotUpdate.Broadcast(this,SlotHandle,Item,nullptr);
 				return true;
 			}
 		}
@@ -52,6 +57,8 @@ bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
 		{
 			if (PlaceItemSlot(Item, SlotHandle))
 			{
+				//向UI广播放入事件
+				OnItemSlotUpdate.Broadcast(this,SlotHandle,Item,nullptr);
 				return true;
 			}
 		}
@@ -178,6 +185,28 @@ bool URLInventoryComponent::AcceptsItem(URLInventoryItemInstance* Item, const FR
 	}
 	return false;
 }
+
+/*
+ * 消息系统
+ */
+// void URLInventoryComponent::SendGetItemMessage(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& Handle)
+// {
+// 	if (!MsgSystem)
+// 	{
+// 		if (UGameInstance* GI = UGameplayStatics::GetGameInstance(GetWorld()))
+// 		{
+// 			MsgSystem = GI->GetSubsystem<UMessageSubsystem>();
+// 		}
+// 	}
+//
+// 	if (MsgSystem)
+// 	{
+// 		UMessage_GetItem* ItemMsg = NewObject<UMessage_GetItem>(this);
+// 		ItemMsg->ItemInstance=Item;
+// 		ItemMsg->SlotHandle=Handle;
+// 		MsgSystem->Publish(ItemMsg);
+// 	}
+// }
 
 void URLInventoryComponent::CreateInventorySlot(int32 Count)
 {

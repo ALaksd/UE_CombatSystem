@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "UI/WidgetController/RL_OverlayWidgetController.h"
@@ -19,7 +19,7 @@ void URL_OverlayWidgetController::BindCallbacksToDependencies()
 {
 	const UAS_Player* PlayerAttributeSet = CastChecked<UAS_Player>(AttributeSet);
 
-	//°ó¶¨GASÊôÐÔ±ä»¯µÄÎ¯ÍÐ
+	//ç»‘å®šGASå±žæ€§å˜åŒ–çš„å§”æ‰˜
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 		PlayerAttributeSet->GetHealthAttribute()).AddLambda(
 			[this](const FOnAttributeChangeData& Data)

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -21,13 +21,13 @@ class UE_ROUGELIKEDEMO_API URL_OverlayWidgetController : public URL_WidgetContro
 	GENERATED_BODY()
 
 public:
-	//¹ã²¥ÊôĞÔ±ä»¯
+	//å¹¿æ’­å±æ€§å˜åŒ–
 	virtual void BroadcastInitialValue() override;
 
-	//GAS»Øµ÷º¯Êı(ÓÃÓÚGASÍ¨ÖªÊôµÄ±ä»¯Î¯ÍĞµÄ»Øµ÷º¯Êı)
+	//GASå›è°ƒå‡½æ•°(ç”¨äºGASé€šçŸ¥å±çš„å˜åŒ–å§”æ‰˜çš„å›è°ƒå‡½æ•°)
 	virtual void BindCallbacksToDependencies() override;
 
-	//À¶Í¼µ÷ÓÃ
+	//è“å›¾è°ƒç”¨
 	virtual void UnbindAllDelegate() override;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
@@ -51,6 +51,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "LevelUpInfo")
 	FOnSoulChangedSignature OnSoulChanged;
 
-	UPROPERTY(BlueprintAssignable, Category = "LevelUpInfo")
+	UPROPERTY(BlueprintAssignable, Category = "LevelUpInfo") 
 	FOnLevelChangedSignature OnLevelChanged;
 };
