@@ -7,6 +7,7 @@
 #include "Player/RL_PlayerState.h"
 #include "UI/RL_HUD.h"
 #include "UI/WidgetController/RL_AttributeWidgetController.h"
+#include "UI/WidgetController/RL_LanternFlameController.h"
 #include "UI/WidgetController/RL_OverlayWidgetController.h"
 
 URL_OverlayWidgetController* URL_AbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
@@ -72,6 +73,23 @@ URL_EquipWidgetController* URL_AbilitySystemLibrary::GetEquipWidgetController(co
 
 			FWidgetControllerParams WidgetControllerParam(PC, PS, ASC, AS);
 			return HUD->GetEquipWidgetController(WidgetControllerParam);
+		}
+	}
+	return nullptr;
+}
+
+URL_LanternFlameController* URL_AbilitySystemLibrary::GetLanternFlameWidgetController(const UObject* WorldContextObject)
+{
+	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
+	{
+		if (ARL_HUD* HUD = Cast<ARL_HUD>(PC->GetHUD()))
+		{
+			ARL_PlayerState* PS = PC->GetPlayerState<ARL_PlayerState>();
+			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+			UAttributeSet* AS = PS->GetAttributeSet();
+
+			FWidgetControllerParams WidgetControllerParam(PC, PS, ASC, AS);
+			return HUD->GetLanternFlameWidgetController(WidgetControllerParam);
 		}
 	}
 	return nullptr;

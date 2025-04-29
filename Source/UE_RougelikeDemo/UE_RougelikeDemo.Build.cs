@@ -16,6 +16,8 @@ public class UE_RougelikeDemo : ModuleRules
 			"HeadMountedDisplay", 
 			"EnhancedInput",
             "UMG",
+            "Slate",
+            "SlateCore",
             "Niagara",
 			"GameplayAbilities"
         });

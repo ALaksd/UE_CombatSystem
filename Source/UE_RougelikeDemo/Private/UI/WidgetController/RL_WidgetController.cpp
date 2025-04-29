@@ -5,6 +5,8 @@
 #include "GAS/AS/AS_Player.h"
 #include <Player/RL_PlayerState.h>
 
+#include "GAS/ASC_Base.h"
+
 void URL_WidgetController::SetWidgetControllerParams(FWidgetControllerParams& WCParams)
 {
 	PlayerController = WCParams.PlayerController;
@@ -36,4 +38,18 @@ inline ARL_PlayerState* URL_WidgetController::GetPlayerState() const
 {
 	ARL_PlayerState* RLPlayerState = CastChecked<ARL_PlayerState>(PlayerState);
 	return RLPlayerState;
+}
+
+UASC_Base* URL_WidgetController::GetPlayerASC() const
+{
+	if (AbilitySystemComponent)
+	{
+		UASC_Base* ASC = Cast<UASC_Base>(AbilitySystemComponent);
+		return ASC;
+	}
+	else
+	{
+		UASC_Base* ASC = Cast<UASC_Base>(GetPlayerState()->GetAbilitySystemComponent());
+		return ASC;
+	}
 }

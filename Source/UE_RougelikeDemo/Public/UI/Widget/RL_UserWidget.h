@@ -9,6 +9,9 @@
 /**
  * 
  */
+
+struct FSkillList;
+
 UCLASS()
 class UE_ROUGELIKEDEMO_API URL_UserWidget : public UUserWidget
 {
