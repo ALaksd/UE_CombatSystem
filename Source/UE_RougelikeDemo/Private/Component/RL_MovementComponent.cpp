@@ -256,12 +256,15 @@ void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 	if (ItemsCanPickup.Num()>0)
 	{
-		// 计算角色正前方30度范围内距离角色最近的一个可拾取物品
+		// 计算角色正前方40度范围内距离角色最近的一个可拾取物品
 		FVector ForwardVector = ownerCharacter->GetActorForwardVector();
 		for (AItem_Pickup* Item : ItemsCanPickup)
 		{
 			// 物品与玩家之间的向量
 			FVector Dir = Item->GetActorLocation()-ownerCharacter->GetActorLocation();
+			Dir.Z=0;
+			ForwardVector.Z=0;
+			
 			float Angle = CalculateAngleBetweenVectors(ForwardVector,Dir);
 			if (Angle<40)
 			{

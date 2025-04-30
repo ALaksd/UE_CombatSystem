@@ -10,6 +10,7 @@
 #include "UI/WidgetController/RL_EquipWidgetController.h"
 #include "RL_HUD.generated.h"
 
+class URL_LanternFlameController;
 class URL_UserWidget;
 /**
  * 
@@ -28,6 +29,10 @@ public:
 	URL_InventoryWidgetController* GetInventoryWidgetController(FWidgetControllerParams& WCParams);
 
 	URL_EquipWidgetController* GetEquipWidgetController(FWidgetControllerParams& WCParams);
+	
+	URL_LanternFlameController* GetLanternFlameWidgetController();
+
+	URL_LanternFlameController* GetLanternFlameWidgetController(FWidgetControllerParams& WCParams);
 
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
@@ -66,4 +71,12 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<URL_EquipWidgetController> EquipWidgetControllerClass;
+
+	//存档点 控制器
+	UPROPERTY()
+	TObjectPtr<URL_LanternFlameController> LanternFlameWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<URL_LanternFlameController> LanternFlameWidgetControllerClass;
+	
 };

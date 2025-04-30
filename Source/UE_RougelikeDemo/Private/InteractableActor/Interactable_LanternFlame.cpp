@@ -7,7 +7,11 @@
 #include "Character/RL_BaseCharacter.h"
 #include "Component/RL_MovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Controller/RL_BasePlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "UI/RL_HUD.h"
 #include "UI/Widget/RL_UserWidget.h"
+#include "UI/WidgetController/RL_LanternFlameController.h"
 
 AInteractable_LanternFlame::AInteractable_LanternFlame()
 {
@@ -23,10 +27,25 @@ AInteractable_LanternFlame::AInteractable_LanternFlame()
 
 void AInteractable_LanternFlame::TryInteract()
 {
-	//创建UI
-	WBP_SavePoint = CreateWidget<URL_UserWidget>(GetWorld(),WBP_SavePointClass);
-	WBP_SavePoint->AddToViewport(0);
-	WBP_SavePoint->SetVisibility(ESlateVisibility::Visible);
+	if (ARL_HUD* RLHUD = Cast<ARL_HUD>(PlayerController->GetHUD()))
+	{
+		if (URL_LanternFlameController* LanternFlameWidgetController = RLHUD->GetLanternFlameWidgetController())
+		{
+			// 初始化数据
+			LanternFlameWidgetController->Initialize(SkillList);
+			
+			//创建UI
+			WBP_SavePoint = CreateWidget<URL_UserWidget>(GetWorld(),WBP_SavePointClass);
+			
+			// 初始化UI
+			WBP_SavePoint->SetWidgetController(LanternFlameWidgetController);
+			LanternFlameWidgetController->BroadcastInitialValue();
+			InitPointName();
+			
+			WBP_SavePoint->AddToViewport(0);
+			WBP_SavePoint->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
 }
 
 void AInteractable_LanternFlame::BeginPlay()
@@ -35,6 +54,8 @@ void AInteractable_LanternFlame::BeginPlay()
 
 	SphereCom->OnComponentBeginOverlap.AddDynamic(this,&AInteractable_LanternFlame::OnComBeginOverlap);
 	SphereCom->OnComponentEndOverlap.AddDynamic(this,&AInteractable_LanternFlame::OnComEndOverlap);
+
+	PlayerController=Cast<ARL_BasePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(),0));
 }
 
 void AInteractable_LanternFlame::OnComBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,

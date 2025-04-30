@@ -3,7 +3,7 @@
 
 #include "UI/RL_HUD.h"
 #include "UI/Widget/RL_UserWidget.h"
-
+#include "UI/WidgetController/RL_LanternFlameController.h"
 
 
 URL_OverlayWidgetController* ARL_HUD::GetOverlayWidgetController(FWidgetControllerParams& WCParams)
@@ -57,6 +57,26 @@ URL_EquipWidgetController* ARL_HUD::GetEquipWidgetController(FWidgetControllerPa
 	return EquipWidgetController;
 }
 
+URL_LanternFlameController* ARL_HUD::GetLanternFlameWidgetController()
+{
+	if (LanternFlameWidgetController)
+		return LanternFlameWidgetController;
+	return nullptr;
+}
+
+URL_LanternFlameController* ARL_HUD::GetLanternFlameWidgetController(FWidgetControllerParams& WCParams)
+{
+	if (LanternFlameWidgetController == nullptr)
+	{
+		LanternFlameWidgetController = NewObject<URL_LanternFlameController>(this, LanternFlameWidgetControllerClass);
+		LanternFlameWidgetController->SetWidgetControllerParams(WCParams);
+		LanternFlameWidgetController->BindCallbacksToDependencies();
+
+		return LanternFlameWidgetController;
+	}
+	return LanternFlameWidgetController;
+}
+
 void ARL_HUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
 	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class unintialized"));
@@ -68,6 +88,11 @@ void ARL_HUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySyste
 	FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
 	URL_OverlayWidgetController* OverlayWidgetController = GetOverlayWidgetController(WidgetControllerParams);
 
+	// 初始化一下存档点控制器
+	GetLanternFlameWidgetController(WidgetControllerParams);
+	//
+
+	
 	OverlayWidget->SetWidgetController(OverlayWidgetController);
 	OverlayWidgetController->BroadcastInitialValue();
 

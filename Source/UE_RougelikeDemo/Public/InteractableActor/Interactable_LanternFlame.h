@@ -6,11 +6,14 @@
 #include "InteractableActor/Interactable_Base.h"
 #include "Interactable_LanternFlame.generated.h"
 
+class ARL_BasePlayerController;
+class UGameplayAbility;
 class URL_UserWidget;
 class USphereComponent;
 /**
  * 存档点
  */
+
 UCLASS()
 class UE_ROUGELIKEDEMO_API AInteractable_LanternFlame : public AInteractable_Base
 {
@@ -28,6 +31,15 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category="Datas")
 	TSubclassOf<UUserWidget> WBP_SavePointClass;
+	//存档点名字
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Datas")
+	FString LanternFlameName;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite,Category="Datas")
+	TObjectPtr<URL_UserWidget> WBP_SavePoint;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void InitPointName();
 	
 private:
 	virtual void BeginPlay() override;
@@ -37,5 +49,9 @@ private:
 	UFUNCTION()
 	void OnComEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	TObjectPtr<URL_UserWidget> WBP_SavePoint;
+	UPROPERTY(EditDefaultsOnly,Category="Datas")
+	TObjectPtr<UDataTable> SkillList;
+
+	UPROPERTY()
+	TObjectPtr<ARL_BasePlayerController> PlayerController;
 };

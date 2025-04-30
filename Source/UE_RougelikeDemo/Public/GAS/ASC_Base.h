@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -17,14 +17,15 @@ class UE_ROUGELIKEDEMO_API UASC_Base : public UAbilitySystemComponent
 
 public:
 	void AbilityActorInfoSet();
+	void AddCharacterAbility(const TSubclassOf<UGameplayAbility> StartupAbilities);
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
 
 	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbilities);
-
+	
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
-	//º” Ù–‘
+	//Âä†Â±ûÊÄß
 	void UpgradeAttribute(const FGameplayTag& AttributeTag);
 	FEffectAssetTags EffecctTags;
 		

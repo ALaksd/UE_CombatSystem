@@ -11,16 +11,21 @@ void UASC_Base::AbilityActorInfoSet()
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this,&UASC_Base::EffectApplied);
 }
 
+void UASC_Base::AddCharacterAbility(const TSubclassOf<UGameplayAbility> StartupAbilities)
+{
+	FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(StartupAbilities,1);
+	if (const UGA_Base* Ability = Cast<UGA_Base>(AbilitySpec.Ability))
+	{
+		AbilitySpec.DynamicAbilityTags.AddTag(Ability->StartInputTag);
+		GiveAbility(AbilitySpec);
+	}
+}
+
 void UASC_Base::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities)
 {
-	for (auto AbilityClass : StartupAbilities)
+	for (TSubclassOf<UGameplayAbility> AbilityClass : StartupAbilities)
 	{
-		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass,1);
-		if (const UGA_Base* Ability = Cast<UGA_Base>(AbilitySpec.Ability))
-		{
-			AbilitySpec.DynamicAbilityTags.AddTag(Ability->StartInputTag);
-			GiveAbility(AbilitySpec);
-		}
+		AddCharacterAbility(AbilityClass);
 	}
 }
 
