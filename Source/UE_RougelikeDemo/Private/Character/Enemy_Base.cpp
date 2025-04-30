@@ -2,9 +2,12 @@
 
 
 #include "Character/Enemy_Base.h"
-
 #include "GAS/ASC_Base.h"
 #include "GAS/AS/AS_Enemy.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "AI/RL_AIController.h"
+#include "BehaviorTree/BehaviorTree.h"
 
 // Sets default values
 AEnemy_Base::AEnemy_Base()
@@ -22,6 +25,10 @@ AEnemy_Base::AEnemy_Base()
 
 	AttributeSet = CreateDefaultSubobject<UAS_Enemy>("AttributeSet");
 
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	
 }
 
@@ -31,6 +38,14 @@ void AEnemy_Base::BeginPlay()
 
 	InitAbilityActorInfo();
 
+}
+
+void AEnemy_Base::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	RLAIController = Cast<ARL_AIController>(NewController);
+	RLAIController->GetBlackboardComponent()->InitializeBlackboard(*BeahabviorTree->BlackboardAsset);
+	RLAIController->RunBehaviorTree(BeahabviorTree);
 }
 
 void AEnemy_Base::InitAbilityActorInfo()

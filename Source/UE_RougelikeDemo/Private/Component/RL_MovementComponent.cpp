@@ -36,9 +36,10 @@ void URL_MovementComponent::BeginPlay()
 	// 将输入映射上下文添加到本地玩家子系统
 	UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
-	if (InputSubsystem && BaseIMC)
+	if (InputSubsystem && BaseIMC && MoveIMC)
 	{
 		InputSubsystem->AddMappingContext(BaseIMC, 0);
+		InputSubsystem->AddMappingContext(MoveIMC, 1);
 	}
 
 	characterMovement = ownerCharacter->GetCharacterMovement();
@@ -255,12 +256,15 @@ void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 	if (ItemsCanPickup.Num()>0)
 	{
-		// 计算角色正前方30度范围内距离角色最近的一个可拾取物品
+		// 计算角色正前方40度范围内距离角色最近的一个可拾取物品
 		FVector ForwardVector = ownerCharacter->GetActorForwardVector();
 		for (AItem_Pickup* Item : ItemsCanPickup)
 		{
 			// 物品与玩家之间的向量
 			FVector Dir = Item->GetActorLocation()-ownerCharacter->GetActorLocation();
+			Dir.Z=0;
+			ForwardVector.Z=0;
+			
 			float Angle = CalculateAngleBetweenVectors(ForwardVector,Dir);
 			if (Angle<40)
 			{

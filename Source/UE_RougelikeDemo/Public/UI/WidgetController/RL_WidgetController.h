@@ -10,6 +10,7 @@ class UAbilitySystemComponent;
 class UAttributeSet;
 class UAS_Player;
 class ARL_PlayerState;
+class UASC_Base;
 
 USTRUCT(BlueprintType)
 struct FWidgetControllerParams
@@ -56,6 +57,9 @@ public:
 	//在空间销毁时调用
 	UFUNCTION(BlueprintCallable)
 	virtual void UnbindAllDelegate();
+
+	UFUNCTION(BlueprintCallable)
+	inline UASC_Base* GetPlayerASC() const;
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
 	TObjectPtr<APlayerController> PlayerController;

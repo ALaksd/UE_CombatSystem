@@ -22,7 +22,7 @@ void UCloseCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//User = Cast<ACharacter>(GetOwner());
+	User = Cast<ACharacter>(GetOwner());
 
 	//if (User)
 	//{
@@ -40,10 +40,23 @@ void UCloseCombatComponent::BeginPlay()
 	//}
 
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	EquipmentInventoryComponent = OwnerPawn->GetPlayerState()->GetComponentByClass<URLInventoryComponent_Equipment>();
+	APlayerState* PlayerState = OwnerPawn->GetPlayerState();
 
-	check(EquipmentInventoryComponent);
-	EquipmentInventoryComponent->OnEquipUpdate.AddDynamic(this, &UCloseCombatComponent::OnEquipSlotUpdate);
+	//敌人类没有PlayerState,在Owner里面找到EquipmentInventoryComponent
+	if (PlayerState)
+	{
+		EquipmentInventoryComponent = PlayerState->GetComponentByClass<URLInventoryComponent_Equipment>();
+
+		check(EquipmentInventoryComponent);
+		EquipmentInventoryComponent->OnEquipUpdate.AddDynamic(this, &UCloseCombatComponent::OnEquipSlotUpdate);
+	}
+	else
+	{
+		EquipmentInventoryComponent = GetOwner()->GetComponentByClass<URLInventoryComponent_Equipment>();
+		check(EquipmentInventoryComponent);
+		EquipmentInventoryComponent->OnEquipUpdate.AddDynamic(this, &UCloseCombatComponent::OnEquipSlotUpdate);
+	}
+
 }
 
 void UCloseCombatComponent::StartCombat() const
@@ -60,15 +73,15 @@ void UCloseCombatComponent::OnEquipSlotUpdate(URLInventoryItemInstance* ItemInst
 {
 	if (PreviousItemInstance)
 	{
-		UnEquipWeapon();
+		UnEquipWeaponForInventory();
 	}
 	if (ItemInstance)
 	{
-		EquipWeapon(ItemInstance);
+		EquipWeaponForInventory(ItemInstance);
 	}
 }
 
-void UCloseCombatComponent::EquipWeapon(URLInventoryItemInstance* ItemInstance)
+void UCloseCombatComponent::EquipWeaponForInventory(URLInventoryItemInstance* ItemInstance)
 {
 	const URLItemFragment_Attached* AttachedFragment =
 		Cast<URLItemFragment_Attached>(ItemInstance->GetItemDefinition()->FindFragmentByClass(URLItemFragment_Attached::StaticClass())
@@ -76,10 +89,11 @@ void UCloseCombatComponent::EquipWeapon(URLInventoryItemInstance* ItemInstance)
 	if (AttachedFragment)
 	{
 		CloseWeapon = Cast<ARL_BaseWeapon>(AttachedFragment->AttachToActor(GetOwner()));
+		CloseWeapon->WeaponOwner = User;
 	}
 }
 
-void UCloseCombatComponent::UnEquipWeapon()
+void UCloseCombatComponent::UnEquipWeaponForInventory()
 {
 	if (CloseWeapon)
 	{
@@ -92,5 +106,17 @@ void UCloseCombatComponent::UnEquipWeapon()
 void UCloseCombatComponent::SwitchWeapon(URLInventoryItemInstance* ItemInstance)
 {
 
+}
+
+void UCloseCombatComponent::EquipWeapon(ARL_BaseWeapon* NewWeapon)
+{
+}
+
+void UCloseCombatComponent::UnEquipWeapon()
+{
+}
+
+void UCloseCombatComponent::SwitchWeapon()
+{
 }
 

@@ -31,4 +31,7 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	static URL_EquipWidgetController* GetEquipWidgetController(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure)
+	static URL_LanternFlameController* GetLanternFlameWidgetController(const UObject* WorldContextObject);
 };

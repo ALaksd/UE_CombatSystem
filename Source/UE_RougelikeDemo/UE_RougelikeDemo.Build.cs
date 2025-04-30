@@ -16,8 +16,11 @@ public class UE_RougelikeDemo : ModuleRules
 			"HeadMountedDisplay", 
 			"EnhancedInput",
             "UMG",
+            "Slate",
+            "SlateCore",
             "Niagara",
-			"GameplayAbilities"
+			"GameplayAbilities",
+            "AIModule",
         });
 		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "GameplayTasks" });
 	}
