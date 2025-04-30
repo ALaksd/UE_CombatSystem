@@ -27,7 +27,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<ACharacter> User = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly)
 	TSubclassOf<ARL_BaseWeapon> BP_CloseWeapon;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -40,8 +40,13 @@ public:
 	UFUNCTION()
 	void OnEquipSlotUpdate(URLInventoryItemInstance* ItemInstance,URLInventoryItemInstance* PreviousItemInstance);
 
-	void EquipWeapon(URLInventoryItemInstance* ItemInstance);
-	void UnEquipWeapon();
+	/*从背包装备/卸下/切换武器*/
+	void EquipWeaponForInventory(URLInventoryItemInstance* ItemInstance);
+	void UnEquipWeaponForInventory();
 	void SwitchWeapon(URLInventoryItemInstance* ItemInstance);
-		
+
+	/*在手上装备/卸下/切换武器*/
+	void EquipWeapon(ARL_BaseWeapon* NewWeapon);
+	void UnEquipWeapon();
+	void SwitchWeapon();
 };

@@ -28,8 +28,6 @@ void ARL_BaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (WeaponOwner)
-		ActorsToIgnore.Add(WeaponOwner);
 }
 
 void ARL_BaseWeapon::Tick(float DeltaTime)
@@ -51,6 +49,8 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 			FVector Start = LastPoints[i];
 			FVector End =  CurrentPoints[i];
 			TArray<FHitResult> OutHits;
+			TArray<AActor*> ActorsToIgnore;
+			ActorsToIgnore.Add(WeaponOwner);
 			UKismetSystemLibrary::LineTraceMultiForObjects(GetWorld(),Start,End,ObjectTypes,false,ActorsToIgnore,DrawDebugType,OutHits,true,TraceColor,TraceHitColor,DrawTime);
 
 			//DrawDebugLine(GetWorld(),CurrentPoints[0],CurrentPoints[4],FColor::Red,false,DrawTime);
@@ -86,6 +86,7 @@ void ARL_BaseWeapon::StartCombat()
 	GEngine->AddOnScreenDebugMessage(5,1,FColor::Green,FString::Printf(TEXT("Buff: %f"),WeaponAttribute->GetSkillAmplification()));
 	
 	DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet,WeaponLevel,WeaponASC->MakeEffectContext());
+
 }
 
 void ARL_BaseWeapon::EndCombat()

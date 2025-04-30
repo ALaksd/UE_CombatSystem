@@ -8,6 +8,9 @@
 #include "GameFramework/Character.h"
 #include "Enemy_Base.generated.h"
 
+class UBehaviorTree;
+class ARL_AIController;
+
 UCLASS()
 class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface
 {
@@ -33,6 +36,16 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
+
+
+	/** AI*/
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	TObjectPtr<UBehaviorTree> BeahabviorTree;
+
+	UPROPERTY()
+	TObjectPtr<ARL_AIController> RLAIController;
 
 private:
 	void InitAbilityActorInfo();

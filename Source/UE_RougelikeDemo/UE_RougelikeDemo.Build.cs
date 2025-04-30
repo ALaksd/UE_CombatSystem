@@ -17,7 +17,8 @@ public class UE_RougelikeDemo : ModuleRules
 			"EnhancedInput",
             "UMG",
             "Niagara",
-			"GameplayAbilities"
+			"GameplayAbilities",
+            "AIModule",
         });
 		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "GameplayTasks" });
 	}

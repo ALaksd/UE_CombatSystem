@@ -36,9 +36,10 @@ void URL_MovementComponent::BeginPlay()
 	// 将输入映射上下文添加到本地玩家子系统
 	UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
-	if (InputSubsystem && BaseIMC)
+	if (InputSubsystem && BaseIMC && MoveIMC)
 	{
 		InputSubsystem->AddMappingContext(BaseIMC, 0);
+		InputSubsystem->AddMappingContext(MoveIMC, 1);
 	}
 
 	characterMovement = ownerCharacter->GetCharacterMovement();

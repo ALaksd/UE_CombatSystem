@@ -14,7 +14,8 @@
 				"GameplayAbilities",
 				"EnhancedInput",
 				"FunctionalTesting",
-				"CoreUObject"
+				"CoreUObject",
+				"AIModule"
 			]
 		}
 	],

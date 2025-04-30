@@ -47,10 +47,7 @@ private:
 	TArray<FVector> CurrentPoints;
 	//储存上一帧插槽位置
 	TArray<FVector> LastPoints;
-
-	//碰撞忽略的Actor，避免自己受伤
-	UPROPERTY(EditDefaultsOnly,Category="Attack Collision")
-	TArray<AActor*> ActorsToIgnore;
+	
 
 	//射线检测碰到的Actor，用于避免二次受伤
 	UPROPERTY()

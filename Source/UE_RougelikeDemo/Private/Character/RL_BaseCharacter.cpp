@@ -46,8 +46,11 @@ ARL_BaseCharacter::ARL_BaseCharacter()
 
 	CloseCombatComponent = CreateDefaultSubobject<UCloseCombatComponent>(TEXT("CloseCombatComponent"));
 
-	//´´½¨Íæ¼ÒÊäÈë×é¼ş
+	//åˆ›å»ºç©å®¶è¾“å…¥ç»„ä»¶
 	MovementComponent = CreateDefaultSubobject<URL_MovementComponent>(TEXT("PlayerInputComponent"));
+
+	//æ·»åŠ Tag
+	Tags.Add(FName("Player"));
 
 	
 	//HeadConstant->CreateDefaultSubobject<USkeletalMeshComponent>("HeadConstant");
@@ -160,7 +163,7 @@ void ARL_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 
 
-/***--------------------²âÊÔ---------------------***/
+/***--------------------æµ‹è¯•---------------------***/
 
 // void ARL_BaseCharacter::LMBInputPressedTest(FGameplayTag InputTag)
 // {
@@ -172,7 +175,7 @@ void ARL_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 // 	//GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf(TEXT("Held")));
 // 	CastChecked<UASC_Base>(AbilitySystemComponent)->AbilityInputTagHeld(InputTag);
 //
-// 	//»º´æÔ¤ÊäÈë
+// 	//ç¼“å­˜é¢„è¾“å…¥
 // 	InputBufferComponent->BufferInput(InputTag);
 // }
 //
@@ -181,7 +184,7 @@ void ARL_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 // 	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, FString::Printf(TEXT("Released")));
 // 	CastChecked<UASC_Base>(AbilitySystemComponent)->AbilityInputTagReleased(InputTag);
 // }
-/***--------------------²âÊÔ---------------------***/
+/***--------------------æµ‹è¯•---------------------***/
 
 
 
@@ -256,7 +259,7 @@ void ARL_BaseCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent = PlayerState->GetAbilitySystemComponent();
 	Cast<UASC_Base>(PlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AttributeSet = PlayerState->GetAttributeSet();
-	//³õÊ¼»¯HUD
+	//åˆå§‹åŒ–HUD
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
 		if (ARL_HUD* RLGHUD = Cast<ARL_HUD>(PlayerController->GetHUD()))
