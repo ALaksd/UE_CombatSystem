@@ -31,6 +31,7 @@ bool URLInventoryFragment_Equipment::GiveToAbilitySystem(UAbilitySystemComponent
 		FGameplayAbilitySpecHandle AbilitySpecHandle;
 		
 		//这里暂时认为能力都是主动的
+		AbilitySpec.DynamicAbilityTags.AddTag(AbilityCDO->StartInputTag); // 设置InputTag
 		AbilitySpecHandle = ASC->GiveAbility(AbilitySpec);
 
 		OutHandle->AddAbilitySpecHandle(AbilitySpecHandle);
