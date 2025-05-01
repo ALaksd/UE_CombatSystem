@@ -11,6 +11,7 @@
 #include "InputActionValue.h"
 #include "Player/RL_PlayerState.h"
 #include "Interface/RL_PlayerInterface.h"
+#include "Interface/RL_CombatInterface.h"
 #include "RL_BaseCharacter.generated.h"
 
 class URL_MovementComponent;
@@ -26,12 +27,14 @@ class UCloseCombatComponent;
 
 
 UCLASS()
-class UE_ROUGELIKEDEMO_API ARL_BaseCharacter : public ACharacter, public IAbilitySystemInterface,public IRL_PlayerInterface
+class UE_ROUGELIKEDEMO_API ARL_BaseCharacter : public ACharacter, public IAbilitySystemInterface,public IRL_PlayerInterface,public IRL_CombatInterface
 {
 	GENERATED_BODY()
 
-#pragma region //PlayerInterfece
+	
 public:
+
+	/** PlayerInterfece */
 	virtual int32 GetSoul_Implementation() const override;
 	virtual void SetSoul_Implementation(int32 NewSoul) override;
 	virtual int32 GetLevel_Implementation() const override;
@@ -40,9 +43,12 @@ public:
 	virtual void AddSpellPoints_Implementation(int32 InSpellPoints) override;
 	virtual int32 GetLevelRequirement_Implementation(int32 InLevel) const override;
 	
+	/** End PlayerInterfece  */
 
-#pragma endregion //End PlayerInterfece
+	/** ComvatInterface */
+	virtual UAnimMontage* GetHitReactMotange_Implementation() override;
 
+	/** End ComvatInterface */
 
 public:
 	//输入组件
@@ -68,99 +74,22 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|UI")
 	TSubclassOf<UUserWidget> PlayerStateUIClass;
 
-#pragma region
-
-	///*外用骨骼*/
-	//UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category = "RLCharacter|Components")
-	//TObjectPtr<USkeletalMeshComponent> HeadConstant;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RLCharacter|Components")
-	//TObjectPtr<USkeletalMeshComponent> Shoulder;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RLCharacter|Components")
-	//TObjectPtr<USkeletalMeshComponent> Hair;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RLCharacter|Components")
-	//TObjectPtr<USkeletalMeshComponent> Boots;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RLCharacter|Components")
-	//TObjectPtr<USkeletalMeshComponent> Chest;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RLCharacter|Components")
-	//TObjectPtr<USkeletalMeshComponent> Back;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RLCharacter|Components")
-	//TObjectPtr<USkeletalMeshComponent> Hands;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RLCharacter|Components")
-	//TObjectPtr<USkeletalMeshComponent> Helmet;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RLCharacter|Components")
-	//TObjectPtr<USkeletalMeshComponent> Legs;
-
-	/**
-	 * 角色输入以及移动相关的设置，这些后面可能会优化到一个组件里面
-	 */
-#pragma endregion //外用骨骼
-
-#pragma region
-
-
-// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-// 	TObjectPtr<UInputMappingContext> BaseIMC;
-//
-// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-// 	TObjectPtr<UInputAction> MoveAction;
-//
-// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-// 	TObjectPtr<UInputAction> LookAction;
-//
-// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-// 	TObjectPtr<UInputAction> JumpAction;
-//
-// 	//跑步按键
-// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-// 	TObjectPtr<UInputAction> RunAction;
-//
-// 	//翻滚按键
-// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-// 	TObjectPtr<UInputAction> RollAction;
-#pragma endregion //输入
-//
-// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Settings")
-// 	//角色移动状态数据
-// 	TMap<EMovementState, FMovementSetting> MovementSettingMap;
-//
-// 	//角色当前移动状态
-// 	UPROPERTY(BlueprintReadWrite)
-// 	EMovementState CurrentMovmentState;
-
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Attribute")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Attribute")
 	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Attribute")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Attribute")
 	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Attribute")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RLCharacter|Attribute")
 	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
 
-	UPROPERTY(EditDefaultsOnly,Category = "0_RLCharacter|Input")
+	UPROPERTY(EditDefaultsOnly,Category = "RLCharacter|Input")
 	TObjectPtr<URLInputConfig> InputConfig;
 	
-	
-	
-	/***--------------------测试---------------------***/
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
+	TObjectPtr<UAnimMontage> HitReactMontage;
 
-	// void LMBInputPressedTest(FGameplayTag InputTag);
-	// void LMBInputHeldTest(FGameplayTag InputTag);
-	// void LMBInputReleasedTest(FGameplayTag InputTag);
-	
-	/***--------------------测试---------------------***/
-	
-	
-	
-	
+
 private:
 	//角色状态UI
 	TObjectPtr<URL_PlayerStateWidget> PlayerStateUI;
@@ -184,9 +113,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	//FORCEINLINE 定义强制内联函数，适用于多次调用的简单函数，减少函数调用开销，提高代码效率
 	FORCEINLINE class USpringArmComponent* GetSpringArmComponent() { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetCameraComponent() { return FllowCamera; }
@@ -198,19 +124,7 @@ public:
 	void AddCharacterAbilities();
 	
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	//更新角色移动状态
-	// UFUNCTION(BlueprintCallable)
-	// void UpdateMovementState(EMovementState State);
-	//
-	// void Move(const FInputActionValue& Value);
-	//
-	// void Look(const FInputActionValue& Value);
-	//
-	// void Run(const FInputActionValue& Value);
-	//
-	// void Roll(const FInputActionValue& Value);
 
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;

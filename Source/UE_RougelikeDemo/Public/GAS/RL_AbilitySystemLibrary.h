@@ -34,4 +34,7 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	static URL_LanternFlameController* GetLanternFlameWidgetController(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable)
+	static void GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC);
 };

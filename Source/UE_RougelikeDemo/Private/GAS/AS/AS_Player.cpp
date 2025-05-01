@@ -73,6 +73,8 @@ void UAS_Player::PostAttributeChange(const FGameplayAttribute& Attribute, float 
 
 void UAS_Player::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
+	Super::PostGameplayEffectExecute(Data);
+
 	const FGameplayAttribute& ModifiedAttribute = Data.EvaluatedData.Attribute;
 
 	// 检查是否是主属性之一

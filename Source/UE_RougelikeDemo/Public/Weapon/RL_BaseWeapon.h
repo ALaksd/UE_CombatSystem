@@ -18,9 +18,8 @@ class UE_ROUGELIKEDEMO_API ARL_BaseWeapon : public AActor, public IRL_ItemInstan
 public:	
 	ARL_BaseWeapon();
 
-	UPROPERTY()
-	TObjectPtr<AActor> WeaponOwner;
-	
+  	FORCEINLINE AActor* GetWeaponOwner() const { return WeaponOwner; }
+	FORCEINLINE void SetWeaponOwner(AActor* InOwner) { WeaponOwner = InOwner; }
 	//武器等级
 	int32 WeaponLevel=1;
 
@@ -45,6 +44,9 @@ private:
 	TObjectPtr<UAS_Weapon> WeaponAttribute;
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> DamageEffet;
+
+	UPROPERTY()
+	TObjectPtr<AActor> WeaponOwner;
 	
 	//武器伤害曲线
 	// UPROPERTY(EditDefaultsOnly,Category="AttackCurve")

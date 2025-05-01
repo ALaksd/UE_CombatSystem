@@ -19,5 +19,5 @@ void UAS_Enemy::PreAttributeChange(const FGameplayAttribute& Attribute, float& N
 
 void UAS_Enemy::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
 {
-	
+	Super::PostGameplayEffectExecute(Data);
 }

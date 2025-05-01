@@ -152,6 +152,7 @@ ARL_BaseWeapon* UCloseCombatComponent::GetWeaponFromInstance(URLInventoryItemIns
 	{
 		ARL_BaseWeapon* NewWeapon = Cast<ARL_BaseWeapon>(Fragment->AttachToActor(GetOwner(),Instance));
 		NewWeapon->SetActorHiddenInGame(true);
+		NewWeapon->SetWeaponOwner(GetOwner());
 		WeaponPool.Add(NewWeapon);
 		return NewWeapon;
 	}

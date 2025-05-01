@@ -5,14 +5,17 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "Interface/RL_CombatInterface.h"
+#include "UI/WidgetController/RL_OverlayWidgetController.h"
 #include "GameFramework/Character.h"
 #include "Enemy_Base.generated.h"
 
 class UBehaviorTree;
 class ARL_AIController;
+class UWidgetComponent;
 
 UCLASS()
-class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface
+class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface,public IRL_CombatInterface
 {
 	GENERATED_BODY()
 
@@ -33,6 +36,10 @@ private:
 public:
 	inline  virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override {return AbilitySystemComponent;}
 
+	/** ComvatInterface */
+	virtual UAnimMontage* GetHitReactMotange_Implementation() override;
+
+	/** End ComvatInterface */
 	
 protected:
 	virtual void BeginPlay() override;
@@ -46,6 +53,34 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<ARL_AIController> RLAIController;
+
+	/** UI */
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetComponent> HealthBar;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxHealthChanged;
+
+	/** Hit */
+
+	//HitReact标签变化回调
+	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+	bool bHitReacting;
+
+	float BaseWalkSpeed = 500.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
+	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	/** Ability */
+	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
+	TArray<TSubclassOf<UGameplayAbility>> Abilites;
+
+	void AddCharacterAbilities();
 
 private:
 	void InitAbilityActorInfo();

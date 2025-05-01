@@ -8,6 +8,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AI/RL_AIController.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include <UI/Widget/RL_UserWidget.h>
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 AEnemy_Base::AEnemy_Base()
@@ -22,8 +24,10 @@ AEnemy_Base::AEnemy_Base()
 	// SkeletalMesh->SetupAttachment(GetRootComponent());
 	
 	AbilitySystemComponent=CreateDefaultSubobject<UASC_Base>("AbilitySystemComponent");
-
 	AttributeSet = CreateDefaultSubobject<UAS_Enemy>("AttributeSet");
+
+	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
+	HealthBar->SetupAttachment(GetRootComponent());
 
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationPitch = false;
@@ -32,12 +36,46 @@ AEnemy_Base::AEnemy_Base()
 	
 }
 
+UAnimMontage* AEnemy_Base::GetHitReactMotange_Implementation()
+{
+	return HitReactMontage;
+}
+
 void AEnemy_Base::BeginPlay()
 {
 	Super::BeginPlay();
 
 	InitAbilityActorInfo();
 
+	//设置自己为HealthBar的控制器
+	if (URL_UserWidget* RL_UserWidget = Cast<URL_UserWidget>(HealthBar->GetUserWidgetObject()))
+	{
+		RL_UserWidget->SetWidgetController(this);
+	}
+	//绑定回调函数
+	if (const UAS_Enemy* EnemyAttributeSet = Cast<UAS_Enemy>(AttributeSet))
+	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetMaxHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+		OnHealthChanged.Broadcast(EnemyAttributeSet->GetHealth());
+		OnMaxHealthChanged.Broadcast(EnemyAttributeSet->GetMaxHealth());
+	}
+
+	//绑定标签变化
+	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Effect.HitReact")),EGameplayTagEventType::NewOrRemoved).AddUObject
+	(this, &AEnemy_Base::HitReactTagChanged);
 }
 
 void AEnemy_Base::PossessedBy(AController* NewController)
@@ -55,6 +93,7 @@ void AEnemy_Base::InitAbilityActorInfo()
 
 	InitializeAttribute();
 	
+	AddCharacterAbilities();
 }
 
 void AEnemy_Base::InitializeAttribute()
@@ -66,3 +105,17 @@ void AEnemy_Base::InitializeAttribute()
 	}
 }
 
+void AEnemy_Base::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bHitReacting = NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+}
+
+void AEnemy_Base::AddCharacterAbilities()
+{
+	//if (!HasAuthority()) return;
+	UASC_Base* ASC = CastChecked<UASC_Base>(AbilitySystemComponent);
+
+	ASC->AddCharacterAbilities(Abilites);
+
+}
