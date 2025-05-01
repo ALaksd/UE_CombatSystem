@@ -6,10 +6,12 @@
 #include "GameplayEffect.h"
 #include "GameFramework/Actor.h"
 #include "GAS/AS/AS_Weapon.h"
+#include "Interface/RL_ItemInstanceHolder.h"
 #include "RL_BaseWeapon.generated.h"
 
+
 UCLASS()
-class UE_ROUGELIKEDEMO_API ARL_BaseWeapon : public AActor
+class UE_ROUGELIKEDEMO_API ARL_BaseWeapon : public AActor, public IRL_ItemInstanceHolder
 {
 	GENERATED_BODY()
 	
@@ -22,6 +24,13 @@ public:
 	//武器等级
 	int32 WeaponLevel=1;
 
+	/**
+	 * ItemInstanceHolder Interface
+	 */
+
+	 // 实现接口方法
+	virtual URLInventoryItemInstance* GetItemInstance_Implementation() const override { return ItemInstance; }
+	virtual void SetItemInstance_Implementation(URLInventoryItemInstance* NewInstance) override { ItemInstance = NewInstance; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly , Category = Mesh)
@@ -57,6 +66,11 @@ private:
 	TArray<TEnumAsByte<EObjectTypeQuery> > ObjectTypes;
 
 	FGameplayEffectSpecHandle DamageSpecHandle;
+
+	/** 物品实例 */
+	UPROPERTY()
+	TObjectPtr<URLInventoryItemInstance> ItemInstance = nullptr;
+
 public:
 	void StartCombat();
 	void EndCombat();

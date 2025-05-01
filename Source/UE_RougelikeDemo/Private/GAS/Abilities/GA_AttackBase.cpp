@@ -36,6 +36,9 @@ void UGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 			if (Task)
 			{
 				Task->OnCompleted.AddDynamic(this, &UGA_AttackBase::OnMontageCompleted);
+				Task->OnCancelled.AddDynamic(this, &UGA_AttackBase::OnMontageCompleted);
+				Task->OnBlendOut.AddDynamic(this, &UGA_AttackBase::OnMontageCompleted);
+				Task->OnInterrupted.AddDynamic(this, &UGA_AttackBase::OnMontageCompleted);
 				Task->ReadyForActivation();
 			}
 		}

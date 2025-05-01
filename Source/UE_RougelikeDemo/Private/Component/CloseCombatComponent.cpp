@@ -24,21 +24,6 @@ void UCloseCombatComponent::BeginPlay()
 
 	User = Cast<ACharacter>(GetOwner());
 
-	//if (User)
-	//{
-	//	//生成武器
-	//	CloseWeapon = GetWorld()->SpawnActorDeferred<ARL_BaseWeapon>(BP_CloseWeapon,FTransform(),User);
-	//	CloseWeapon->WeaponOwner = User;
-	//	CloseWeapon = Cast<ARL_BaseWeapon>(UGameplayStatics::FinishSpawningActor(CloseWeapon,FTransform()));
-
-	//	//将武器绑到使用者的骨骼上
-	//	EAttachmentRule LocationRule = EAttachmentRule::SnapToTarget;
-	//	EAttachmentRule RotationRule = EAttachmentRule::SnapToTarget;
-	//	EAttachmentRule ScaleRule = EAttachmentRule::KeepRelative;
-	//	FAttachmentTransformRules AttachmentTransformRules = FAttachmentTransformRules(LocationRule,RotationRule,ScaleRule,true);
-	//	CloseWeapon->AttachToComponent(User->GetMesh(),AttachmentTransformRules,FName("Socket_Weapon_Sword"));
-	//}
-
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	APlayerState* PlayerState = OwnerPawn->GetPlayerState();
 
@@ -61,12 +46,12 @@ void UCloseCombatComponent::BeginPlay()
 
 void UCloseCombatComponent::StartCombat() const
 {
-	CloseWeapon->StartCombat();
+	CurrentWeapon->StartCombat();
 }
 
 void UCloseCombatComponent::EndCombat() const
 {
-	CloseWeapon->EndCombat();
+	CurrentWeapon->EndCombat();
 }
 
 void UCloseCombatComponent::OnEquipSlotUpdate(URLInventoryItemInstance* ItemInstance, URLInventoryItemInstance* PreviousItemInstance)
@@ -83,40 +68,93 @@ void UCloseCombatComponent::OnEquipSlotUpdate(URLInventoryItemInstance* ItemInst
 
 void UCloseCombatComponent::EquipWeaponForInventory(URLInventoryItemInstance* ItemInstance)
 {
-	const URLItemFragment_Attached* AttachedFragment =
-		Cast<URLItemFragment_Attached>(ItemInstance->GetItemDefinition()->FindFragmentByClass(URLItemFragment_Attached::StaticClass())
-		);
-	if (AttachedFragment)
+	if (ARL_BaseWeapon* Weapon = GetWeaponFromInstance(ItemInstance))
 	{
-		CloseWeapon = Cast<ARL_BaseWeapon>(AttachedFragment->AttachToActor(GetOwner()));
-		CloseWeapon->WeaponOwner = User;
+		Weapon->SetActorHiddenInGame(false);
+		CurrentWeapon = Weapon;
 	}
 }
 
 void UCloseCombatComponent::UnEquipWeaponForInventory()
 {
-	if (CloseWeapon)
+	if (CurrentWeapon)
 	{
-		CloseWeapon->Destroy();
-		CloseWeapon = nullptr;
+		CurrentWeapon->SetActorHiddenInGame(true);
+		CurrentWeapon = nullptr;
 	}
 }
 
 
-void UCloseCombatComponent::SwitchWeapon(URLInventoryItemInstance* ItemInstance)
-{
-
-}
-
-void UCloseCombatComponent::EquipWeapon(ARL_BaseWeapon* NewWeapon)
-{
-}
-
-void UCloseCombatComponent::UnEquipWeapon()
-{
-}
-
 void UCloseCombatComponent::SwitchWeapon()
 {
+	 // 获取有效武器列表
+    TArray<ARL_BaseWeapon*> ValidWeapons;
+    for (ARL_BaseWeapon* Weapon : WeaponPool)
+    {
+        if (Weapon && !Weapon->IsHidden())
+        {
+            ValidWeapons.Add(Weapon);
+        }
+    }
+    
+    if (ValidWeapons.Num() < 2) return;
+
+    // 计算新索引
+    const int32 NewIndex = (CurrentWeaponIndex + 1) % ValidWeapons.Num();
+    
+    // 隐藏当前武器
+    if (ARL_BaseWeapon* Current = ValidWeapons[CurrentWeaponIndex])
+    {
+        Current->SetActorHiddenInGame(true);
+    }
+
+    // 显示新武器
+    ARL_BaseWeapon* NewWeapon = ValidWeapons[NewIndex];
+    NewWeapon->SetActorHiddenInGame(false);
+	CurrentWeapon = NewWeapon;
+    CurrentWeaponIndex = NewIndex;
+}
+
+//没用到
+void UCloseCombatComponent::PreloadWeapons()
+{
+	TArray<FRLInventoryItemSlotHandle> AllSlots = EquipmentInventoryComponent->GetSlotsByType(
+		FGameplayTag::RequestGameplayTag("Equipment.Type.Weapon"));
+
+	for (const auto& Slot : AllSlots)
+	{
+		if (URLInventoryItemInstance* Instance = EquipmentInventoryComponent->GetItemInstanceInSlot(Slot))
+		{
+			if (ARL_BaseWeapon* Weapon = GetWeaponFromInstance(Instance))
+			{
+				Weapon->SetActorHiddenInGame(true);
+				WeaponPool.Add(Weapon);
+			}
+		}
+	}
+}
+
+ARL_BaseWeapon* UCloseCombatComponent::GetWeaponFromInstance(URLInventoryItemInstance* Instance)
+{
+	for (AActor* WeaponActor : WeaponPool)
+	{
+		if (IRL_ItemInstanceHolder::Execute_GetItemInstance(WeaponActor) == Instance)
+		{
+			return Cast<ARL_BaseWeapon>(WeaponActor);
+		}
+	}
+
+	// 创建新实例
+	const URLItemFragment_Attached* Fragment = Cast<URLItemFragment_Attached>(
+		Instance->GetItemDefinition()->FindFragmentByClass(URLItemFragment_Attached::StaticClass()));
+
+	if (Fragment)
+	{
+		ARL_BaseWeapon* NewWeapon = Cast<ARL_BaseWeapon>(Fragment->AttachToActor(GetOwner(),Instance));
+		NewWeapon->SetActorHiddenInGame(true);
+		WeaponPool.Add(NewWeapon);
+		return NewWeapon;
+	}
+	return nullptr;
 }
 

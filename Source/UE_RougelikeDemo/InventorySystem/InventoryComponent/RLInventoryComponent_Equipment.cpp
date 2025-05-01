@@ -8,13 +8,61 @@
 
 URLInventoryComponent_Equipment::URLInventoryComponent_Equipment(const FObjectInitializer& ObjectInitializer)
 {
-	
+	bWantsInitializeComponent = true;
 }
 
 void URLInventoryComponent_Equipment::InitializeComponent()
 {
 	Super::InitializeComponent();
 
+	// 动态创建所有预设槽位
+	for (const FEquipmentSlotGroup& Group : SlotGroups)
+	{
+		for (int32 i = 0; i < Group.SlotCount; ++i)
+		{
+			// 创建带编号的Tag（示例：Slot.Weapon.1）
+			FGameplayTag NumberedTag = FGameplayTag::RequestGameplayTag(FName(Group.SlotTypeTag.GetTagName().ToString().Append(FString::Printf(TEXT(".%d"), i + 1))));
+
+			//创建插槽
+			CreateInventorySlotByTag(NumberedTag);
+			// 创建槽位Handle
+			FRLInventoryItemSlotHandle NewHandle(NumberedTag,this);
+
+			// 添加到装备信息
+			EquipmentInfos.Add(FRLInventoryItemInfoEntry(NewHandle));
+		}
+	}
+}
+
+TArray<FRLInventoryItemSlotHandle> URLInventoryComponent_Equipment::GetSlotsByType(FGameplayTag SlotTypeTag) const
+{
+	TArray<FRLInventoryItemSlotHandle> Result;
+
+	for (const FRLInventoryItemInfoEntry& Entry : EquipmentInfos)
+	{
+		if (Entry.Handle.SlotTags.HasTagExact(SlotTypeTag))
+		{
+			Result.Add(Entry.Handle);
+		}
+	}
+	return Result;
+}
+
+TArray<URLInventoryItemInstance*> URLInventoryComponent_Equipment::GetEquippedItemsByType(FGameplayTag SlotTypeTag)
+{
+	TArray<URLInventoryItemInstance*> Result;
+
+	for (const FRLInventoryItemInfoEntry& Entry : EquipmentInfos)
+	{
+		if (Entry.Handle.SlotTags.HasTagExact(SlotTypeTag))
+		{
+			if (URLInventoryItemInstance* Item = GetItemInstanceInSlot(Entry.Handle))
+			{
+				Result.Add(Item);
+			}
+		}
+	}
+	return Result;
 }
 
 void URLInventoryComponent_Equipment::BeginPlay()

@@ -225,6 +225,19 @@ void URLInventoryComponent::CreateInventorySlot(int32 Count)
 	PostInventoryUpdate();
 }
 
+void URLInventoryComponent::CreateInventorySlotByTag(FGameplayTag Tag)
+{
+	//根据Tag生成背包插槽，不用重新生成
+	FRLInventoryItemSlot NewSlot;
+	NewSlot.ItemInstance = nullptr;
+	NewSlot.SlotId = IdCounter;
+	NewSlot.Onwer = this;
+	NewSlot.SlotTags.AddTag(Tag);
+
+	IdCounter++;
+	Inventory.Slots.Add(NewSlot);
+}
+
 void URLInventoryComponent::RemoveInventorySlot(const FRLInventoryItemSlotHandle& Handle)
 {
 	if (!IsVaildItemSlot(Handle)) return;

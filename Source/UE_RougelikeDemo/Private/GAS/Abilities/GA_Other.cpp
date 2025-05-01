@@ -34,6 +34,9 @@ void UGA_Other::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 			if (Task)
 			{
 				Task->OnCompleted.AddDynamic(this, &UGA_Other::OnMontageCompleted);
+				Task->OnCancelled.AddDynamic(this, &UGA_Other::OnMontageCompleted);
+				Task->OnBlendOut.AddDynamic(this, &UGA_Other::OnMontageCompleted);
+				Task->OnInterrupted.AddDynamic(this, &UGA_Other::OnMontageCompleted);
 				Task->ReadyForActivation();
 			}
 		}

@@ -2,8 +2,9 @@
 
 
 #include "UE_RougelikeDemo/InventorySystem/Fragments/RLItemFragment_Attached.h"
+#include <Interface/RL_ItemInstanceHolder.h>
 
-AActor* URLItemFragment_Attached::AttachToActor(AActor* Owner_T) const
+AActor* URLItemFragment_Attached::AttachToActor(AActor* Owner_T, URLInventoryItemInstance* ItemInstance) const
 {
 	// 检查是否指定了正确的 AttachedActorClass
 	if (!AttachedActorClass)
@@ -18,6 +19,9 @@ AActor* URLItemFragment_Attached::AttachToActor(AActor* Owner_T) const
 		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn attached actor."));
 		return nullptr;
 	}
+
+	IRL_ItemInstanceHolder::Execute_SetItemInstance(AttachedActor, ItemInstance);
+
 
 	// 尝试获取目标插槽，附加到物体上
 	USkeletalMeshComponent* SkeletalMeshComp = Cast<USkeletalMeshComponent>(Owner_T->GetComponentByClass(USkeletalMeshComponent::StaticClass()));
