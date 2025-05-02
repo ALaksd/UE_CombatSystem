@@ -47,7 +47,8 @@ public:
 
 	/** ComvatInterface */
 	virtual UAnimMontage* GetHitReactMotange_Implementation() override;
-
+	virtual bool isDead_Implementation() const override;
+	virtual AActor* GetAvatar_Implementation() override;
 	/** End ComvatInterface */
 
 public:

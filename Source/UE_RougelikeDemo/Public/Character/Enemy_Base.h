@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "Interface/RL_CombatInterface.h"
+#include "Interface/RL_EnemyInterface.h"
 #include "UI/WidgetController/RL_OverlayWidgetController.h"
 #include "GameFramework/Character.h"
 #include "Enemy_Base.generated.h"
@@ -15,7 +16,7 @@ class ARL_AIController;
 class UWidgetComponent;
 
 UCLASS()
-class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface,public IRL_CombatInterface
+class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface,public IRL_CombatInterface,public IRL_EnemyInterface
 {
 	GENERATED_BODY()
 
@@ -40,6 +41,12 @@ public:
 	virtual UAnimMontage* GetHitReactMotange_Implementation() override;
 
 	/** End ComvatInterface */
+
+	/** EnemyInterface */
+	virtual AActor* GetCombatTarget_Implementation()const override;
+	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
+
+	/** End EnemyInterface */
 	
 protected:
 	virtual void BeginPlay() override;
@@ -53,6 +60,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<ARL_AIController> RLAIController;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
+	TObjectPtr<AActor> TargetActor;
 
 	/** UI */
 	UPROPERTY(VisibleAnywhere)

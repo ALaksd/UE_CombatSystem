@@ -102,10 +102,12 @@ void URL_MovementComponent::ToggleLockOn(const FInputActionValue& Value)
 	{
 		bIsLockedOn = false;
 		CurrentTarget = nullptr;
+		characterMovement->bOrientRotationToMovement = true;
 	}
 	else
 	{
 		FindLockOnTarget();
+		characterMovement->bOrientRotationToMovement = false;
 	}
 }
 

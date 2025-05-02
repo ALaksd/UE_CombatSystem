@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "RL_CombatInterface.generated.h"
+#include "RL_EnemyInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class URL_CombatInterface : public UInterface
+class URL_EnemyInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,21 +16,16 @@ class URL_CombatInterface : public UInterface
 /**
  * 
  */
-class UE_ROUGELIKEDEMO_API IRL_CombatInterface
+class UE_ROUGELIKEDEMO_API IRL_EnemyInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	UAnimMontage* GetHitReactMotange();
-
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetFacingTarget(FVector TargetLoction);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	bool isDead() const;
+	void SetCombatTarget(AActor* InCombatTarget);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	AActor* GetAvatar();
+	AActor* GetCombatTarget() const;
 };

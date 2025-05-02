@@ -19,8 +19,14 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FBlackboardKeySelector TargetToFollowSelecter;
+	FBlackboardKeySelector TargetToFollowSelector;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FBlackboardKeySelector DistanceToTargetSelecter;
+	FBlackboardKeySelector DistanceToTargetSelector;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	FBlackboardKeySelector IsTargetValidSelector;
+
+	UPROPERTY(BlueprintReadOnly,EditAnywhere)
+	float MaxTrackingDistance = 1500.f;
 };

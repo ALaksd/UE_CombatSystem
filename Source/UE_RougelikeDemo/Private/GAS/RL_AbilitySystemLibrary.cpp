@@ -9,6 +9,8 @@
 #include "UI/WidgetController/RL_AttributeWidgetController.h"
 #include "UI/WidgetController/RL_LanternFlameController.h"
 #include "UI/WidgetController/RL_OverlayWidgetController.h"
+#include "Interface/RL_CombatInterface.h"
+#include "Engine/OverlapResult.h"
 
 URL_OverlayWidgetController* URL_AbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
 {
@@ -95,16 +97,38 @@ URL_LanternFlameController* URL_AbilitySystemLibrary::GetLanternFlameWidgetContr
 	return nullptr;
 }
 
-void URL_AbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC)
+void URL_AbilitySystemLibrary::GetLivePlayerWithRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin)
 {
-	/*ARPG_GameModeBase* RPGGameMode = Cast<ARPG_GameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if (RPGGameMode == nullptr) return;
+	// 初始化查询参数
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActors(ActorsToIgnore);  // 忽略指定的Actors
+	QueryParams.bTraceComplex = false;             // 简单碰撞检测
 
-	UCharacterClassInfo* CharacterClassInfo = RPGGameMode->CharacterClassInfo;
+	// 用于存储重叠的Actors
+	TArray<FOverlapResult> OverlapResults;
 
-	for (TSubclassOf<UGameplayAbility> AbilityClass : CharacterClassInfo->Abilites)
+	if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
 	{
-		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
-		ASC->GiveAbility(AbilitySpec);
-	}*/
+		// 进行球形重叠查询
+		bool bHasOverlaps = World->OverlapMultiByObjectType(
+			OverlapResults,                            // 重叠结果
+			SphereOrigin,                              // 球体原点
+			FQuat::Identity,                           // 球体旋转
+			FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects),     // 查找Pawn对象类型
+			FCollisionShape::MakeSphere(Radius),       // 球体形状和半径
+			QueryParams                               // 查询参数
+		);
+
+		if (bHasOverlaps)
+		{
+			// 遍历重叠的结果并筛选玩家
+			for (const FOverlapResult& Result : OverlapResults)
+			{
+				if (Result.GetActor()->Implements<URL_CombatInterface>() && !IRL_CombatInterface::Execute_isDead(Result.GetActor()))
+				{
+					OutOverlappingActors.AddUnique(IRL_CombatInterface::Execute_GetAvatar(Result.GetActor()));
+				}
+			}
+		}
+	}
 }

@@ -187,3 +187,13 @@ UAnimMontage* ARL_BaseCharacter::GetHitReactMotange_Implementation()
 {
 	return HitReactMontage;
 }
+
+bool ARL_BaseCharacter::isDead_Implementation() const
+{
+	return false;
+}
+
+AActor* ARL_BaseCharacter::GetAvatar_Implementation()
+{
+	return this;
+}

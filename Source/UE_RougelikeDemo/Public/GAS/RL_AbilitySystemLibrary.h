@@ -36,5 +36,5 @@ public:
 	static URL_LanternFlameController* GetLanternFlameWidgetController(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable)
-	static void GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC);
+	static void GetLivePlayerWithRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin);
 };

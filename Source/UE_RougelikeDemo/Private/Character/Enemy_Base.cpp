@@ -41,6 +41,16 @@ UAnimMontage* AEnemy_Base::GetHitReactMotange_Implementation()
 	return HitReactMontage;
 }
 
+AActor* AEnemy_Base::GetCombatTarget_Implementation() const
+{
+	return TargetActor;
+}
+
+void AEnemy_Base::SetCombatTarget_Implementation(AActor* InCombatTarget)
+{
+	TargetActor = InCombatTarget;
+}
+
 void AEnemy_Base::BeginPlay()
 {
 	Super::BeginPlay();
