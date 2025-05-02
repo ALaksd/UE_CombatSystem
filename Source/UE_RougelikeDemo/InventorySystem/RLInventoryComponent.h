@@ -188,6 +188,8 @@ protected:
 
 	/** 创建插槽 */
 	virtual void CreateInventorySlot(int32 Count = 1);
+	/** 创建插槽byTag */
+	virtual void CreateInventorySlotByTag(FGameplayTag Tag);
 	/** 移除插槽 */
 	virtual void RemoveInventorySlot(const FRLInventoryItemSlotHandle& Handle);
 

@@ -17,7 +17,7 @@ void UANS_AttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
 		if (UCloseCombatComponent* CloseCombatComponent = Player->FindComponentByClass<UCloseCombatComponent>())
 		{
 			//向武器应用增幅
-			if (UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(CloseCombatComponent->CloseWeapon))
+			if (UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(CloseCombatComponent->GetCurrentWeapon()))
 			{
 				FGameplayEffectSpecHandle Handle = SourceASC->MakeOutgoingSpec(GameEffect,1,SourceASC->MakeEffectContext());
 				SourceASC->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
@@ -38,7 +38,7 @@ void UANS_AttackDecision::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSeque
 		if (UCloseCombatComponent* CloseCombatComponent = Player->FindComponentByClass<UCloseCombatComponent>())
 		{
 			//向武器应用增幅
-			if (UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(CloseCombatComponent->CloseWeapon))
+			if (UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(CloseCombatComponent->GetCurrentWeapon()))
 			{
 				FGameplayEffectSpecHandle Handle = SourceASC->MakeOutgoingSpec(GameEffect,0,SourceASC->MakeEffectContext());
 				SourceASC->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());

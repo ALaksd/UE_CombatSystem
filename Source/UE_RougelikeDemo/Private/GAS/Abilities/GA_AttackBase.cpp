@@ -19,23 +19,30 @@ UGA_AttackBase::UGA_AttackBase()
 void UGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	//暂时只播放动画
-	if (UAnimMontage* MontageToPlay = AttackMontage)
+	if (CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
-		UAbilityTask_PlayMontageAndWait* Task = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-			this,
-			NAME_None,          
-			MontageToPlay,
-			1.0f,                
-			NAME_None,          
-			false                
-		);
-
-		if (Task)
+		//暂时只播放动画
+		if (UAnimMontage* MontageToPlay = AttackMontage)
 		{
-			Task->OnCompleted.AddDynamic(this, &UGA_AttackBase::OnMontageCompleted);
-			Task->ReadyForActivation();
+			UAbilityTask_PlayMontageAndWait* Task = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+				this,
+				NAME_None,
+				MontageToPlay,
+				1.0f,
+				NAME_None,
+				false
+			);
+
+			if (Task)
+			{
+				Task->OnCompleted.AddDynamic(this, &UGA_AttackBase::OnMontageCompleted);
+				Task->OnCancelled.AddDynamic(this, &UGA_AttackBase::OnMontageCompleted);
+				Task->OnBlendOut.AddDynamic(this, &UGA_AttackBase::OnMontageCompleted);
+				Task->OnInterrupted.AddDynamic(this, &UGA_AttackBase::OnMontageCompleted);
+				Task->ReadyForActivation();
+			}
 		}
+	
 	}
 }
 

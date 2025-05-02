@@ -46,6 +46,6 @@ float UMMC_WeaponDamage::CalculateBaseMagnitude_Implementation(const FGameplayEf
 
 	//  计算最终伤害
 	//const float BaseWeaponDamage = YourWeaponDamageCurve->GetFloatValue(WeaponLevel);
-	return -(WeaponDamage * SkillMultiplier + BuffDamage);	
+	return WeaponDamage * SkillMultiplier + BuffDamage;	
 }
 

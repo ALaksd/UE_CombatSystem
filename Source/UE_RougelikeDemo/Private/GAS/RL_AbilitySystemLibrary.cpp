@@ -94,3 +94,17 @@ URL_LanternFlameController* URL_AbilitySystemLibrary::GetLanternFlameWidgetContr
 	}
 	return nullptr;
 }
+
+void URL_AbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC)
+{
+	/*ARPG_GameModeBase* RPGGameMode = Cast<ARPG_GameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (RPGGameMode == nullptr) return;
+
+	UCharacterClassInfo* CharacterClassInfo = RPGGameMode->CharacterClassInfo;
+
+	for (TSubclassOf<UGameplayAbility> AbilityClass : CharacterClassInfo->Abilites)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		ASC->GiveAbility(AbilitySpec);
+	}*/
+}

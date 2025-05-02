@@ -6,22 +6,30 @@
 #include "GameplayEffect.h"
 #include "GameFramework/Actor.h"
 #include "GAS/AS/AS_Weapon.h"
+#include "Interface/RL_ItemInstanceHolder.h"
 #include "RL_BaseWeapon.generated.h"
 
+
 UCLASS()
-class UE_ROUGELIKEDEMO_API ARL_BaseWeapon : public AActor
+class UE_ROUGELIKEDEMO_API ARL_BaseWeapon : public AActor, public IRL_ItemInstanceHolder
 {
 	GENERATED_BODY()
 	
 public:	
 	ARL_BaseWeapon();
 
-	UPROPERTY()
-	TObjectPtr<AActor> WeaponOwner;
-	
+  	FORCEINLINE AActor* GetWeaponOwner() const { return WeaponOwner; }
+	FORCEINLINE void SetWeaponOwner(AActor* InOwner) { WeaponOwner = InOwner; }
 	//武器等级
 	int32 WeaponLevel=1;
 
+	/**
+	 * ItemInstanceHolder Interface
+	 */
+
+	 // 实现接口方法
+	virtual URLInventoryItemInstance* GetItemInstance_Implementation() const override { return ItemInstance; }
+	virtual void SetItemInstance_Implementation(URLInventoryItemInstance* NewInstance) override { ItemInstance = NewInstance; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly , Category = Mesh)
@@ -36,6 +44,9 @@ private:
 	TObjectPtr<UAS_Weapon> WeaponAttribute;
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> DamageEffet;
+
+	UPROPERTY()
+	TObjectPtr<AActor> WeaponOwner;
 	
 	//武器伤害曲线
 	// UPROPERTY(EditDefaultsOnly,Category="AttackCurve")
@@ -57,6 +68,11 @@ private:
 	TArray<TEnumAsByte<EObjectTypeQuery> > ObjectTypes;
 
 	FGameplayEffectSpecHandle DamageSpecHandle;
+
+	/** 物品实例 */
+	UPROPERTY()
+	TObjectPtr<URLInventoryItemInstance> ItemInstance = nullptr;
+
 public:
 	void StartCombat();
 	void EndCombat();

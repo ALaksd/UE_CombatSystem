@@ -15,7 +15,7 @@ class UE_ROUGELIKEDEMO_API URLItemFragment_Attached : public URLInventoryItemFra
 	GENERATED_BODY()
 	
 public:
-	AActor* AttachToActor(AActor* Owner_T) const;
+	AActor* AttachToActor(AActor* Owner_T, URLInventoryItemInstance* ItemInstance) const;
 
 	UPROPERTY(EditDefaultsOnly,Category = "Item")
 	FName AttchedSokectName;  //武器附加到插槽的名字

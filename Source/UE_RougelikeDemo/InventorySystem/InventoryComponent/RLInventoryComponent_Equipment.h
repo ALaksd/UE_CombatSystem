@@ -33,6 +33,20 @@ public:
 		return this->Handle == InEntry->Handle;
 	}
 };
+
+/** 装备槽位 */
+USTRUCT(BlueprintType)
+struct FEquipmentSlotGroup
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
+	FGameplayTag SlotTypeTag; // 主类型Tag 如 Equipment.Type.Weapon
+
+	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
+	int32 SlotCount = 1; // 该类型下的槽位数量
+};
+
 /**
  * 
  */
@@ -52,6 +66,17 @@ public:
 	 */
 	UPROPERTY(BlueprintAssignable)
 	FOnEquipUpdate OnEquipUpdate;
+
+	/** 查询接口 */
+
+	// 获取指定类型的槽位
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	TArray<FRLInventoryItemSlotHandle> GetSlotsByType(FGameplayTag SlotTypeTag) const;
+
+	// 获取当前装备的物品（按类型）
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	TArray<URLInventoryItemInstance*> GetEquippedItemsByType(FGameplayTag SlotTypeTag);
+
 protected:
 	virtual void BeginPlay() override;
 	//回调函数，绑定父类的OnItemSlotUpdated
@@ -69,7 +94,7 @@ protected:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
-	TArray<FGameplayTag> InitEquipmentSlotTags; 
+	TArray<FEquipmentSlotGroup> SlotGroups;
 
 	UPROPERTY(VisibleAnywhere, Category = "Equipment")
 	TArray<FRLInventoryItemInfoEntry> EquipmentInfos;

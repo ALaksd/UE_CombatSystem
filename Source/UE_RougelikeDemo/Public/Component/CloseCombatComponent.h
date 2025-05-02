@@ -17,18 +17,34 @@ class UE_ROUGELIKEDEMO_API UCloseCombatComponent : public UActorComponent
 public:	
 	UCloseCombatComponent();
 
-	UPROPERTY()
-	TObjectPtr<ARL_BaseWeapon> CloseWeapon;
+	/*Getter*/
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	FORCEINLINE ACharacter* GetUser() const { return User; }
 
-	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE ARL_BaseWeapon* GetCurrentWeapon() const { return CurrentWeapon; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE URLInventoryComponent_Equipment* GetEquipmentInventoryComponent() const { return EquipmentInventoryComponent; }
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY()
 	TObjectPtr<ACharacter> User = nullptr;
 
-	UPROPERTY(BlueprintReadOnly)
-	TSubclassOf<ARL_BaseWeapon> BP_CloseWeapon;
+	/** 主武器 */
+	UPROPERTY()
+	TObjectPtr<ARL_BaseWeapon> CurrentWeapon;
+
+	/** 当前选中的武器槽位索引 */
+	UPROPERTY()
+	int32 CurrentWeaponIndex = 0;
+
+	/** 武器对象池 */
+	UPROPERTY()
+	TArray<TObjectPtr<ARL_BaseWeapon>> WeaponPool;
+
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<URLInventoryComponent_Equipment> EquipmentInventoryComponent;
@@ -43,10 +59,13 @@ public:
 	/*从背包装备/卸下/切换武器*/
 	void EquipWeaponForInventory(URLInventoryItemInstance* ItemInstance);
 	void UnEquipWeaponForInventory();
-	void SwitchWeapon(URLInventoryItemInstance* ItemInstance);
 
-	/*在手上装备/卸下/切换武器*/
-	void EquipWeapon(ARL_BaseWeapon* NewWeapon);
-	void UnEquipWeapon();
+	UFUNCTION(BlueprintCallable)
 	void SwitchWeapon();
+
+	/** 预加载武器 */
+	void PreloadWeapons();
+
+	/** 根据实例获取武器对象 */
+	ARL_BaseWeapon* GetWeaponFromInstance(URLInventoryItemInstance* Instance);
 };

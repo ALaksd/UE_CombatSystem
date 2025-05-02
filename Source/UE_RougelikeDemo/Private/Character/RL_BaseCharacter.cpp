@@ -51,43 +51,7 @@ ARL_BaseCharacter::ARL_BaseCharacter()
 
 	//添加Tag
 	Tags.Add(FName("Player"));
-
 	
-	//HeadConstant->CreateDefaultSubobject<USkeletalMeshComponent>("HeadConstant");
-	//HeadConstant->SetupAttachment(GetMesh());
-	//HeadConstant->SetLeaderPoseComponent(GetMesh());
-
-	//Shoulder->CreateDefaultSubobject<USkeletalMeshComponent>("Shoulder");
-	//Shoulder->SetupAttachment(GetMesh());
-	//Shoulder->SetLeaderPoseComponent(GetMesh());
-
-	//Hair->CreateDefaultSubobject<USkeletalMeshComponent>("Hair");
-	//Hair->SetupAttachment(GetMesh());
-	//Hair->SetLeaderPoseComponent(GetMesh());
-
-	//Boots->CreateDefaultSubobject<USkeletalMeshComponent>("Boots");
-	//Boots->SetupAttachment(GetMesh());
-	//Boots->SetLeaderPoseComponent(GetMesh());
-
-	//Chest->CreateDefaultSubobject<USkeletalMeshComponent>("Chest");
-	//Chest->SetupAttachment(GetMesh());
-	//Chest->SetLeaderPoseComponent(GetMesh());
-
-	//Back->CreateDefaultSubobject<USkeletalMeshComponent>("Back");
-	//Back->SetupAttachment(GetMesh());
-	//Back->SetLeaderPoseComponent(GetMesh());
-
-	//Hands->CreateDefaultSubobject<USkeletalMeshComponent>("Hands");
-	//Hands->SetupAttachment(GetMesh());
-	//Hands->SetLeaderPoseComponent(GetMesh());
-
-	//Helmet->CreateDefaultSubobject<USkeletalMeshComponent>("Helmet");
-	//Helmet->SetupAttachment(GetMesh());
-	//Helmet->SetLeaderPoseComponent(GetMesh());
-
-	//Legs->CreateDefaultSubobject<USkeletalMeshComponent>("Legs");
-	//Legs->SetupAttachment(GetMesh());
-	//Legs->SetLeaderPoseComponent(GetMesh());
 
 }
 
@@ -106,15 +70,6 @@ void ARL_BaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//??????????????????????????
-	// if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	// {
-	// 	if (UEnhancedInputLocalPlayerSubsystem* System = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-	// 	{
-	// 		System->AddMappingContext(BaseIMC, 0);
-	// 	}
-	// }
-
 	//????????UI
 	if (PlayerStateUIClass)
 	{
@@ -127,8 +82,6 @@ void ARL_BaseCharacter::BeginPlay()
 
 	PlayerState = Cast<ARL_PlayerState>(GetPlayerState());
 
-
-	//SetupPlayerInputComponent(UGameplayStatics::GetPlayerController(GetWorld(),0)->InputComponent);
 }
 
 
@@ -139,100 +92,6 @@ void ARL_BaseCharacter::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
-void ARL_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	// Super::SetupPlayerInputComponent(PlayerInputComponent);
-	// if (URLInputComponent* RLInputComponent = CastChecked<URLInputComponent>(PlayerInputComponent))
-	// {
-	// 	RLInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-	//
-	// 	RLInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-	//
-	// 	RLInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ARL_BaseCharacter::Move);
-	//
-	// 	RLInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARL_BaseCharacter::Look);
-	// 	
-	// 	RLInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::LMBInputPressedTest,&ThisClass::LMBInputReleasedTest,&ThisClass::LMBInputHeldTest);
-	//
-	// }
-
-}
-
-
-
-
-
-/***--------------------测试---------------------***/
-
-// void ARL_BaseCharacter::LMBInputPressedTest(FGameplayTag InputTag)
-// {
-// 	//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Pressed")));
-// }
-//
-// void ARL_BaseCharacter::LMBInputHeldTest(FGameplayTag InputTag)
-// {
-// 	//GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf(TEXT("Held")));
-// 	CastChecked<UASC_Base>(AbilitySystemComponent)->AbilityInputTagHeld(InputTag);
-//
-// 	//缓存预输入
-// 	InputBufferComponent->BufferInput(InputTag);
-// }
-//
-// void ARL_BaseCharacter::LMBInputReleasedTest(FGameplayTag InputTag)
-// {
-// 	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, FString::Printf(TEXT("Released")));
-// 	CastChecked<UASC_Base>(AbilitySystemComponent)->AbilityInputTagReleased(InputTag);
-// }
-/***--------------------测试---------------------***/
-
-
-
-
-
-
-// void ARL_BaseCharacter::Move(const FInputActionValue& Value)
-// {
-// 	FVector2D MoveVector = Value.Get<FVector2D>();
-//
-// 	if (Controller != nullptr)
-// 	{
-// 		const FRotator Rotation = Controller->GetControlRotation();
-// 		const FRotator YawRotation(0, Rotation.Yaw, 0);
-//
-// 		// get forward vector
-// 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-//
-// 		// get right vector 
-// 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-//
-// 		// add movement 
-// 		AddMovementInput(ForwardDirection, MoveVector.Y);
-// 		AddMovementInput(RightDirection, MoveVector.X);
-// 	}
-// }
-
-// void ARL_BaseCharacter::Look(const FInputActionValue& Value)
-// {
-// 	FVector2D LookAxisVector = Value.Get<FVector2D>();
-//
-// 	if (Controller != nullptr)
-// 	{
-// 		// add yaw and pitch input to controller
-// 		AddControllerYawInput(LookAxisVector.X);
-// 		AddControllerPitchInput(LookAxisVector.Y);
-// 	}
-// }
-//
-// void ARL_BaseCharacter::Run(const FInputActionValue& Value)
-// {
-//
-// }
-//
-// void ARL_BaseCharacter::Roll(const FInputActionValue& Value)
-// {
-//
-// }
 
 void ARL_BaseCharacter::PossessedBy(AController* NewController)
 {
@@ -288,25 +147,6 @@ void ARL_BaseCharacter::ApplyGameEffect(TSubclassOf<UGameplayEffect> EffectClass
 	}
 }
 
-// void ARL_BaseCharacter::UpdateMovementState(EMovementState State)
-// {
-// 	FMovementSetting* MovementSettingPtr = MovementSettingMap.Find(State);
-// 	if(MovementSettingPtr)
-// 	{
-// 		CurrentMovmentState = State;
-// 		GetCharacterMovement()->MaxWalkSpeed = MovementSettingPtr->MaxWalkSpeed;
-// 		GetCharacterMovement()->MaxAcceleration = MovementSettingPtr->MaxAcceleration;
-// 		GetCharacterMovement()->BrakingDecelerationWalking = MovementSettingPtr->BrakingDeceleration;
-// 		GetCharacterMovement()->BrakingFrictionFactor = MovementSettingPtr->BrakingFrictionFactor;
-// 		GetCharacterMovement()->BrakingFriction = MovementSettingPtr->BrakingFriction;
-// 		GetCharacterMovement()->bUseSeparateBrakingFriction = MovementSettingPtr->bUseSeparateBrakingFriction;
-//
-// 		if (GetMesh()->GetAnimInstance()->Implements<URL_CharacterAimInterface>())
-// 		{
-// 			IRL_CharacterAimInterface::Execute_ReciveMovementState(GetMesh()->GetAnimInstance(),State);
-// 		}
-// 	}
-// }
 
 int32 ARL_BaseCharacter::GetSoul_Implementation() const
 {
@@ -341,4 +181,9 @@ void ARL_BaseCharacter::AddSpellPoints_Implementation(int32 InSpellPoints)
 int32 ARL_BaseCharacter::GetLevelRequirement_Implementation(int32 InLevel) const
 {
 	return PlayerState->GetLevelRequirement(InLevel);
+}
+
+UAnimMontage* ARL_BaseCharacter::GetHitReactMotange_Implementation()
+{
+	return HitReactMontage;
 }
