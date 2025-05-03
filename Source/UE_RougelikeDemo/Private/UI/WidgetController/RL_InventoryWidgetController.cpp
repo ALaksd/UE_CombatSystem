@@ -12,7 +12,7 @@ void URL_InventoryWidgetController::BroadcastInitialValue()
 
 void URL_InventoryWidgetController::BindCallbacksToDependencies()
 {
-	URLInventoryComponent* InventoryComponnet = PlayerState->FindComponentByClass<URLInventoryComponent>();
+	InventoryComponnet = PlayerState->FindComponentByClass<URLInventoryComponent>();
 	if (InventoryComponnet)
 	{
 		InventoryComponnet->OnItemSlotUpdate.AddDynamic(this, &URL_InventoryWidgetController::HandleItemSlotUpdate);

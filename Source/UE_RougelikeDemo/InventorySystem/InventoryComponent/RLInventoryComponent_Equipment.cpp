@@ -27,9 +27,6 @@ void URLInventoryComponent_Equipment::InitializeComponent()
 			CreateInventorySlotByTag(NumberedTag);
 			// 创建槽位Handle
 			FRLInventoryItemSlotHandle NewHandle(NumberedTag,this);
-
-			// 添加到装备信息
-			EquipmentInfos.Add(FRLInventoryItemInfoEntry(NewHandle));
 		}
 	}
 }
@@ -65,6 +62,22 @@ TArray<URLInventoryItemInstance*> URLInventoryComponent_Equipment::GetEquippedIt
 	return Result;
 }
 
+URLInventoryItemInstance* URLInventoryComponent_Equipment::GetEqeippedItemByType(FGameplayTag SlotTypeTag)
+{
+	for (const FRLInventoryItemInfoEntry& Entry : EquipmentInfos)
+	{
+		if (Entry.Handle.SlotTags.HasTagExact(SlotTypeTag))
+		{
+			if (URLInventoryItemInstance* Item = GetItemInstanceInSlot(Entry.Handle))
+			{
+				return Item;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
 void URLInventoryComponent_Equipment::BeginPlay()
 {
 	Super::BeginPlay();
@@ -84,7 +97,6 @@ void URLInventoryComponent_Equipment::OnEquipSlotUpdate(URLInventoryComponent* I
 	{
 		MakeItemEquipped_Internal(SlotHandle, ItemInstance);
 	}
-	OnEquipUpdate.Broadcast(ItemInstance, PreviousItemInstance);
 }
 
 bool URLInventoryComponent_Equipment::MakeItemEquipped_Internal(const FRLInventoryItemSlotHandle& SlotHandle, URLInventoryItemInstance* ItemInstance)
@@ -109,6 +121,8 @@ bool URLInventoryComponent_Equipment::MakeItemEquipped_Internal(const FRLInvento
 			EquipmentInfos.Add(Entry);
 		}
 	}
+
+	ItemInstance->SetbEquiped(true);
 	return true;
 }
 
@@ -144,6 +158,8 @@ bool URLInventoryComponent_Equipment::MakeItemUnequipped_Internal(const FRLInven
 		},
 		EAllowShrinking::No);
 
+	// 更新物品实例的装备状态
+	ItemInstance->SetbEquiped(false);
 	return true;
 }
 

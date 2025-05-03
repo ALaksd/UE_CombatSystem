@@ -54,7 +54,7 @@ public:
 	void StartCombat() const;
 	void EndCombat() const;
 	UFUNCTION()
-	void OnEquipSlotUpdate(URLInventoryItemInstance* ItemInstance,URLInventoryItemInstance* PreviousItemInstance);
+	void OnEquipSlotUpdate(URLInventoryComponent* InventoryComponent,const FRLInventoryItemSlotHandle& SlotHandle, URLInventoryItemInstance* ItemInstance, URLInventoryItemInstance* PreviousItemInstance);
 
 	/*从背包装备/卸下/切换武器*/
 	void EquipWeaponForInventory(URLInventoryItemInstance* ItemInstance);

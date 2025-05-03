@@ -232,12 +232,12 @@ void URL_MovementComponent::Collect(const FInputActionValue& Value)
 		ARL_PlayerState* PlayerState = Cast<ARL_PlayerState>(UGameplayStatics::GetPlayerState(GetWorld(),0));
 
 		//这里先暂时加入装备背包
-		//URLInventoryComponent* BackpComponent = Cast<URLInventoryComponent>(PlayerState->FindComponentByClass(URLInventoryComponent::StaticClass()));
-		URLInventoryComponent_Equipment* EquipComponent = PlayerState->FindComponentByClass<URLInventoryComponent_Equipment>();
+		URLInventoryComponent* BackpComponent = Cast<URLInventoryComponent>(PlayerState->FindComponentByClass(URLInventoryComponent::StaticClass()));
+		//URLInventoryComponent_Equipment* EquipComponent = PlayerState->FindComponentByClass<URLInventoryComponent_Equipment>();
 
-		if (EquipComponent)
+		if (BackpComponent)
 		{
-			EquipComponent->LootItem(ItemToPickup->ItemInstance);
+			BackpComponent->LootItem(ItemToPickup->ItemInstance);
 		}
 		// 销毁地上的物品
 		ItemToPickup->Destroy();

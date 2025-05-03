@@ -28,6 +28,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnInventoryItemSlotUpdate OnInventoryItemSlotUpdate;
 
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<URLInventoryComponent> InventoryComponnet;
+
 	UFUNCTION()
 	void HandleItemSlotUpdate(URLInventoryComponent* InventoryComponent, const FRLInventoryItemSlotHandle& SlotHandle, URLInventoryItemInstance* NewItem, URLInventoryItemInstance* OldItem);
 

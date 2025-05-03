@@ -1,0 +1,165 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "System/RL_UIManagerSubsystem.h"
+
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Blueprint/UserWidget.h"
+#include "EnhancedInputSubsystems.h"
+#include <Input/RLInputComponent.h>
+
+void URL_UIManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	
+}
+
+void URL_UIManagerSubsystem::AddNewWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController)
+{
+	PushWidget(WidgetClass, PlayerController);
+}
+
+void URL_UIManagerSubsystem::ToggleWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController)
+{
+	// 检查是否已存在
+	bool bFound = false;
+	for (UUserWidget* ExistingWidget : WidgetStack)
+	{
+		if (ExistingWidget && ExistingWidget->GetClass() == WidgetClass)
+		{
+			PopWidget(PlayerController); // 关闭已存在的
+			bFound = true;
+			break;
+		}
+	}
+
+	if (!bFound)
+	{
+		PushWidget(WidgetClass, PlayerController); // 打开新的
+	}
+}
+
+void URL_UIManagerSubsystem::PushWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController)
+{
+	if (!WidgetClass || !PlayerController) return;
+
+	// 创建Widget并添加到视口
+	UUserWidget* NewWidget = CreateWidget<UUserWidget>(PlayerController, WidgetClass);
+	if (NewWidget)
+	{
+		NewWidget->AddToViewport();
+		WidgetStack.Add(NewWidget);
+
+		// 绑定返回键输入（首次压入时绑定）
+		if (WidgetStack.Num() == 1)
+		{
+			if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
+				ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+			{
+				// 加载配置的资源（确保已设置UIContext）
+				if (const UInputMappingContext* LoadedContext = UIContext.LoadSynchronous())
+				{
+					InputSubsystem->AddMappingContext(
+						LoadedContext,
+						1 // 优先级高于默认游戏输入
+					);
+				}
+			}
+
+			// 绑定返回键（使用异步加载确保资源可用）
+			BackAction.LoadSynchronous();
+			BindBackInput(PlayerController);
+		}
+
+		// 设置输入模式为UI
+		FInputModeGameAndUI InputMode;
+		InputMode.SetWidgetToFocus(NewWidget->TakeWidget());
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->SetShowMouseCursor(true);
+	}
+}
+
+void URL_UIManagerSubsystem::PopWidget(APlayerController* PlayerController)
+{
+	if (WidgetStack.Num() == 0 || !PlayerController) return;
+
+	// 移除栈顶Widget
+	UUserWidget* TopWidget = WidgetStack.Last();
+	TopWidget->RemoveFromParent();
+	WidgetStack.Pop();
+
+	// 更新输入模式
+	if (WidgetStack.Num() > 0)
+	{
+		UUserWidget* NextWidget = WidgetStack.Last();
+		FInputModeGameAndUI InputMode;
+		InputMode.SetWidgetToFocus(NextWidget->TakeWidget());
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->SetShowMouseCursor(true);
+
+	}
+	else
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			if (const UInputMappingContext* LoadedContext = UIContext.LoadSynchronous())
+			{
+				InputSubsystem->RemoveMappingContext(LoadedContext);
+			}
+		}
+		FInputModeGameOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->SetShowMouseCursor(false);
+	}
+}
+
+void URL_UIManagerSubsystem::BindBackInput(APlayerController* PlayerController)
+{
+	if (!PlayerController || InputHandles.Contains(PlayerController)) return;
+
+	if (URLInputComponent* RLInput = Cast<URLInputComponent>(PlayerController->InputComponent))
+	{
+		// 绑定并保存返回的句柄
+		FInputBindingHandle Handle = RLInput->BindAction(
+			BackAction.LoadSynchronous(),
+			ETriggerEvent::Started,
+			this,
+			&URL_UIManagerSubsystem::HandleBackAction
+		);
+
+		InputHandles.Add(PlayerController, Handle);
+	}
+}
+
+void URL_UIManagerSubsystem::UnbindBackInput(APlayerController* PlayerController)
+{
+	if (!PlayerController || !InputHandles.Contains(PlayerController)) return;
+
+	if (URLInputComponent* RLInput = Cast<URLInputComponent>(PlayerController->InputComponent))
+	{
+		// 通过句柄解绑
+		RLInput->RemoveBindingByHandle(InputHandles[PlayerController].GetHandle());
+		InputHandles.Remove(PlayerController);
+	}
+}
+
+void URL_UIManagerSubsystem::HandleBackAction()
+{
+	// 获取当前PlayerController（需根据项目逻辑调整）
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	PopWidget(PC);
+}
+
+void URL_UIManagerSubsystem::Deinitialize()
+{
+	//for (auto& Pair : InputHandles)
+	//{
+	//	if (APlayerController* PC = Pair.Key)
+	//	{
+	//		UnbindBackInput(PC);
+	//	}
+	//}
+	//InputHandles.Empty();
+}

@@ -24,6 +24,11 @@ public:
 	FORCEINLINE URLInventoryItemDefinition* GetItemDefinition() const { return ItemDefinition; }
 	FORCEINLINE void SetItemDefinition(URLInventoryItemDefinition* InDefinition) { ItemDefinition = InDefinition; }
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE bool GetbEquiped() { return bEquipped; }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetbEquiped(bool bInEquipped) { bEquipped = bInEquipped; }
+
 	/** 物品实例同样也需要GameplayTags去判断类别和属性 */
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
@@ -40,6 +45,11 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	URLInventoryItemDefinition* ItemDefinition;
+
+	// 装备状态
+	UPROPERTY()
+	bool bEquipped = false;
+
 
 	//可动态修改的fragment,暂时没有用到
 	UPROPERTY()

@@ -14,11 +14,11 @@ URLInventoryComponent::URLInventoryComponent()
 
 }
 
+
 void URLInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//CreateInventorySlot(20);
 }
 
 bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
@@ -33,8 +33,6 @@ bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
 		{
 			if (PlaceItemSlot(Item, SlotHandle))
 			{
-				//向UI广播放入事件
-				OnItemSlotUpdate.Broadcast(this,SlotHandle,Item,nullptr);
 				return true;
 			}
 		}
@@ -57,10 +55,9 @@ bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
 		{
 			if (PlaceItemSlot(Item, SlotHandle))
 			{
-				//向UI广播放入事件
-				OnItemSlotUpdate.Broadcast(this,SlotHandle,Item,nullptr);
 				return true;
 			}
+			
 		}
 	}
 
@@ -236,6 +233,8 @@ void URLInventoryComponent::CreateInventorySlotByTag(FGameplayTag Tag)
 
 	IdCounter++;
 	Inventory.Slots.Add(NewSlot);
+
+	PostInventoryUpdate();
 }
 
 void URLInventoryComponent::RemoveInventorySlot(const FRLInventoryItemSlotHandle& Handle)

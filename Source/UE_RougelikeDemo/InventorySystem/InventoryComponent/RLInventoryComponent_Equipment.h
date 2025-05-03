@@ -61,11 +61,6 @@ public:
 	URLInventoryComponent_Equipment(const FObjectInitializer& ObjectInitializer);
 	virtual void InitializeComponent() override;
 
-	/**
-	 * 委托
-	 */
-	UPROPERTY(BlueprintAssignable)
-	FOnEquipUpdate OnEquipUpdate;
 
 	/** 查询接口 */
 
@@ -73,9 +68,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	TArray<FRLInventoryItemSlotHandle> GetSlotsByType(FGameplayTag SlotTypeTag) const;
 
-	// 获取当前装备的物品（按类型）
+	// 获取当前装备的物品数组（按类型）
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	TArray<URLInventoryItemInstance*> GetEquippedItemsByType(FGameplayTag SlotTypeTag);
+
+	// 获取当前装备的物品（按类型）
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	URLInventoryItemInstance* GetEqeippedItemByType(FGameplayTag SlotTypeTag);
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -99,4 +99,3 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Equipment")
 	TArray<FRLInventoryItemInfoEntry> EquipmentInfos;
 };
-

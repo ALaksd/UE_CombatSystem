@@ -13,12 +13,12 @@
 void UGA_Other::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                 const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	//执行检查
 	if (CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
 		//执行技能
 		// 监听通知
+		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
 		InitAnimation();
 		if (UAnimMontage* MontageToPlay = Montage)
 		{

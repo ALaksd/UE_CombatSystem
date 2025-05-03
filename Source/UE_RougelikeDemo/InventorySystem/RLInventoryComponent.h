@@ -40,6 +40,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Inventory")
 	FGameplayTagContainer SlotTags;
 
+
 	bool operator==(const FRLInventoryItemSlot& Other) const { return this->SlotId == Other.SlotId && this->ItemInstance == Other.ItemInstance; }
 	bool operator!=(const FRLInventoryItemSlot& Other) const { return !(FRLInventoryItemSlot::operator==(Other)); }
 
@@ -71,7 +72,7 @@ struct UE_ROUGELIKEDEMO_API FRLInventoryItemSlotHandle
 public:
 	// 默认构造函数
 	FRLInventoryItemSlotHandle()
-		: SlotId(-1), SlotTags(), ParentInventory(nullptr) {}
+		: SlotId(-1), SlotTags(), ParentInventory(nullptr){}
 
 	// 拷贝构造函数
 	FRLInventoryItemSlotHandle(const FRLInventoryItemSlotHandle& InHandle)
@@ -79,7 +80,7 @@ public:
 
 	// 从Slot构造
 	FRLInventoryItemSlotHandle(const FRLInventoryItemSlot& FromSlot, URLInventoryComponent* InParentInventory)
-		: SlotId(FromSlot.SlotId), SlotTags(FromSlot.SlotTags), ParentInventory(InParentInventory) {}
+		: SlotId(FromSlot.SlotId), SlotTags(FromSlot.SlotTags),ParentInventory(InParentInventory) {}
 
 	// ID构造
 	FRLInventoryItemSlotHandle(int32 InSlotId, URLInventoryComponent* InParentInventory)
@@ -124,6 +125,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Inventory")
 	URLInventoryComponent* ParentInventory;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Inventory")
+	bool bEquip;	//判断该Handle对应的Slot是否已装备
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnItemSlotUpdate,
@@ -148,6 +152,8 @@ public:
 	/**
 	 * 委托
 	 */
+
+	//需要确保只有PlaceItemSlot和RemoveItemFromInventory调用，防止重复调用
 	UPROPERTY(BlueprintAssignable,Category = "Inventory")
 	FOnItemSlotUpdate OnItemSlotUpdate;
 

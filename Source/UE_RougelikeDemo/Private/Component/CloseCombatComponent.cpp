@@ -33,13 +33,13 @@ void UCloseCombatComponent::BeginPlay()
 		EquipmentInventoryComponent = PlayerState->GetComponentByClass<URLInventoryComponent_Equipment>();
 
 		check(EquipmentInventoryComponent);
-		EquipmentInventoryComponent->OnEquipUpdate.AddDynamic(this, &UCloseCombatComponent::OnEquipSlotUpdate);
+		EquipmentInventoryComponent->OnItemSlotUpdate.AddDynamic(this, &UCloseCombatComponent::OnEquipSlotUpdate);
 	}
 	else
 	{
 		EquipmentInventoryComponent = GetOwner()->GetComponentByClass<URLInventoryComponent_Equipment>();
 		check(EquipmentInventoryComponent);
-		EquipmentInventoryComponent->OnEquipUpdate.AddDynamic(this, &UCloseCombatComponent::OnEquipSlotUpdate);
+		EquipmentInventoryComponent->OnItemSlotUpdate.AddDynamic(this, &UCloseCombatComponent::OnEquipSlotUpdate);
 	}
 
 }
@@ -54,7 +54,7 @@ void UCloseCombatComponent::EndCombat() const
 	CurrentWeapon->EndCombat();
 }
 
-void UCloseCombatComponent::OnEquipSlotUpdate(URLInventoryItemInstance* ItemInstance, URLInventoryItemInstance* PreviousItemInstance)
+void UCloseCombatComponent::OnEquipSlotUpdate(URLInventoryComponent* InventoryComponent,const FRLInventoryItemSlotHandle& SlotHandle, URLInventoryItemInstance* ItemInstance, URLInventoryItemInstance* PreviousItemInstance)
 {
 	if (PreviousItemInstance)
 	{
