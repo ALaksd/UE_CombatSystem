@@ -70,6 +70,9 @@ public:
 	URLInventoryComponent_Equipment(const FObjectInitializer& ObjectInitializer);
 	virtual void InitializeComponent() override;
 
+	/*委托*/
+	UPROPERTY(BlueprintAssignable)
+	FOnEquipUpdate OnEquipUpdate;
 
 	/** 查询接口 */
 
