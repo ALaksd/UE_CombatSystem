@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -28,12 +28,12 @@ public:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
 	EBowState BowState;
 
-	//²¥·ÅÀ­¹­ÉùÒô
+	//æ’­æ”¾æ‹‰å¼“å£°éŸ³
 	void PullBowStart();
-	//Í£Ö¹²¥·ÅÀ­¹­ÉùÒô
+	//åœæ­¢æ’­æ”¾æ‹‰å¼“å£°éŸ³
 	void PullBowEnd();
 
-	//×î´óÀ­¹­Ê±¼ä
+	//æœ€å¤§æ‹‰å¼“æ—¶é—´
 	float MaxPullTime = 1.0f;
 
 	class UAudioComponent* SoundToPlay;

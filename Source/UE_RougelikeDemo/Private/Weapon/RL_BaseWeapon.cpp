@@ -33,6 +33,7 @@ void ARL_BaseWeapon::BeginPlay()
 void ARL_BaseWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 	if (bCombat)
 	{
 		GetCurrentPointsLocation();
@@ -81,10 +82,6 @@ void ARL_BaseWeapon::StartCombat()
 	bCombat = true;
 	
 	//创建GameplayEffect
-	GEngine->AddOnScreenDebugMessage(3,1,FColor::Red,FString::Printf(TEXT("Weapon: %f"),WeaponAttribute->GetDamage()));
-	GEngine->AddOnScreenDebugMessage(4,1,FColor::Blue,FString::Printf(TEXT("Multiple %f"),WeaponAttribute->GetDamageMultiplier()));
-	GEngine->AddOnScreenDebugMessage(5,1,FColor::Green,FString::Printf(TEXT("Buff: %f"),WeaponAttribute->GetSkillAmplification()));
-	
 	DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet,WeaponLevel,WeaponASC->MakeEffectContext());
 
 }

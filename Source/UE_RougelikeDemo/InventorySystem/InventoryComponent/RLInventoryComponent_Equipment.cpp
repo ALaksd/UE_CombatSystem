@@ -65,6 +65,30 @@ TArray<URLInventoryItemInstance*> URLInventoryComponent_Equipment::GetEquippedIt
 	return Result;
 }
 
+void URLInventoryComponent_Equipment::SwitchWeapon()
+{
+	TArray<URLInventoryItemInstance*> Weapons;
+	TArray<FRLInventoryItemSlotHandle> Handles;
+	URLInventoryItemInstance* OldInstance = CurrentWeapon.ItemInstance;
+	
+	FGameplayTag NewTag = FGameplayTag::RequestGameplayTag(FName("Slot.Weapon"));
+
+	Weapons = GetEquippedItemsByType(NewTag);
+	Handles = GetSlotsByType(NewTag);
+
+	Weapons.Remove(CurrentWeapon.ItemInstance);
+	Handles.Remove(CurrentWeapon.Handle);
+	// 移除手持武器的GA
+	MakeItemUnequipped_Internal(CurrentWeapon.Handle,CurrentWeapon.ItemInstance);
+	// 给予另一把武器的GA
+	MakeItemEquipped_Internal(Handles[0],Weapons[0]);
+	// 设置手持武器
+	CurrentWeapon.Handle = Handles[0];
+	CurrentWeapon.ItemInstance = Weapons[0];
+	// 通知近战攻击组件
+	OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance,OldInstance);
+}
+
 void URLInventoryComponent_Equipment::BeginPlay()
 {
 	Super::BeginPlay();

@@ -34,7 +34,7 @@ bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
 			if (PlaceItemSlot(Item, SlotHandle))
 			{
 				//向UI广播放入事件
-				OnItemSlotUpdate.Broadcast(this,SlotHandle,Item,nullptr);
+				//OnItemSlotUpdate.Broadcast(this,SlotHandle,Item,nullptr);
 				return true;
 			}
 		}
@@ -58,7 +58,7 @@ bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
 			if (PlaceItemSlot(Item, SlotHandle))
 			{
 				//向UI广播放入事件
-				OnItemSlotUpdate.Broadcast(this,SlotHandle,Item,nullptr);
+				//OnItemSlotUpdate.Broadcast(this,SlotHandle,Item,nullptr);
 				return true;
 			}
 		}
