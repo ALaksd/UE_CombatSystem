@@ -286,9 +286,8 @@ void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		}
 
 		// TODO:将可拾取物品相关信息显示
-		if (ItemToPickup)
-			GEngine->AddOnScreenDebugMessage(-1, 0.8f, FColor::Red, FString::Printf(TEXT("The actor's name is: %s"), *ItemToPickup->GetName()));
-		
+		// if (ItemToPickup)
+		// 	;
 	}
 	else
 	{

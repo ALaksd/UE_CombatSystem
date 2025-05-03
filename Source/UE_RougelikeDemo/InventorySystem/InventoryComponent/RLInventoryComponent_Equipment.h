@@ -47,6 +47,15 @@ struct FEquipmentSlotGroup
 	int32 SlotCount = 1; // 该类型下的槽位数量
 };
 
+USTRUCT()
+struct FEquipWeapon
+{
+	GENERATED_BODY()
+	UPROPERTY()
+	URLInventoryItemInstance* ItemInstance;
+	FRLInventoryItemSlotHandle Handle;
+};
+
 /**
  * 
  */
@@ -75,8 +84,10 @@ public:
 	// 获取当前装备的物品（按类型）
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	URLInventoryItemInstance* GetEqeippedItemByType(FGameplayTag SlotTypeTag);
-
-
+	//武器切换的输入回调函数
+	UFUNCTION()
+	void SwitchWeapon();
+	
 protected:
 	virtual void BeginPlay() override;
 	//回调函数，绑定父类的OnItemSlotUpdated
@@ -98,4 +109,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Equipment")
 	TArray<FRLInventoryItemInfoEntry> EquipmentInfos;
+
+private:
+	// 标识当前装备的武器
+	UPROPERTY()
+	FEquipWeapon CurrentWeapon;
 };

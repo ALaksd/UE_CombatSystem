@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -114,6 +114,8 @@ protected:
 	
 
 	int32 Soul = 0;
+	// 玩家等级
 	int32 Level = 1;
+	// 可用技能点
 	int32 SpellPoints = 0;
 };

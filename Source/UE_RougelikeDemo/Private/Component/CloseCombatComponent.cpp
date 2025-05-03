@@ -56,6 +56,10 @@ void UCloseCombatComponent::EndCombat() const
 
 void UCloseCombatComponent::OnEquipSlotUpdate(URLInventoryComponent* InventoryComponent,const FRLInventoryItemSlotHandle& SlotHandle, URLInventoryItemInstance* ItemInstance, URLInventoryItemInstance* PreviousItemInstance)
 {
+	// 将新的武器显示
+	//CurrentWeapon = GetWeaponFromInstance(ItemInstance);
+
+	
 	if (PreviousItemInstance)
 	{
 		UnEquipWeaponForInventory();
