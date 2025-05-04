@@ -60,6 +60,8 @@ struct FEquipWeapon
  * 
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipUpdate,URLInventoryItemInstance*, NewItem,URLInventoryItemInstance*, OldItem);
+/** 是否装备 */
+DECLARE_DELEGATE_OneParam(FbOnEquip, bool);
 
 UCLASS(BlueprintType, Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UE_ROUGELIKEDEMO_API URLInventoryComponent_Equipment : public URLInventoryComponent
@@ -74,6 +76,8 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEquipUpdate OnEquipUpdate;
 
+	FbOnEquip bOnEquip;
+
 	/** 查询接口 */
 
 	// 获取指定类型的槽位
@@ -83,6 +87,10 @@ public:
 	// 获取当前装备的物品数组（按类型）
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	TArray<URLInventoryItemInstance*> GetEquippedItemsByType(FGameplayTag SlotTypeTag);
+
+	virtual bool PlaceItemSlot(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle) override;
+
+	virtual bool RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle) override;
 
 	// 获取当前装备的物品（按类型）
 	UFUNCTION(BlueprintCallable, Category = "Equipment")

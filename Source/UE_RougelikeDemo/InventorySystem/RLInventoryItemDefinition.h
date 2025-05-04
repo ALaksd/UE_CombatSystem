@@ -26,6 +26,7 @@ public:
 
 	const URLInventoryItemFragment* FindFragmentByClass(TSubclassOf<URLInventoryItemFragment> FragmentClass) const;
 
+	//将自己的CombinedTags添加到输入参数TagContainer中
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
 	//用于安全地组合父蓝图和子蓝图中的标签的结构

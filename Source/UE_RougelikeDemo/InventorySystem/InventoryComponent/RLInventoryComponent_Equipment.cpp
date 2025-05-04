@@ -20,7 +20,7 @@ void URLInventoryComponent_Equipment::InitializeComponent()
 	{
 		for (int32 i = 0; i < Group.SlotCount; ++i)
 		{
-			// 创建带编号的Tag（示例：Slot.Weapon.1）
+			// 创建带编号的Tag（示例：Item.Weapon.Slot.1）
 			FGameplayTag NumberedTag = FGameplayTag::RequestGameplayTag(FName(Group.SlotTypeTag.GetTagName().ToString().Append(FString::Printf(TEXT(".%d"), i + 1))));
 
 			//创建插槽
@@ -60,6 +60,43 @@ TArray<URLInventoryItemInstance*> URLInventoryComponent_Equipment::GetEquippedIt
 		}
 	}
 	return Result;
+}
+
+bool URLInventoryComponent_Equipment::PlaceItemSlot(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle)
+{
+	if (!Item) return false;
+
+	FRLInventoryItemSlot& Slot = GetItemSlot(ItemHandle);
+	URLInventoryItemInstance* PreItem = Slot.ItemInstance;
+	Slot.ItemInstance = Item;
+	// 正确赋值SlotTags，这里暂时不会用CombindTags
+	if (Item->GetItemDefinition())
+	{
+		Slot.SlotTags = Item->GetItemDefinition()->ItemTags.Added;
+	}
+	else
+	{
+		Slot.SlotTags.Reset(); // 没有ItemDefinition则清空
+	}
+
+	OnItemSlotUpdate.Broadcast(this, ItemHandle, Slot.ItemInstance, PreItem);
+
+	return true;
+}
+
+bool URLInventoryComponent_Equipment::RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle)
+{
+	FRLInventoryItemSlot& ItemSlot = GetItemSlot(SlotHandle);
+	URLInventoryItemInstance* PreviousItem = ItemSlot.ItemInstance;
+
+	if (!ItemSlot.ItemInstance) return false;
+
+	ItemSlot.ItemInstance = nullptr;
+	ItemSlot.SlotTags.Reset();
+
+	OnItemSlotUpdate.Broadcast(this, SlotHandle, ItemSlot.ItemInstance, PreviousItem);
+
+	return true;
 }
 
 void URLInventoryComponent_Equipment::SwitchWeapon()
@@ -148,6 +185,7 @@ bool URLInventoryComponent_Equipment::MakeItemEquipped_Internal(const FRLInvento
 	}
 
 	ItemInstance->SetbEquiped(true);
+	bOnEquip.ExecuteIfBound(true);
 	return true;
 }
 
@@ -185,6 +223,7 @@ bool URLInventoryComponent_Equipment::MakeItemUnequipped_Internal(const FRLInven
 
 	// 更新物品实例的装备状态
 	ItemInstance->SetbEquiped(false);
+	bOnEquip.ExecuteIfBound(false);
 	return true;
 }
 

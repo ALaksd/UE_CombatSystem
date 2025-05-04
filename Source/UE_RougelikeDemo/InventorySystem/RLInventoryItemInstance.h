@@ -20,7 +20,7 @@ class UE_ROUGELIKEDEMO_API URLInventoryItemInstance : public UObject, public IGa
 	
 public:
 	/** 设置和获取Definition */
-
+	UFUNCTION(BlueprintCallable,BlueprintPure)
 	FORCEINLINE URLInventoryItemDefinition* GetItemDefinition() const { return ItemDefinition; }
 	FORCEINLINE void SetItemDefinition(URLInventoryItemDefinition* InDefinition) { ItemDefinition = InDefinition; }
 

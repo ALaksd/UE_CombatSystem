@@ -125,9 +125,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Inventory")
 	URLInventoryComponent* ParentInventory;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Inventory")
-	bool bEquip;	//判断该Handle对应的Slot是否已装备
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnItemSlotUpdate,
@@ -165,6 +162,9 @@ public:
 	UFUNCTION(BlueprintCallable,Category = "Inventory")
 	virtual bool LootItem(URLInventoryItemInstance* Item);
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	virtual bool LootItemByTag(URLInventoryItemInstance* Item,FGameplayTagContainer ItemTags);
+
 	/** 将物品放入指定的插槽当中 */
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	virtual bool PlaceItemSlot(URLInventoryItemInstance* Item,const FRLInventoryItemSlotHandle& ItemHandle);
@@ -183,7 +183,7 @@ public:
 
 	/** 根据Tag返回插槽钥匙 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Inventory")
-	virtual FRLInventoryItemSlotHandle GetSlotHandleByTags(FGameplayTagContainer Tags);
+	virtual TArray<FRLInventoryItemSlotHandle> GetSlotHandlesByTags(const FGameplayTagContainer& Tags);
 
 	/** 获取指定插槽内存放的物品 */
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
