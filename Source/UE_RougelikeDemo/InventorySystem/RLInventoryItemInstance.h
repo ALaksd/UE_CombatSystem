@@ -51,7 +51,7 @@ protected:
 	bool bEquipped = false;
 
 
-	//可动态修改的fragment,暂时没有用到
+	//可动态修改的fragments
 	UPROPERTY()
 	TArray<URLInventoryItemFragment*> DynamicFragments;
 };

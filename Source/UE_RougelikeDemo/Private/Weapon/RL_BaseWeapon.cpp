@@ -20,14 +20,46 @@ ARL_BaseWeapon::ARL_BaseWeapon()
 	WeaponASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	WeaponAttribute = CreateDefaultSubobject<UAS_Weapon>(TEXT("AttributeSet"));
-	WeaponAttribute->InitDamage(10);
-	
+}
+
+const FWeaponLevelData* ARL_BaseWeapon::GetCurrentLevelData() const
+{
+	static const FString ContextString(TEXT("Weapon Level Data"));
+	return WeaponLevelDataTable ? WeaponLevelDataTable->FindRow<FWeaponLevelData>(
+		FName(FString::FromInt(WeaponLevel)), ContextString) : nullptr;
+}
+
+void ARL_BaseWeapon::SetWeaponLevel(int32 NewLevel)
+{
+	WeaponLevel = FMath::Clamp(NewLevel, 1, MaxLevel);
+
+	if (WeaponAttribute && WeaponASC)
+	{
+		if (const FWeaponLevelData* LevelData = GetCurrentLevelData())
+		{
+			// 创建临时GE修改属性
+			FGameplayEffectContextHandle Context = WeaponASC->MakeEffectContext();
+			Context.AddSourceObject(this);
+
+			UGameplayEffect* GE = NewObject<UGameplayEffect>();
+			GE->DurationPolicy = EGameplayEffectDurationType::Instant;
+
+			FGameplayModifierInfo DamageMod;
+			DamageMod.Attribute = UAS_Weapon::GetDamageAttribute();
+			DamageMod.ModifierOp = EGameplayModOp::Override;
+			DamageMod.ModifierMagnitude = FScalableFloat(LevelData->BaseDamage);
+			GE->Modifiers.Add(DamageMod);
+
+			WeaponASC->ApplyGameplayEffectToSelf(GE, 1.0f, Context);
+		}
+	}
 }
 
 void ARL_BaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetWeaponLevel(WeaponLevel);
 }
 
 void ARL_BaseWeapon::Tick(float DeltaTime)
@@ -37,7 +69,7 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 	if (bCombat)
 	{
 		GetCurrentPointsLocation();
-
+		 
 		//碰撞检测参数
 		EDrawDebugTrace::Type DrawDebugType = EDrawDebugTrace::ForDuration;
 		FLinearColor TraceColor = FLinearColor::Red;

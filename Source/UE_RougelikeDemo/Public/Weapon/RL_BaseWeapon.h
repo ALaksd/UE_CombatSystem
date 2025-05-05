@@ -9,6 +9,23 @@
 #include "Interface/RL_ItemInstanceHolder.h"
 #include "RL_BaseWeapon.generated.h"
 
+USTRUCT(BlueprintType)
+struct FWeaponLevelData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Level = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BaseDamage = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 NeededFragment;  //强化所需要的碎片
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 NeededCurrency;  //强化所需要的钱
+};
 
 UCLASS()
 class UE_ROUGELIKEDEMO_API ARL_BaseWeapon : public AActor, public IRL_ItemInstanceHolder
@@ -20,8 +37,12 @@ public:
 
   	FORCEINLINE AActor* GetWeaponOwner() const { return WeaponOwner; }
 	FORCEINLINE void SetWeaponOwner(AActor* InOwner) { WeaponOwner = InOwner; }
-	//武器等级
-	int32 WeaponLevel=1;
+
+	/** 武器等级 */
+	// 添加获取当前等级数据的函数
+	const FWeaponLevelData* GetCurrentLevelData() const;
+
+	void SetWeaponLevel(int32 NewLevel);
 
 	/**
 	 * ItemInstanceHolder Interface
@@ -35,7 +56,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly , Category = Mesh)
 	class USkeletalMeshComponent* Mesh;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Level")
+	TObjectPtr<UDataTable> WeaponLevelDataTable;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Level")
+	int32 MaxLevel = 10;
 	
 private:
 	UPROPERTY()
@@ -47,6 +72,10 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AActor> WeaponOwner;
+
+	//武器等级
+	UPROPERTY()
+	int32 WeaponLevel = 1;
 	
 	//武器伤害曲线
 	// UPROPERTY(EditDefaultsOnly,Category="AttackCurve")
