@@ -14,9 +14,9 @@ void URL_UIManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	
 }
 
-void URL_UIManagerSubsystem::AddNewWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController)
+UUserWidget* URL_UIManagerSubsystem::AddNewWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController)
 {
-	PushWidget(WidgetClass, PlayerController);
+	return PushWidget(WidgetClass, PlayerController);
 }
 
 void URL_UIManagerSubsystem::ToggleWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController)
@@ -39,9 +39,9 @@ void URL_UIManagerSubsystem::ToggleWidget(TSubclassOf<UUserWidget> WidgetClass, 
 	}
 }
 
-void URL_UIManagerSubsystem::PushWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController)
+UUserWidget* URL_UIManagerSubsystem::PushWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController)
 {
-	if (!WidgetClass || !PlayerController) return;
+	if (!WidgetClass || !PlayerController) return nullptr;
 
 	// 创建Widget并添加到视口
 	UUserWidget* NewWidget = CreateWidget<UUserWidget>(PlayerController, WidgetClass);
@@ -77,7 +77,10 @@ void URL_UIManagerSubsystem::PushWidget(TSubclassOf<UUserWidget> WidgetClass, AP
 		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 		PlayerController->SetInputMode(InputMode);
 		PlayerController->SetShowMouseCursor(true);
+
+		return NewWidget;
 	}
+	return nullptr;
 }
 
 void URL_UIManagerSubsystem::PopWidget(APlayerController* PlayerController)

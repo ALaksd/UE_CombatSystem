@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include <UE_RougelikeDemo/InventorySystem/Fragments/RLItemFragment_Attached.h>
 #include "GameFramework/PlayerState.h"
+#include <UE_RougelikeDemo/InventorySystem/RLItemFragment_EquipDynamicData.h>
 
 
 UCloseCombatComponent::UCloseCombatComponent()
@@ -76,6 +77,13 @@ void UCloseCombatComponent::EquipWeaponForInventory(URLInventoryItemInstance* It
 	{
 		Weapon->SetActorHiddenInGame(false);
 		CurrentWeapon = Weapon;
+
+		//设置武器等级
+		const URLItemFragment_EquipDynamicData* EquipDynamicData = ItemInstance->FindFragmentByClass<URLItemFragment_EquipDynamicData>();
+		if (EquipDynamicData)
+		{
+			CurrentWeapon->SetWeaponLevel(EquipDynamicData->CurrentLevel);
+		}
 	}
 }
 

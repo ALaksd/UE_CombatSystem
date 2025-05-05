@@ -25,7 +25,7 @@ public:
 
 	//创建新的UI
 	UFUNCTION(BlueprintCallable)
-	void AddNewWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController);
+	UUserWidget* AddNewWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController);
 
 	//创建支持开关的UI
 	UFUNCTION(BlueprintCallable)
@@ -44,7 +44,7 @@ private:
 	TArray<UUserWidget*> WidgetStack; // UI栈
 
 	// 压入新UI到栈顶
-	void PushWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController);
+	UUserWidget* PushWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController);
 	// 弹出栈顶UI
 	void PopWidget(APlayerController* PlayerController);
 

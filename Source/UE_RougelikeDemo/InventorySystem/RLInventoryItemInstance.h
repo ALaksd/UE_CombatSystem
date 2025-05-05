@@ -23,6 +23,7 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	FORCEINLINE URLInventoryItemDefinition* GetItemDefinition() const { return ItemDefinition; }
 	FORCEINLINE void SetItemDefinition(URLInventoryItemDefinition* InDefinition) { ItemDefinition = InDefinition; }
+	FORCEINLINE void AddDynamicFragments(URLInventoryItemFragment* NewFragments) { DynamicFragments.Add(NewFragments); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE bool GetbEquiped() { return bEquipped; }

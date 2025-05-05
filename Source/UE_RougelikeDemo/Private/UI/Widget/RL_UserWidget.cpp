@@ -3,9 +3,10 @@
 
 #include "UI/Widget/RL_UserWidget.h"
 
-void URL_UserWidget::SetWidgetController(UObject* InWidgetConller)
+void URL_UserWidget::SetWidgetController(UObject* InWidgetConller, URL_UserWidget* InOnwerWidget)
 {
 	WidgetController = InWidgetConller;
+	OnwerWidget = InOnwerWidget;
 	WidgetControllerSet();
 }
 

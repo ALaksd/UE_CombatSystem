@@ -12,6 +12,7 @@
 #include "UI/RL_HUD.h"
 #include "UI/Widget/RL_UserWidget.h"
 #include "UI/WidgetController/RL_LanternFlameController.h"
+#include <System/RL_UIManagerSubsystem.h>
 
 AInteractable_LanternFlame::AInteractable_LanternFlame()
 {
@@ -34,16 +35,24 @@ void AInteractable_LanternFlame::TryInteract()
 			// 初始化数据
 			LanternFlameWidgetController->Initialize(SkillList);
 			
-			//创建UI
-			WBP_SavePoint = CreateWidget<URL_UserWidget>(GetWorld(),WBP_SavePointClass);
 			
+			UGameInstance* GameInstance = GetWorld()->GetGameInstance();
+			if (GameInstance)
+			{
+				URL_UIManagerSubsystem* UIManager = GameInstance->GetSubsystem<URL_UIManagerSubsystem>();
+				if (UIManager)
+				{
+					WBP_SavePoint = Cast<URL_UserWidget>(UIManager->AddNewWidget(WBP_SavePointClass, UGameplayStatics::GetPlayerController(this, 0)));
+				}
+			}
+
 			// 初始化UI
 			WBP_SavePoint->SetWidgetController(LanternFlameWidgetController);
 			LanternFlameWidgetController->BroadcastInitialValue();
 			InitPointName();
 			
-			WBP_SavePoint->AddToViewport(0);
-			WBP_SavePoint->SetVisibility(ESlateVisibility::Visible);
+			//WBP_SavePoint->AddToViewport(0);
+			//WBP_SavePoint->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }
