@@ -65,7 +65,7 @@ TArray<URLInventoryItemInstance*> URLInventoryComponent_Equipment::GetEquippedIt
 	return Result;
 }
 
-void URLInventoryComponent_Equipment::SwitchWeapon()
+void URLInventoryComponent_Equipment::SwitchWeapon(const FInputActionValue& Value)
 {
 	TArray<URLInventoryItemInstance*> Weapons;
 	TArray<FRLInventoryItemSlotHandle> Handles;

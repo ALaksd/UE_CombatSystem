@@ -66,6 +66,11 @@ void URL_MovementComponent::BeginPlay()
 		RLInputComponent->BindAction(STLAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::SwitchTargetLeft);
 		
 		RLInputComponent->BindAction(STRAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::SwitchTargetRight);
+
+		// 武器切换
+		if (ARL_PlayerState* PlayerState = CastChecked<ARL_PlayerState>(UGameplayStatics::GetPlayerState(GetWorld(),0)))
+			if (URLInventoryComponent_Equipment* Equipment = CastChecked<URLInventoryComponent_Equipment>(PlayerState->EquipmentInventoryComponnet))
+				RLInputComponent->BindAction(SwitchWeaponAction,ETriggerEvent::Started, Equipment, &URLInventoryComponent_Equipment::SwitchWeapon);	
 		
 		RLInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::LMBInputPressedTest,&ThisClass::LMBInputReleasedTest,&ThisClass::LMBInputHeldTest);
 	}

@@ -32,18 +32,18 @@ protected:
 	void EquipWeapon();
 
 protected:
-	//生成的武器类
+	//鐢熸垚鐨勬鍣ㄧ被
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon)
 	TSubclassOf<ARL_BaseWeapon> WeaponClass;
 
-	//插槽
+	//鎻掓Ы
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = Weapon)
 	FName SocketName;
 
-	//附加到的角色
+	//闄勫姞鍒扮殑瑙掕壊
 	ACharacter* AttachCharacter;
 
-	//生成的武器的引用
+	//鐢熸垚鐨勬鍣ㄧ殑寮曠敤
 	ARL_BaseWeapon* BaseWeapon;
 		
 };
