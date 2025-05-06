@@ -27,6 +27,7 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category="Components")
 	TObjectPtr<UStaticMeshComponent> StaticMeshCom;
 
+	// 交互回调,由输入处触发
 	virtual void TryInteract() override;
 
 	UPROPERTY(EditDefaultsOnly,Category="Datas")

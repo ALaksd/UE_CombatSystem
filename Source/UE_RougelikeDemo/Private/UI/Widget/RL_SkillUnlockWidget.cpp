@@ -73,6 +73,12 @@ void URL_SkillUnlockWidget::AddSkillSlot(const FSkillList&  SkillInfor)
 			break;
 		default:break;
 	}
+
+	if (!bInit)
+	{
+		bInit=true;
+		SkillSlot->SkillSlot_1->OnClicked.Broadcast();
+	}
 }
 
 bool URL_SkillUnlockWidget::Initialize()
