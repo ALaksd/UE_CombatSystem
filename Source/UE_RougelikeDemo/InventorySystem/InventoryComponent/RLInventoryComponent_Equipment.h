@@ -7,6 +7,7 @@
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryItemFragment.h"
 #include "RLInventoryComponent_Equipment.generated.h"
 
+struct  FInputActionValue;
 
 USTRUCT(BlueprintType)
 struct UE_ROUGELIKEDEMO_API FRLInventoryItemInfoEntry
@@ -97,7 +98,7 @@ public:
 	URLInventoryItemInstance* GetEqeippedItemByType(FGameplayTag SlotTypeTag);
 	//武器切换的输入回调函数
 	UFUNCTION()
-	void SwitchWeapon();
+	void SwitchWeapon(const FInputActionValue& Value);
 	
 protected:
 	virtual void BeginPlay() override;
