@@ -36,4 +36,14 @@ public:
 	//用于存放不改变的Fragments
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "Inventory")
 	TArray<TObjectPtr<URLInventoryItemFragment>> Fragments;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory")
+	FText DisplayName;
+
+	// 最大堆叠数量（默认1表示不可堆叠）
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory")
+	int32 MaxStack = 1;
+
+	// 是否允许堆叠（根据标签或其他条件判断）
+	bool IsStackable() const { return MaxStack > 1; }
 };

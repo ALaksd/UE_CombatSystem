@@ -90,7 +90,7 @@ public:
 
 	virtual bool PlaceItemSlot(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle) override;
 
-	virtual bool RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle) override;
+	virtual bool RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle,int32 RemoveQuantity = 1) override;
 
 	// 获取当前装备的物品（按类型）
 	UFUNCTION(BlueprintCallable, Category = "Equipment")

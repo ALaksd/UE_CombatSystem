@@ -84,7 +84,7 @@ bool URLInventoryComponent_Equipment::PlaceItemSlot(URLInventoryItemInstance* It
 	return true;
 }
 
-bool URLInventoryComponent_Equipment::RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle)
+bool URLInventoryComponent_Equipment::RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle, int32 RemoveQuantity)
 {
 	FRLInventoryItemSlot& ItemSlot = GetItemSlot(SlotHandle);
 	URLInventoryItemInstance* PreviousItem = ItemSlot.ItemInstance;
