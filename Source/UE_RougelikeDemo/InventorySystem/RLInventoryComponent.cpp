@@ -11,7 +11,7 @@
 URLInventoryComponent::URLInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
+	
 }
 
 
@@ -24,7 +24,20 @@ bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
 {
 	if (!Item) return false;
 
-	// 第一次尝试放入
+	// 优先尝试堆叠到现有槽位
+	for (auto& Slot : Inventory.Slots)
+	{
+		if (CanStackItem(Slot, Item))
+		{
+			const int32 Remaining = AttemptStackItem(Slot, Item);
+			if (Remaining <= 0)
+			{
+				return true; // 堆叠成功
+			}
+			Item->SetStack(Remaining); // 更新剩余数量
+		}
+	}
+
 	for (auto& Slot : Inventory.Slots)
 	{
 		FRLInventoryItemSlotHandle SlotHandle(Slot, this);
@@ -86,10 +99,19 @@ bool URLInventoryComponent::LootItemByTag(URLInventoryItemInstance* Item, FGamep
 
 bool URLInventoryComponent::PlaceItemSlot(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle)
 {
-	if (!Item) return false;
-
 	FRLInventoryItemSlot& Slot = GetItemSlot(ItemHandle);
-	URLInventoryItemInstance* PreItem = Slot.ItemInstance;	
+
+	//// 如果目标槽位已有物品且可堆叠
+	//if (Slot.ItemInstance && CanStackItem(Slot, Item))
+	//{
+	//	const int32 Remaining = AttemptStackItem(Slot, Item);
+	//	return Remaining == 0;
+	//}
+
+	// 原有放置逻辑（空槽或不可堆叠物品）
+	if (Slot.ItemInstance != nullptr) return false;
+
+	URLInventoryItemInstance* PreItem = Slot.ItemInstance;
 	Slot.ItemInstance = Item;
 	// 正确赋值SlotTags，这里暂时不会用CombindTags
 	if (Item->GetItemDefinition())
@@ -101,6 +123,8 @@ bool URLInventoryComponent::PlaceItemSlot(URLInventoryItemInstance* Item, const 
 		Slot.SlotTags.Reset(); // 没有ItemDefinition则清空
 	}
 
+
+
 	// 更新对应的句柄标签
 	for (auto& Handle : AllSlotHandles)
 	{
@@ -111,20 +135,28 @@ bool URLInventoryComponent::PlaceItemSlot(URLInventoryItemInstance* Item, const 
 		}
 	}
 
-	OnItemSlotUpdate.Broadcast(this,ItemHandle,Slot.ItemInstance,PreItem);
 
+	// 广播更新事件
+	OnItemSlotUpdate.Broadcast(this, ItemHandle, Slot.ItemInstance, PreItem);
 	return true;
 }
 
-bool URLInventoryComponent::RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle)
+bool URLInventoryComponent::RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle, int32 RemoveQuantity)
 {
 	FRLInventoryItemSlot& ItemSlot = GetItemSlot(SlotHandle);
-	URLInventoryItemInstance* PreviousItem = ItemSlot.ItemInstance;
-
 	if (!ItemSlot.ItemInstance) return false;
 
-	ItemSlot.ItemInstance = nullptr;
-	ItemSlot.SlotTags.Reset();
+	// 处理堆叠物品
+	if (ItemSlot.ItemInstance->GetItemDefinition()->IsStackable())
+	{
+		const int32 NewQuantity = ItemSlot.ItemInstance->GetCurrentStack() - RemoveQuantity;
+		if (NewQuantity > 0)
+		{
+			ItemSlot.ItemInstance->SetStack(NewQuantity);
+			OnItemSlotUpdate.Broadcast(this, SlotHandle, ItemSlot.ItemInstance, ItemSlot.ItemInstance);
+			return true;
+		}
+	}
 
 	// 更新对应的句柄标签
 	for (auto& Handle : AllSlotHandles)
@@ -136,10 +168,15 @@ bool URLInventoryComponent::RemoveItemFromInventory(const FRLInventoryItemSlotHa
 		}
 	}
 
+	//移除不可堆叠物品
+	URLInventoryItemInstance* PreviousItem = ItemSlot.ItemInstance;
+	ItemSlot.ItemInstance = nullptr;
+	ItemSlot.SlotTags.Reset();
 	OnItemSlotUpdate.Broadcast(this, SlotHandle, ItemSlot.ItemInstance, PreviousItem);
 
 	return true;
 }
+
 
 bool URLInventoryComponent::RemoveAllItemsFromInventory(TArray<URLInventoryItemInstance*>& OutItemsRemoved)
 {
@@ -217,6 +254,30 @@ bool URLInventoryComponent::AcceptsItem(URLInventoryItemInstance* Item, const FR
 		return true;
 	}
 	return false;
+}
+
+bool URLInventoryComponent::CanStackItem(const FRLInventoryItemSlot& Slot, URLInventoryItemInstance* NewItem) const
+{
+	if (!Slot.ItemInstance)
+		return false;
+	bool bSame = Slot.ItemInstance->GetItemDefinition() == NewItem->GetItemDefinition();
+	bool bStackable = Slot.ItemInstance->GetItemDefinition()->IsStackable() && Slot.ItemInstance->GetCurrentStack() < Slot.ItemInstance->GetMaxStack();
+
+	return bSame && bStackable;
+}
+
+int32 URLInventoryComponent::AttemptStackItem(FRLInventoryItemSlot& Slot, URLInventoryItemInstance* NewItem)
+{
+	URLInventoryItemInstance* ExistingItem = Slot.ItemInstance;
+	const int32 AvailableSpace = ExistingItem->GetMaxStack() - ExistingItem->GetCurrentStack();
+	const int32 ToAdd = FMath::Min(AvailableSpace, NewItem->GetCurrentStack());
+
+	const int32 Remaining = ExistingItem->AddStack(ToAdd);
+
+	// 通知堆叠数量变化
+	OnItemSlotUpdate.Broadcast(this, FRLInventoryItemSlotHandle(Slot, this), ExistingItem, ExistingItem);
+
+	return Remaining;
 }
 
 /*
