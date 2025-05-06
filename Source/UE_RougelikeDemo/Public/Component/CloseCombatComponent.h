@@ -37,15 +37,6 @@ protected:
 	UPROPERTY()
 	TObjectPtr<ARL_BaseWeapon> CurrentWeapon;
 
-	/** 当前选中的武器槽位索引 */
-	UPROPERTY()
-	int32 CurrentWeaponIndex = 0;
-
-	/** 武器对象池 */
-	UPROPERTY()
-	TArray<TObjectPtr<ARL_BaseWeapon>> WeaponPool;
-
-
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<URLInventoryComponent_Equipment> EquipmentInventoryComponent;
 
@@ -53,19 +44,8 @@ protected:
 public:	
 	void StartCombat() const;
 	void EndCombat() const;
+
+private:
 	UFUNCTION()
-	void OnEquipSlotUpdate(URLInventoryComponent* InventoryComponent,const FRLInventoryItemSlotHandle& SlotHandle, URLInventoryItemInstance* ItemInstance, URLInventoryItemInstance* PreviousItemInstance);
-
-	/*从背包装备/卸下/切换武器*/
-	void EquipWeaponForInventory(URLInventoryItemInstance* ItemInstance);
-	void UnEquipWeaponForInventory();
-
-	UFUNCTION(BlueprintCallable)
-	void SwitchWeapon();
-
-	/** 预加载武器 */
-	void PreloadWeapons();
-
-	/** 根据实例获取武器对象 */
-	ARL_BaseWeapon* GetWeaponFromInstance(URLInventoryItemInstance* Instance);
+	void SwitchWeapon(URLInventoryItemInstance* NewWeapon);
 };

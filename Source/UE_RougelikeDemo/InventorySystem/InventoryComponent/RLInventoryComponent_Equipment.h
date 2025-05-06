@@ -54,13 +54,28 @@ struct FEquipWeapon
 	GENERATED_BODY()
 	UPROPERTY()
 	URLInventoryItemInstance* ItemInstance;
+	
 	FRLInventoryItemSlotHandle Handle;
+
+	FGameplayTag SlotTag;
+
+	UPROPERTY()
+	FRLAbilitySet_GrantHandles AbilityGrantHandles;
+	
+	bool operator==(const FEquipWeapon& Other) const
+	{
+		if (this->ItemInstance==Other.ItemInstance && this->SlotTag==Other.SlotTag)
+			return true;
+		return false;
+	}
 };
 
 /**
  * 
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipUpdate,URLInventoryItemInstance*, NewItem,URLInventoryItemInstance*, OldItem);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipUpdate,URLInventoryItemInstance*, NewItem,URLInventoryItemInstance*, OldItem);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipUpdate,URLInventoryItemInstance*, NewItem);
 /** 是否装备 */
 DECLARE_DELEGATE_OneParam(FbOnEquip, bool);
 
@@ -112,6 +127,15 @@ protected:
 	virtual bool MakeItemEquipped_Internal(const FRLInventoryItemSlotHandle& SlotHandle,URLInventoryItemInstance* ItemInstance);
 	virtual bool MakeItemUnequipped_Internal(const FRLInventoryItemSlotHandle& SlotHandle,URLInventoryItemInstance* ItemInstance);
 
+	// 装备武器
+	void EquipWeapon(const FRLInventoryItemSlotHandle& SlotHandle,URLInventoryItemInstance* ItemInstance);
+	// 卸下武器
+	void UnEquipWeapon(const FRLInventoryItemSlotHandle& SlotHandle,URLInventoryItemInstance* ItemInstance);
+	// 将武器GA给到玩家
+	void GiveAbilityToPlayer(FEquipWeapon& Weapon);
+	// 移除武器GA
+	void RemoveAbilityFromPlayer(FEquipWeapon& Weapon);
+	
 	UFUNCTION()
 	UAbilitySystemComponent* GetOwnerAbilitySystemComponent();
 
@@ -124,6 +148,8 @@ protected:
 
 private:
 	// 标识当前装备的武器
-	UPROPERTY()
 	FEquipWeapon CurrentWeapon;
+	FEquipWeapon Weapon1;
+	FEquipWeapon Weapon2;
 };
+
