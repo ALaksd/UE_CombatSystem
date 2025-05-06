@@ -3,7 +3,7 @@
 
 #include "RLItemFragment_EquipDynamicData.h"
 
-void URLItemFragment_EquipDynamicData::AddLevel()
+void URLItemFragment_EquipDynamicData::AddLevel() const
 {
 	//TODO:增加消耗资源
 	CurrentLevel++;

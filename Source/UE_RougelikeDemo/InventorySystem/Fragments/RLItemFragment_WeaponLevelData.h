@@ -21,6 +21,9 @@ struct FWeaponLevelData : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 NeededFragment;  //强化所需要的碎片
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	FGameplayTag FragmentTag = FGameplayTag();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 NeededCurrency;  //强化所需要的钱
 };

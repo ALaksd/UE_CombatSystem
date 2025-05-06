@@ -18,7 +18,7 @@ class UE_ROUGELIKEDEMO_API URLItemFragment_EquipDynamicData : public URLInventor
 public:
 
 	UFUNCTION(BlueprintCallable)
-	void AddLevel();
+	void AddLevel() const;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnWeaponUpgrade OnWeaponUpgrade;

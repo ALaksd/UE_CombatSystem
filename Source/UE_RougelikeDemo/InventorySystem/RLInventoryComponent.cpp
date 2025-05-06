@@ -208,6 +208,18 @@ TArray<FRLInventoryItemSlotHandle> URLInventoryComponent::GetSlotHandlesByTags(c
 	return MatchingHandles;
 }
 
+FRLInventoryItemSlotHandle URLInventoryComponent::GetSlotHandleByTag(const FGameplayTag& Tag)
+{
+	for (const FRLInventoryItemSlot& Slot : Inventory.Slots)
+	{
+		if (Slot.ItemInstance && Slot.SlotTags.HasTagExact(Tag))
+		{
+			return FRLInventoryItemSlotHandle(Slot, this);
+		}
+	}
+	return FRLInventoryItemSlotHandle();
+}
+
 URLInventoryItemInstance* URLInventoryComponent::GetItemInstanceInSlot(const FRLInventoryItemSlotHandle& Handle)
 {
 	if (!IsVaildItemSlot(Handle))
