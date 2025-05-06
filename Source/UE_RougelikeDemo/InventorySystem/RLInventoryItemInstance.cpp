@@ -9,7 +9,7 @@ const URLInventoryItemFragment* URLInventoryItemInstance::FindFragmentByClass(TS
 {
 	if (FragmentClass != nullptr)
 	{
-		if (ItemDefinition != nullptr)
+		if (ItemDefinition != nullptr && ItemDefinition->FindFragmentByClass(FragmentClass))
 		{
 			return ItemDefinition->FindFragmentByClass(FragmentClass);
 		}
@@ -23,6 +23,7 @@ const URLInventoryItemFragment* URLInventoryItemInstance::FindFragmentByClass(TS
 	}
 	return nullptr;
 }
+
 
 void URLInventoryItemInstance::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
 {

@@ -40,6 +40,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Inventory")
 	FGameplayTagContainer SlotTags;
 
+
 	bool operator==(const FRLInventoryItemSlot& Other) const { return this->SlotId == Other.SlotId && this->ItemInstance == Other.ItemInstance; }
 	bool operator!=(const FRLInventoryItemSlot& Other) const { return !(FRLInventoryItemSlot::operator==(Other)); }
 
@@ -71,7 +72,7 @@ struct UE_ROUGELIKEDEMO_API FRLInventoryItemSlotHandle
 public:
 	// 默认构造函数
 	FRLInventoryItemSlotHandle()
-		: SlotId(-1), SlotTags(), ParentInventory(nullptr) {}
+		: SlotId(-1), SlotTags(), ParentInventory(nullptr){}
 
 	// 拷贝构造函数
 	FRLInventoryItemSlotHandle(const FRLInventoryItemSlotHandle& InHandle)
@@ -79,7 +80,7 @@ public:
 
 	// 从Slot构造
 	FRLInventoryItemSlotHandle(const FRLInventoryItemSlot& FromSlot, URLInventoryComponent* InParentInventory)
-		: SlotId(FromSlot.SlotId), SlotTags(FromSlot.SlotTags), ParentInventory(InParentInventory) {}
+		: SlotId(FromSlot.SlotId), SlotTags(FromSlot.SlotTags),ParentInventory(InParentInventory) {}
 
 	// ID构造
 	FRLInventoryItemSlotHandle(int32 InSlotId, URLInventoryComponent* InParentInventory)
@@ -148,6 +149,8 @@ public:
 	/**
 	 * 委托
 	 */
+
+	//需要确保只有PlaceItemSlot和RemoveItemFromInventory调用，防止重复调用
 	UPROPERTY(BlueprintAssignable,Category = "Inventory")
 	FOnItemSlotUpdate OnItemSlotUpdate;
 
@@ -158,6 +161,9 @@ public:
 	/** 找到背包中的第一个空的插槽，调用PlaceItemIntoSlot将物品实例放入插槽 */
 	UFUNCTION(BlueprintCallable,Category = "Inventory")
 	virtual bool LootItem(URLInventoryItemInstance* Item);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	virtual bool LootItemByTag(URLInventoryItemInstance* Item,FGameplayTagContainer ItemTags);
 
 	/** 将物品放入指定的插槽当中 */
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
@@ -177,7 +183,7 @@ public:
 
 	/** 根据Tag返回插槽钥匙 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Inventory")
-	virtual FRLInventoryItemSlotHandle GetSlotHandleByTags(FGameplayTagContainer Tags);
+	virtual TArray<FRLInventoryItemSlotHandle> GetSlotHandlesByTags(const FGameplayTagContainer& Tags);
 
 	/** 获取指定插槽内存放的物品 */
 	UFUNCTION(BlueprintCallable, Category = "Inventory")

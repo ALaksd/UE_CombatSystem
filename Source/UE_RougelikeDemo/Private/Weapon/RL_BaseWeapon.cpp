@@ -7,6 +7,9 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "UE_RougelikeDemo/InventorySystem/RLItemFragment_EquipDynamicData.h"
+#include "UE_RougelikeDemo/InventorySystem/Fragments/RLItemFragment_WeaponLevelData.h"
+#include "UE_RougelikeDemo/InventorySystem/RLInventoryItemInstance.h"
 
 // Sets default values
 ARL_BaseWeapon::ARL_BaseWeapon()
@@ -20,14 +23,58 @@ ARL_BaseWeapon::ARL_BaseWeapon()
 	WeaponASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	WeaponAttribute = CreateDefaultSubobject<UAS_Weapon>(TEXT("AttributeSet"));
-	WeaponAttribute->InitDamage(10);
-	
+}
+
+
+void ARL_BaseWeapon::SetWeaponLevel(int32 NewLevel)
+{
+	//获取武器等级数据的Fragment
+	if (!ItemInstance) return;
+
+	const URLItemFragment_WeaponLevelData* WeaponLevelDataFrag = ItemInstance->FindFragmentByClass<URLItemFragment_WeaponLevelData>();
+	if (!WeaponLevelDataFrag) return;
+
+	if (NewLevel > WeaponLevelDataFrag->MaxLevel)
+	{
+		return;
+	}
+	WeaponLevel = NewLevel;
+
+
+	if (WeaponAttribute && WeaponASC)
+	{
+		// 创建临时GE修改属性
+		FGameplayEffectContextHandle Context = WeaponASC->MakeEffectContext();
+		Context.AddSourceObject(this);
+
+		UGameplayEffect* GE = NewObject<UGameplayEffect>();
+		GE->DurationPolicy = EGameplayEffectDurationType::Instant;
+
+		//仅设置Damage
+		FGameplayModifierInfo DamageMod;
+		DamageMod.Attribute = UAS_Weapon::GetDamageAttribute();
+		DamageMod.ModifierOp = EGameplayModOp::Override;
+		DamageMod.ModifierMagnitude = FScalableFloat(WeaponLevelDataFrag->GetWeaponLevelData(WeaponLevel).BaseDamage);
+		GE->Modifiers.Add(DamageMod);
+
+		WeaponASC->ApplyGameplayEffectToSelf(GE, 1.0f, Context);
+	}
+
+	//将等级存到Fragment中
+	if (ItemInstance)
+	{
+		const URLItemFragment_EquipDynamicData* EquipDynamicData = ItemInstance->FindFragmentByClass<URLItemFragment_EquipDynamicData>();
+		if (EquipDynamicData)
+		{
+			EquipDynamicData->CurrentLevel = WeaponLevel;
+		}
+
+	}
 }
 
 void ARL_BaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void ARL_BaseWeapon::Tick(float DeltaTime)
@@ -37,7 +84,7 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 	if (bCombat)
 	{
 		GetCurrentPointsLocation();
-
+		 
 		//碰撞检测参数
 		EDrawDebugTrace::Type DrawDebugType = EDrawDebugTrace::ForDuration;
 		FLinearColor TraceColor = FLinearColor::Red;

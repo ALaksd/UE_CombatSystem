@@ -8,7 +8,11 @@
 
 class UMessageSubsystem;
 class URLInventoryComponent_Equipment;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipItemSlotUpdate,URLInventoryItemInstance*, NewItem, URLInventoryItemInstance*, OldItem);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnEquipItemSlotUpdate,
+	URLInventoryComponent*, InventoryComponent,
+	const FRLInventoryItemSlotHandle&, SlotHandle,
+	URLInventoryItemInstance*, NewItem,
+	URLInventoryItemInstance*, OldItem);
 /**
  * 
  */
@@ -23,14 +27,14 @@ public:
 	virtual void BindCallbacksToDependencies() override;
 	virtual void UnbindAllDelegate()override;
 
-	UPROPERTY(BlueprintAssignable)
-	FOnEquipItemSlotUpdate OnEquipItemSlotUpdate;
+	//UPROPERTY(BlueprintAssignable)
+	//FOnEquipItemSlotUpdate OnEquipItemSlotUpdate;
 
 	UPROPERTY(BlueprintReadOnly)
 	URLInventoryComponent_Equipment* EquipmentInventory;
 
 	UFUNCTION()
-	void HandleEquipUpdate(URLInventoryItemInstance* NewItem, URLInventoryItemInstance* OldItem);
+	void HandleEquipUpdate(URLInventoryComponent* InventoryComponent,const FRLInventoryItemSlotHandle& SlotHandle,URLInventoryItemInstance* NewItem, URLInventoryItemInstance* OldItem);
 
 
 private:

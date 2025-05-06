@@ -20,9 +20,15 @@ class UE_ROUGELIKEDEMO_API URLInventoryItemInstance : public UObject, public IGa
 	
 public:
 	/** 设置和获取Definition */
-
+	UFUNCTION(BlueprintCallable,BlueprintPure)
 	FORCEINLINE URLInventoryItemDefinition* GetItemDefinition() const { return ItemDefinition; }
 	FORCEINLINE void SetItemDefinition(URLInventoryItemDefinition* InDefinition) { ItemDefinition = InDefinition; }
+	FORCEINLINE void AddDynamicFragments(URLInventoryItemFragment* NewFragments) { DynamicFragments.Add(NewFragments); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE bool GetbEquiped() { return bEquipped; }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetbEquiped(bool bInEquipped) { bEquipped = bInEquipped; }
 
 	/** 物品实例同样也需要GameplayTags去判断类别和属性 */
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
@@ -41,7 +47,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	URLInventoryItemDefinition* ItemDefinition;
 
-	//可动态修改的fragment,暂时没有用到
+	// 装备状态
+	UPROPERTY()
+	bool bEquipped = false;
+
+
+	//可动态修改的fragments
 	UPROPERTY()
 	TArray<URLInventoryItemFragment*> DynamicFragments;
 };

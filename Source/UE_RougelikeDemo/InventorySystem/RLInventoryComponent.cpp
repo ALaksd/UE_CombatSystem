@@ -14,11 +14,10 @@ URLInventoryComponent::URLInventoryComponent()
 
 }
 
+
 void URLInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//CreateInventorySlot(20);
 }
 
 bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
@@ -33,8 +32,6 @@ bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
 		{
 			if (PlaceItemSlot(Item, SlotHandle))
 			{
-				//向UI广播放入事件
-				//OnItemSlotUpdate.Broadcast(this,SlotHandle,Item,nullptr);
 				return true;
 			}
 		}
@@ -57,15 +54,32 @@ bool URLInventoryComponent::LootItem(URLInventoryItemInstance* Item)
 		{
 			if (PlaceItemSlot(Item, SlotHandle))
 			{
-				//向UI广播放入事件
-				//OnItemSlotUpdate.Broadcast(this,SlotHandle,Item,nullptr);
 				return true;
 			}
+			
 		}
 	}
 
 	// 极端情况：扩容后仍然无法放入（理论上不应该发生）
 	UE_LOG(LogTemp, Warning, TEXT("Failed to place item after inventory expansion!"));
+	return false;
+}
+
+bool URLInventoryComponent::LootItemByTag(URLInventoryItemInstance* Item, FGameplayTagContainer ItemTags)
+{
+	if (!Item) return false;
+
+	for (auto& Slot : Inventory.Slots)
+	{
+		FRLInventoryItemSlotHandle SlotHandle(Slot, this);
+		if (AcceptsItem(Item, SlotHandle) && Slot.SlotTags.HasAny(ItemTags))
+		{
+			if (PlaceItemSlot(Item, SlotHandle))
+			{
+				return true;
+			}
+		}
+	}
 	return false;
 }
 
@@ -77,14 +91,24 @@ bool URLInventoryComponent::PlaceItemSlot(URLInventoryItemInstance* Item, const 
 	FRLInventoryItemSlot& Slot = GetItemSlot(ItemHandle);
 	URLInventoryItemInstance* PreItem = Slot.ItemInstance;	
 	Slot.ItemInstance = Item;
-	// 正确赋值SlotTags
+	// 正确赋值SlotTags，这里暂时不会用CombindTags
 	if (Item->GetItemDefinition())
 	{
-		Slot.SlotTags = Item->GetItemDefinition()->ItemTags.CombinedTags;
+		Slot.SlotTags = Item->GetItemDefinition()->ItemTags.Added;
 	}
 	else
 	{
 		Slot.SlotTags.Reset(); // 没有ItemDefinition则清空
+	}
+
+	// 更新对应的句柄标签
+	for (auto& Handle : AllSlotHandles)
+	{
+		if (Handle.SlotId == Slot.SlotId)
+		{
+			Handle.SlotTags = Slot.SlotTags;
+			break;
+		}
 	}
 
 	OnItemSlotUpdate.Broadcast(this,ItemHandle,Slot.ItemInstance,PreItem);
@@ -101,6 +125,16 @@ bool URLInventoryComponent::RemoveItemFromInventory(const FRLInventoryItemSlotHa
 
 	ItemSlot.ItemInstance = nullptr;
 	ItemSlot.SlotTags.Reset();
+
+	// 更新对应的句柄标签
+	for (auto& Handle : AllSlotHandles)
+	{
+		if (Handle.SlotId == ItemSlot.SlotId)
+		{
+			Handle.SlotTags.Reset(); // 清空标签
+			break;
+		}
+	}
 
 	OnItemSlotUpdate.Broadcast(this, SlotHandle, ItemSlot.ItemInstance, PreviousItem);
 
@@ -124,18 +158,17 @@ TArray<FRLInventoryItemSlotHandle> URLInventoryComponent::GetAllSlotHandles()
 	return AllSlotHandles;
 }
 
-FRLInventoryItemSlotHandle URLInventoryComponent::GetSlotHandleByTags(FGameplayTagContainer Tags)
+TArray<FRLInventoryItemSlotHandle> URLInventoryComponent::GetSlotHandlesByTags(const FGameplayTagContainer& Tags)
 {
+	TArray<FRLInventoryItemSlotHandle> MatchingHandles;
 	for (const FRLInventoryItemSlot& Slot : Inventory.Slots)
 	{
-		if (Slot.ItemInstance && Slot.SlotTags.HasAll(Tags))
+		if (Slot.ItemInstance && Slot.SlotTags.HasAny(Tags))
 		{
-			return FRLInventoryItemSlotHandle(Slot, this);
+			MatchingHandles.Add(FRLInventoryItemSlotHandle(Slot, this));
 		}
 	}
-
-	// 没找到返回空Handle（SlotId = -1）
-	return FRLInventoryItemSlotHandle();
+	return MatchingHandles;
 }
 
 URLInventoryItemInstance* URLInventoryComponent::GetItemInstanceInSlot(const FRLInventoryItemSlotHandle& Handle)
@@ -236,6 +269,8 @@ void URLInventoryComponent::CreateInventorySlotByTag(FGameplayTag Tag)
 
 	IdCounter++;
 	Inventory.Slots.Add(NewSlot);
+
+	PostInventoryUpdate();
 }
 
 void URLInventoryComponent::RemoveInventorySlot(const FRLInventoryItemSlotHandle& Handle)

@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include <UE_RougelikeDemo/InventorySystem/Fragments/RLItemFragment_Attached.h>
 #include "GameFramework/PlayerState.h"
+#include <UE_RougelikeDemo/InventorySystem/RLItemFragment_EquipDynamicData.h>
 
 
 UCloseCombatComponent::UCloseCombatComponent()
@@ -33,13 +34,13 @@ void UCloseCombatComponent::BeginPlay()
 		EquipmentInventoryComponent = PlayerState->GetComponentByClass<URLInventoryComponent_Equipment>();
 
 		check(EquipmentInventoryComponent);
-		EquipmentInventoryComponent->OnEquipUpdate.AddDynamic(this, &UCloseCombatComponent::OnEquipSlotUpdate);
+		EquipmentInventoryComponent->OnItemSlotUpdate.AddDynamic(this, &UCloseCombatComponent::OnEquipSlotUpdate);
 	}
 	else
 	{
 		EquipmentInventoryComponent = GetOwner()->GetComponentByClass<URLInventoryComponent_Equipment>();
 		check(EquipmentInventoryComponent);
-		EquipmentInventoryComponent->OnEquipUpdate.AddDynamic(this, &UCloseCombatComponent::OnEquipSlotUpdate);
+		EquipmentInventoryComponent->OnItemSlotUpdate.AddDynamic(this, &UCloseCombatComponent::OnEquipSlotUpdate);
 	}
 
 }
@@ -54,7 +55,7 @@ void UCloseCombatComponent::EndCombat() const
 	CurrentWeapon->EndCombat();
 }
 
-void UCloseCombatComponent::OnEquipSlotUpdate(URLInventoryItemInstance* ItemInstance, URLInventoryItemInstance* PreviousItemInstance)
+void UCloseCombatComponent::OnEquipSlotUpdate(URLInventoryComponent* InventoryComponent,const FRLInventoryItemSlotHandle& SlotHandle, URLInventoryItemInstance* ItemInstance, URLInventoryItemInstance* PreviousItemInstance)
 {
 	// 旧武器删掉
 	//UnEquipWeaponForInventory()
@@ -78,6 +79,13 @@ void UCloseCombatComponent::EquipWeaponForInventory(URLInventoryItemInstance* It
 	{
 		Weapon->SetActorHiddenInGame(false);
 		CurrentWeapon = Weapon;
+
+		//设置武器等级
+		const URLItemFragment_EquipDynamicData* EquipDynamicData = ItemInstance->FindFragmentByClass<URLItemFragment_EquipDynamicData>();
+		if (EquipDynamicData)
+		{
+			CurrentWeapon->SetWeaponLevel(EquipDynamicData->CurrentLevel);
+		}
 	}
 }
 

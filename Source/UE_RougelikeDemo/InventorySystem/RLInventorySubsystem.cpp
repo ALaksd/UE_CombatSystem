@@ -6,6 +6,7 @@
 #include "RLInventoryItemDefinition.h"
 #include "Fragments/RLItemFragment_Pickup.h"
 #include "Item/Item_Pickup.h"
+#include "RLItemFragment_EquipDynamicData.h"
 
 
 URLInventoryItemInstance* URLInventorySubsystem::GenerateItemInstance(URLInventoryItemDefinition* ItemDefinition)
@@ -21,6 +22,11 @@ URLInventoryItemInstance* URLInventorySubsystem::GenerateItemInstance(URLInvento
 	URLInventoryItemInstance* NewInstance = NewObject<URLInventoryItemInstance>(this);
 	NewInstance->SetItemDefinition(ItemDefinition);
 
+	//添加动态实例，这里所有都添加
+
+	URLItemFragment_EquipDynamicData* NewDynamicFragment = NewObject<URLItemFragment_EquipDynamicData>();
+	NewInstance->AddDynamicFragments(NewDynamicFragment);
+	NewDynamicFragment->Owner = NewInstance;
 	return NewInstance;
 }
 

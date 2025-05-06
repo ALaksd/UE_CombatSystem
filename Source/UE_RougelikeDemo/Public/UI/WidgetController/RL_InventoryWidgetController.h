@@ -11,6 +11,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnInventoryItemSlotUpdate,
 	const FRLInventoryItemSlotHandle&, SlotHandle,
 	URLInventoryItemInstance*, NewItem,
 	URLInventoryItemInstance*, OldItem);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FbOnEquip_UI, bool,bEquip);
 /**
  * 
  */
@@ -28,7 +30,15 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnInventoryItemSlotUpdate OnInventoryItemSlotUpdate;
 
+	UPROPERTY(BlueprintAssignable)
+	FbOnEquip_UI bOnEquip_UI;
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<URLInventoryComponent> InventoryComponnet;
+
 	UFUNCTION()
 	void HandleItemSlotUpdate(URLInventoryComponent* InventoryComponent, const FRLInventoryItemSlotHandle& SlotHandle, URLInventoryItemInstance* NewItem, URLInventoryItemInstance* OldItem);
 
+	UFUNCTION()
+	void SetbEquiped(bool bEquip);
 };

@@ -18,9 +18,9 @@ UGA_AttackBase::UGA_AttackBase()
 
 void UGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	if (CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
+		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 		//暂时只播放动画
 		if (UAnimMontage* MontageToPlay = AttackMontage)
 		{

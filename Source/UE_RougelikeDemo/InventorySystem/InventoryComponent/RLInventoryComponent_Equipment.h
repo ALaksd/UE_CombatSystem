@@ -61,6 +61,8 @@ struct FEquipWeapon
  * 
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipUpdate,URLInventoryItemInstance*, NewItem,URLInventoryItemInstance*, OldItem);
+/** 是否装备 */
+DECLARE_DELEGATE_OneParam(FbOnEquip, bool);
 
 UCLASS(BlueprintType, Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UE_ROUGELIKEDEMO_API URLInventoryComponent_Equipment : public URLInventoryComponent
@@ -71,11 +73,11 @@ public:
 	URLInventoryComponent_Equipment(const FObjectInitializer& ObjectInitializer);
 	virtual void InitializeComponent() override;
 
-	/**
-	 * 委托
-	 */
+	/*委托*/
 	UPROPERTY(BlueprintAssignable)
 	FOnEquipUpdate OnEquipUpdate;
+
+	FbOnEquip bOnEquip;
 
 	/** 查询接口 */
 
@@ -83,10 +85,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	TArray<FRLInventoryItemSlotHandle> GetSlotsByType(FGameplayTag SlotTypeTag) const;
 
-	// 获取当前装备的物品（按类型）
+	// 获取当前装备的物品数组（按类型）
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	TArray<URLInventoryItemInstance*> GetEquippedItemsByType(FGameplayTag SlotTypeTag);
 
+	virtual bool PlaceItemSlot(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle) override;
+
+	virtual bool RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle) override;
+
+	// 获取当前装备的物品（按类型）
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	URLInventoryItemInstance* GetEqeippedItemByType(FGameplayTag SlotTypeTag);
 	//武器切换的输入回调函数
 	UFUNCTION()
 	void SwitchWeapon(const FInputActionValue& Value);
@@ -118,4 +127,3 @@ private:
 	UPROPERTY()
 	FEquipWeapon CurrentWeapon;
 };
-
