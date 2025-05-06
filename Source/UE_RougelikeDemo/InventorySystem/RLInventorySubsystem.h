@@ -25,4 +25,25 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	AActor* SpawnItemActorFromDefinition(URLInventoryItemDefinition* ItemDefinition, const FVector& Location);
+
+	/**
+	* 升级武器并消耗材料
+	* @param WeaponInstance 要升级的武器实例
+	* @param OwnerInventory 玩家库存组件
+	* @return 是否升级成功
+   */
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Upgrade")
+	bool UpgradeWeapon(URLInventoryItemInstance* WeaponInstance,URLInventoryComponent* OwnerInventory);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Upgrade")
+	FWeaponLevelData GetCurrentWeaponLevelData(URLInventoryItemInstance* WeaponInstance);
+
+	/** 获取背包里的指定武器强化碎片的数量 */
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Upgrade")
+	int32 GetCurrentWeaponFragmentNum(URLInventoryComponent* OwnerInventory,FGameplayTag ItemTag);
+
+	/** 获取当前灵魂 */
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Upgrade")
+	int32 GetCurrentSoul(URLInventoryComponent* OwnerInventory);
+
 };

@@ -59,17 +59,6 @@ void ARL_BaseWeapon::SetWeaponLevel(int32 NewLevel)
 
 		WeaponASC->ApplyGameplayEffectToSelf(GE, 1.0f, Context);
 	}
-
-	//将等级存到Fragment中
-	if (ItemInstance)
-	{
-		const URLItemFragment_EquipDynamicData* EquipDynamicData = ItemInstance->FindFragmentByClass<URLItemFragment_EquipDynamicData>();
-		if (EquipDynamicData)
-		{
-			EquipDynamicData->CurrentLevel = WeaponLevel;
-		}
-
-	}
 }
 
 void ARL_BaseWeapon::BeginPlay()

@@ -99,7 +99,7 @@ bool URLInventoryComponent_Equipment::RemoveItemFromInventory(const FRLInventory
 	return true;
 }
 
-void URLInventoryComponent_Equipment::SwitchWeapon()
+void URLInventoryComponent_Equipment::SwitchWeapon(const FInputActionValue& Value)
 {
 	TArray<URLInventoryItemInstance*> Weapons;
 	TArray<FRLInventoryItemSlotHandle> Handles;
