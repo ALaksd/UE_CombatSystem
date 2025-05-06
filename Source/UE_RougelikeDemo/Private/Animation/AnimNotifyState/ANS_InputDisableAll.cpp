@@ -17,9 +17,10 @@ void UANS_InputDisableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSe
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 		{
-			if (InputSubsystem->HasMappingContext(DefaultIMC))
+			if (InputSubsystem->HasMappingContext(DefaultIMC) && InputSubsystem->HasMappingContext(MoveIMC))
 			{
 				InputSubsystem->RemoveMappingContext(DefaultIMC);
+				InputSubsystem->RemoveMappingContext(MoveIMC);
 				InputSubsystem->AddMappingContext(DisableIMC, 0);
 			}
 		}
