@@ -69,16 +69,6 @@ bool URLInventoryComponent_Equipment::PlaceItemSlot(URLInventoryItemInstance* It
 	FRLInventoryItemSlot& Slot = GetItemSlot(ItemHandle);
 	URLInventoryItemInstance* PreItem = Slot.ItemInstance;
 	Slot.ItemInstance = Item;
-	// 正确赋值SlotTags，这里暂时不会用CombindTags
-	if (Item->GetItemDefinition())
-	{
-		Slot.SlotTags = Item->GetItemDefinition()->ItemTags.Added;
-	}
-	else
-	{
-		Slot.SlotTags.Reset(); // 没有ItemDefinition则清空
-	}
-
 	OnItemSlotUpdate.Broadcast(this, ItemHandle, Slot.ItemInstance, PreItem);
 
 	return true;
@@ -92,7 +82,6 @@ bool URLInventoryComponent_Equipment::RemoveItemFromInventory(const FRLInventory
 	if (!ItemSlot.ItemInstance) return false;
 
 	ItemSlot.ItemInstance = nullptr;
-	ItemSlot.SlotTags.Reset();
 
 	OnItemSlotUpdate.Broadcast(this, SlotHandle, ItemSlot.ItemInstance, PreviousItem);
 
@@ -150,22 +139,30 @@ void URLInventoryComponent_Equipment::BeginPlay()
 
 void URLInventoryComponent_Equipment::OnEquipSlotUpdate(URLInventoryComponent* InventoryComponent, const FRLInventoryItemSlotHandle& SlotHandle, URLInventoryItemInstance* ItemInstance, URLInventoryItemInstance* PreviousItemInstance)
 {
-	//前一个装备不为空，则首先将前一个装备脱下；如果当前装备不为空，则将当前装备穿上。
+	/*
+	* 首先脱下前一个装备；
+	* 当前装备等于前一个装备，返回；
+	* 否则穿上；
+	*/
 	if (IsValid(PreviousItemInstance))
 	{
 		// 如果将要装备的物品是武器则调用武器专有装备函数
 		if (SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.1"))) || SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.2"))))
-			UnEquipWeapon(SlotHandle, ItemInstance);
+			UnEquipWeapon(SlotHandle, PreviousItemInstance);
 		else
 		MakeItemUnequipped_Internal(SlotHandle, PreviousItemInstance);
 	}
 	if (IsValid(ItemInstance))
 	{
-		// 如果将要装备的物品是武器则调用武器专有装备函数
-		if (SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.1"))) || SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.2"))))
-			EquipWeapon(SlotHandle, ItemInstance);
-		else
-			MakeItemEquipped_Internal(SlotHandle, ItemInstance);
+		if (ItemInstance != PreviousItemInstance)
+		{
+			// 如果将要装备的物品是武器则调用武器专有装备函数
+			if (SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.1"))) || SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.2"))))
+				EquipWeapon(SlotHandle, ItemInstance);
+			else
+				MakeItemEquipped_Internal(SlotHandle, ItemInstance);
+		}
+
 	}
 }
 
@@ -302,6 +299,7 @@ void URLInventoryComponent_Equipment::UnEquipWeapon(const FRLInventoryItemSlotHa
 		EAllowShrinking::No);
 
 	// 更新物品实例的装备状态
+	OnEquipUpdate.Broadcast(nullptr);
 	ItemInstance->SetbEquiped(false);
 	bOnEquip.ExecuteIfBound(false);
 }

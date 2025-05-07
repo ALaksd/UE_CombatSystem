@@ -10,3 +10,7 @@ void URL_UserWidget::SetWidgetController(UObject* InWidgetConller, URL_UserWidge
 	WidgetControllerSet();
 }
 
+void URL_UserWidget::ApplyInitParams_Implementation(const FWidgetInitParams& InitParams)
+{
+	CurrentParams = InitParams; // 存储参数
+}

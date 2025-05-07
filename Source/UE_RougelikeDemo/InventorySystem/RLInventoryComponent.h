@@ -161,7 +161,7 @@ public:
 	UFUNCTION(BlueprintCallable,Category = "Inventory")
 	virtual bool LootItem(URLInventoryItemInstance* Item);
 
-	/** 根据Tag放置物品 ,由于指定了插槽，所以不需要扩容*/
+	/** 根据Tag放置物品 ,由于指定了插槽，所以不需要扩容,*/
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	virtual bool LootItemByTag(URLInventoryItemInstance* Item,FGameplayTagContainer ItemTags);
 

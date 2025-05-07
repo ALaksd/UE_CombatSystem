@@ -4,11 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include <GameplayTagContainer.h>
 #include "RL_UserWidget.generated.h"
+
 
 /**
  * 
  */
+
+USTRUCT(BlueprintType)
+struct FWidgetInitParams
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	FGameplayTag TransTag;
+};
 
 struct FSkillList;
 
@@ -28,7 +39,15 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<URL_UserWidget> OnwerWidget;
 
+	// 蓝图可访问的参数副本
+	UPROPERTY(BlueprintReadOnly, Category = "UI")
+	FWidgetInitParams CurrentParams;
+
 	//设置好控制器后执行调试或其他功能
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetControllerSet();
+
+	// 参数应用方法（可被子类覆盖）
+	UFUNCTION(BlueprintNativeEvent)
+	void ApplyInitParams(const FWidgetInitParams& InitParams);
 };

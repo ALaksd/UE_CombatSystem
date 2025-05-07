@@ -106,6 +106,7 @@ public:
 
 	virtual bool PlaceItemSlot(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle) override;
 
+	/** 装备组件只需要移除ItemInstance,不移除Tag */
 	virtual bool RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle,int32 RemoveQuantity = 1) override;
 
 	// 获取当前装备的物品（按类型）

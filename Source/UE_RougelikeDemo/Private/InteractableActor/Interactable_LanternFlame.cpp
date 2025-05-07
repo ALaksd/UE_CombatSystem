@@ -42,7 +42,7 @@ void AInteractable_LanternFlame::TryInteract()
 				URL_UIManagerSubsystem* UIManager = GameInstance->GetSubsystem<URL_UIManagerSubsystem>();
 				if (UIManager)
 				{
-					WBP_SavePoint = Cast<URL_UserWidget>(UIManager->AddNewWidget(WBP_SavePointClass, UGameplayStatics::GetPlayerController(this, 0)));
+					WBP_SavePoint = UIManager->AddNewWidget(WBP_SavePointClass, UGameplayStatics::GetPlayerController(this, 0));
 				}
 			}
 

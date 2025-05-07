@@ -55,6 +55,13 @@ void UCloseCombatComponent::EndCombat() const
 
 void UCloseCombatComponent::SwitchWeapon(URLInventoryItemInstance* NewWeapon)
 {
+	// 销毁之前的武器
+	if (CurrentWeapon)
+		CurrentWeapon->Destroy();
+
+	if (!NewWeapon)
+		return;
+
 	// 创建新实例
 	const URLItemFragment_Attached* Fragment = Cast<URLItemFragment_Attached>(
 		NewWeapon->GetItemDefinition()->FindFragmentByClass(URLItemFragment_Attached::StaticClass()));
@@ -63,9 +70,6 @@ void UCloseCombatComponent::SwitchWeapon(URLInventoryItemInstance* NewWeapon)
 	{
 		if (ARL_BaseWeapon* NewWeapon_T = Cast<ARL_BaseWeapon>(Fragment->AttachToActor(GetOwner(),NewWeapon)))
 		{
-			// 销毁之前的武器
-			if (CurrentWeapon)
-				CurrentWeapon->Destroy();
 			
 			NewWeapon_T->SetActorHiddenInGame(false);
 			CurrentWeapon=NewWeapon_T;
