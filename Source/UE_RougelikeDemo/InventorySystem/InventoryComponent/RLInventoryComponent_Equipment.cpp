@@ -31,36 +31,6 @@ void URLInventoryComponent_Equipment::InitializeComponent()
 	}
 }
 
-TArray<FRLInventoryItemSlotHandle> URLInventoryComponent_Equipment::GetSlotsByType(FGameplayTag SlotTypeTag) const
-{
-	TArray<FRLInventoryItemSlotHandle> Result;
-
-	for (const FRLInventoryItemInfoEntry& Entry : EquipmentInfos)
-	{
-		if (Entry.Handle.SlotTags.HasTagExact(SlotTypeTag))
-		{
-			Result.Add(Entry.Handle);
-		}
-	}
-	return Result;
-}
-
-TArray<URLInventoryItemInstance*> URLInventoryComponent_Equipment::GetEquippedItemsByType(FGameplayTag SlotTypeTag)
-{
-	TArray<URLInventoryItemInstance*> Result;
-
-	for (const FRLInventoryItemInfoEntry& Entry : EquipmentInfos)
-	{
-		if (Entry.Handle.SlotTags.HasTagExact(SlotTypeTag))
-		{
-			if (URLInventoryItemInstance* Item = GetItemInstanceInSlot(Entry.Handle))
-			{
-				Result.Add(Item);
-			}
-		}
-	}
-	return Result;
-}
 
 bool URLInventoryComponent_Equipment::PlaceItemSlot(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle)
 {

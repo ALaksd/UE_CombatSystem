@@ -96,14 +96,6 @@ public:
 
 	/** 查询接口 */
 
-	// 获取指定类型的槽位
-	UFUNCTION(BlueprintCallable, Category = "Equipment")
-	TArray<FRLInventoryItemSlotHandle> GetSlotsByType(FGameplayTag SlotTypeTag) const;
-
-	// 获取当前装备的物品数组（按类型）
-	UFUNCTION(BlueprintCallable, Category = "Equipment")
-	TArray<URLInventoryItemInstance*> GetEquippedItemsByType(FGameplayTag SlotTypeTag);
-
 	virtual bool PlaceItemSlot(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle) override;
 
 	/** 装备组件只需要移除ItemInstance,不移除Tag */
