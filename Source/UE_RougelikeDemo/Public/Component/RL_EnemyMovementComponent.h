@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include <Abilities/GameplayAbility.h>
 #include "RL_EnemyMovementComponent.generated.h"
+
 
 USTRUCT(BlueprintType)
 struct FPatrolConfig
@@ -58,6 +60,37 @@ enum EMovementRange:uint8
 	Min,
 	Mid,
 };
+
+// 技能配置结构体
+USTRUCT(BlueprintType)
+struct FSkillConfig : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	// 基础配置
+	UPROPERTY(EditAnywhere, Category = "Skill")
+	FGameplayTag SkillTag;
+
+	// 触发条件
+	UPROPERTY(EditAnywhere, Category = "Condition")
+	FGameplayTagQuery ActivationQuery;
+
+	// 概率权重
+	UPROPERTY(EditAnywhere, Category = "Probability")
+	float SelectionWeight = 1.0f;
+
+	// 优先级（数值越大优先级越高）
+	UPROPERTY(EditAnywhere, Category = "Priority")
+	int32 PriorityLevel = 0;
+
+	// 冷却时间（秒）
+	UPROPERTY(EditAnywhere, Category = "Cooldown")
+	float CooldownDuration = 5.0f;
+
+	// 距离条件
+	UPROPERTY(EditAnywhere, Category = "Distance")
+	FFloatRange ValidDistance = FFloatRange(0.0f, 1000.0f);
+};
 class USplineComponent;
 class UBehaviorTree;
 /**
@@ -99,6 +132,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI|Confrontation")
 	TObjectPtr<UBehaviorTree> ConfrontationSubTree;
 
+	// 配置数据引用
+	UPROPERTY(EditAnywhere, Category = "AI|Attack")
+	TObjectPtr<UDataTable> SkillConfigTable;
+
 public:	
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	FORCEINLINE UBehaviorTree* GetPatrolSubTree() const { return PatrolSubTree; }
@@ -114,4 +151,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE FConfrontationConfig& GetConfrontationConfig() { return ConfrontationConfig; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE UDataTable* GetSkillConfigTable() { return SkillConfigTable; }
 };
