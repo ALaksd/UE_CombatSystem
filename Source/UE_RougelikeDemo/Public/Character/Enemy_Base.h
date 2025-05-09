@@ -14,6 +14,8 @@
 class UBehaviorTree;
 class ARL_AIController;
 class UWidgetComponent;
+class URL_EnemyMovementComponent;
+class USplineComponent;
 
 UCLASS()
 class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface,public IRL_CombatInterface,public IRL_EnemyInterface
@@ -63,6 +65,13 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<AActor> TargetActor;
+
+	//样条线组件，用于巡逻
+	UPROPERTY(VisibleAnywhere, Category = "AI|Patrol")
+	TObjectPtr<USplineComponent> PatrolSpline;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	TObjectPtr<URL_EnemyMovementComponent> EnemyMovementComponent;
 
 	/** UI */
 	UPROPERTY(VisibleAnywhere)

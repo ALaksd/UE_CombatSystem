@@ -10,6 +10,8 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include <UI/Widget/RL_UserWidget.h>
 #include "Components/WidgetComponent.h"
+#include "Component/RL_EnemyMovementComponent.h"
+#include "Components/SplineComponent.h"
 
 // Sets default values
 AEnemy_Base::AEnemy_Base()
@@ -29,6 +31,10 @@ AEnemy_Base::AEnemy_Base()
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
 
+	EnemyMovementComponent = CreateDefaultSubobject<URL_EnemyMovementComponent>("EnemyMovementComponent");
+
+	PatrolSpline = CreateDefaultSubobject<USplineComponent>("PatrolSpline");
+	PatrolSpline->SetupAttachment(GetRootComponent());
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
