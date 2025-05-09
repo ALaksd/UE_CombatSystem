@@ -25,16 +25,17 @@ class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySyste
 public:
 	AEnemy_Base();
 
-
-private:
-	UPROPERTY(EditDefaultsOnly)
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Components")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+private:
+	
 	//属性
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAttributeSet> AttributeSet;
 
-
-
+	// 存储状态相关的标签(暂时只放破防与蹒跚状态)
+	FGameplayTagContainer StateTags;
 
 public:
 	inline  virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override {return AbilitySystemComponent;}
@@ -49,12 +50,30 @@ public:
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 
 	/** End EnemyInterface */
+
+	// 体力减少回调
+	UFUNCTION(BlueprintImplementableEvent)
+	void StaminaReduceCallBack();
+	// 韧性减少回调
+	UFUNCTION(BlueprintImplementableEvent)
+	void ResilienceReduceCallBack();
+	
+	// 处理破防相关
+	void GuardBroken();
+	// 处理蹒跚相关
+	void Staggered();
+
 	
 protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 
-
+	// 回复体力,韧性
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="GE_Restore")
+	TSubclassOf<UGameplayEffect> GE_RestoreStamina;
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="GE_Restore")
+	TSubclassOf<UGameplayEffect> GE_RestoreResilience;
+	
 	/** AI*/
 
 	UPROPERTY(EditAnywhere, Category = "AI")
@@ -107,5 +126,11 @@ private:
 	UPROPERTY(EditDefaultsOnly,Category="Initialize")
 	TSubclassOf<UGameplayEffect> PrimariAttribute;
 	void InitializeAttribute();
-	
+
+	// 添加标签
+	void AddTag(FName Tag);
+	// 移除标签
+	void RemoveTag(FName Tag);
 };
+
+

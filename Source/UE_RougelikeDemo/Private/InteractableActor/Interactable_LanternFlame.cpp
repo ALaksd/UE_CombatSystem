@@ -14,6 +14,8 @@
 #include "UI/WidgetController/RL_LanternFlameController.h"
 #include <System/RL_UIManagerSubsystem.h>
 
+#include "System/RL_SanitySubsystem.h"
+
 AInteractable_LanternFlame::AInteractable_LanternFlame()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -39,8 +41,7 @@ void AInteractable_LanternFlame::TryInteract()
 			UGameInstance* GameInstance = GetWorld()->GetGameInstance();
 			if (GameInstance)
 			{
-				URL_UIManagerSubsystem* UIManager = GameInstance->GetSubsystem<URL_UIManagerSubsystem>();
-				if (UIManager)
+				if (URL_UIManagerSubsystem* UIManager = GameInstance->GetSubsystem<URL_UIManagerSubsystem>())
 				{
 					WBP_SavePoint = UIManager->AddNewWidget(WBP_SavePointClass, UGameplayStatics::GetPlayerController(this, 0));
 				}
@@ -50,9 +51,11 @@ void AInteractable_LanternFlame::TryInteract()
 			WBP_SavePoint->SetWidgetController(LanternFlameWidgetController);
 			LanternFlameWidgetController->BroadcastInitialValue();
 			InitPointName();
+
+			// 回复理智
+			if (URL_SanitySubsystem* SanitySubsystem = GameInstance->GetSubsystem<URL_SanitySubsystem>())
+				SanitySubsystem->RestoreSanityToMax();
 			
-			//WBP_SavePoint->AddToViewport(0);
-			//WBP_SavePoint->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }

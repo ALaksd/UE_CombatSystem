@@ -33,6 +33,13 @@ void URL_SanitySubsystem::RestoreSanity(float Amount)
 	}
 }
 
+void URL_SanitySubsystem::RestoreSanityToMax()
+{
+	CurrentSanity = MaxSanity;
+	SanityState=E_SanityState::Sane;
+	OnSanityStateChanged.Broadcast(GetSanityState());
+}
+
 void URL_SanitySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
