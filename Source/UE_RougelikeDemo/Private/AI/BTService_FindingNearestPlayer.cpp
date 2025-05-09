@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BTFunctionLibrary.h"
 #include <Interface/RL_CombatInterface.h>
+#include "Interface/RL_EnemyInterface.h"
 
 void UBTService_FindingNearestPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
@@ -64,4 +65,5 @@ void UBTService_FindingNearestPlayer::TickNode(UBehaviorTreeComponent& OwnerComp
 	UBTFunctionLibrary::SetBlackboardValueAsObject(this, TargetToFollowSelector, ClosestActor);
 	UBTFunctionLibrary::SetBlackboardValueAsFloat(this, DistanceToTargetSelector, ClosestDistance);
 	UBTFunctionLibrary::SetBlackboardValueAsBool(this, IsTargetValidSelector, bIsTargetValid);
+	IRL_EnemyInterface::Execute_SetCombatTarget(OwningPawn, ClosestActor);
 }
