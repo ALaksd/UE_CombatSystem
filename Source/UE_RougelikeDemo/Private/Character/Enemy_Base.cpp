@@ -57,6 +57,21 @@ void AEnemy_Base::SetCombatTarget_Implementation(AActor* InCombatTarget)
 	TargetActor = InCombatTarget;
 }
 
+void AEnemy_Base::GuardBroken()
+{
+	AddTag(FName("EnemyState.GuardBroken"));
+	
+	//该状态下敌人无法攻击
+	//受到的伤害增加（受到的伤害*1.2）
+	//并能被处决
+}
+
+void AEnemy_Base::Staggered()
+{
+	AddTag(FName("EnemyState.Staggered"));
+
+}
+
 void AEnemy_Base::BeginPlay()
 {
 	Super::BeginPlay();
@@ -118,6 +133,25 @@ void AEnemy_Base::InitializeAttribute()
 	{
 		FGameplayEffectSpecHandle GameplayEffect = AbilitySystemComponent->MakeOutgoingSpec(PrimariAttribute,1,AbilitySystemComponent->MakeEffectContext());
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*GameplayEffect.Data.Get());
+	}
+}
+
+void AEnemy_Base::AddTag(FName Tag)
+{
+	FGameplayTag EnemyTag = FGameplayTag::RequestGameplayTag(Tag);
+	StateTags.AddTag(EnemyTag);
+}
+
+void AEnemy_Base::RemoveTag(FName Tag)
+{
+	FGameplayTag EnemyTag = FGameplayTag::RequestGameplayTag(Tag);
+	for (FGameplayTag StateTag : StateTags)
+	{
+		if (EnemyTag == StateTag)
+		{
+			StateTags.RemoveTag(StateTag);
+			break;
+		}
 	}
 }
 
