@@ -17,6 +17,10 @@ EBTNodeResult::Type UBTTask_ExecuteSkill::ExecuteTask(UBehaviorTreeComponent& Ow
 	CachedOwnerComp = &OwnerComp;
 
 	const FName SkillTagName = OwnerComp.GetBlackboardComponent()->GetValueAsName(SelectedSkillKey.SelectedKeyName);
+	if(SkillTagName == "None")
+		return EBTNodeResult::Failed;
+
+
 	const FGameplayTag SkillTag = FGameplayTag::RequestGameplayTag(SkillTagName);
 
 	if (UAbilitySystemComponent* ASC = GetAbilitySystem(OwnerComp.GetAIOwner()->GetPawn()))

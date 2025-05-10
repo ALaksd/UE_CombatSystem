@@ -5,6 +5,7 @@
 
 #include "GAS/Abilities/GA_Base.h"
 #include <AbilitySystemBlueprintLibrary.h>
+#include <GAS/Abilities/GA_EnemyAbilityBase.h>
 
 void UASC_Base::AbilityActorInfoSet()
 {
@@ -28,6 +29,61 @@ void UASC_Base::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>
 		AddCharacterAbility(AbilityClass);
 	}
 }
+
+void UASC_Base::AddEnemyAbility(const FEnemySkills& SkillInfo)
+{
+	if (!SkillInfo.Skill) return;
+
+	// 生成 AbilitySpec（默认等级为 1）
+	FGameplayAbilitySpec AbilitySpec(SkillInfo.Skill, 1);
+
+	// 提取标签
+	UGA_EnemyAbilityBase* AbilityCDO = Cast<UGA_EnemyAbilityBase>(SkillInfo.Skill->GetDefaultObject());
+	if (AbilityCDO)
+	{
+		AbilityCDO->SetAbilityMontage(SkillInfo.SkillMontage);
+		AbilitySpec.DynamicAbilityTags.AddTag(AbilityCDO->StartInputTag);
+	}
+
+	// 注册能力
+	GiveAbility(AbilitySpec);
+
+	// 应用冷却 GE（动态）
+	if (AbilityCDO)
+	{
+		const UGameplayEffect* CooldownEffect = AbilityCDO->GetCooldownGameplayEffect();
+		if (!CooldownEffect) return;
+
+		// 构建冷却 Spec
+		FGameplayEffectSpecHandle CooldownSpecHandle = MakeOutgoingSpec(CooldownEffect->GetClass(), 1.0f, MakeEffectContext());
+		if (CooldownSpecHandle.IsValid())
+		{
+			FGameplayEffectSpec* Spec = CooldownSpecHandle.Data.Get();
+
+			// 设置 SetByCaller 冷却时间（前提：GE 支持 SetByCaller）
+			Spec->SetSetByCallerMagnitude(FName(TEXT("Data.Cooldown")), SkillInfo.Cooldown);
+
+			// 强制覆盖 Duration（如果没用 SetByCaller）
+			Spec->SetDuration(SkillInfo.Cooldown, true);
+
+			// 应用冷却到自己
+			ApplyGameplayEffectSpecToSelf(*Spec);
+		}
+	}
+}
+
+
+void UASC_Base::AddEnemyAbilities(const TArray<FEnemySkills>& AllSkills)
+{
+	for (const FEnemySkills& Skill : AllSkills)
+	{
+		if (Skill.Skill)
+		{
+			AddEnemyAbility(Skill);
+		}
+	}
+}
+
 
 void UASC_Base::AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbilities)
 {

@@ -16,6 +16,8 @@ void UAS_Enemy::PreAttributeBaseChange(const FGameplayAttribute& Attribute, floa
 
 void UAS_Enemy::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
+	Super::PreAttributeChange(Attribute, NewValue);
+
 	if (!EnemyRef)
 		EnemyRef = CastChecked<AEnemy_Base>(GetOwningActor());
 	

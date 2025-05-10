@@ -17,9 +17,9 @@ class UE_ROUGELIKEDEMO_API UGA_EnemyAbilityBase : public UGA_Base
 public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-	
-protected:
 
+	FORCEINLINE void SetAbilityMontage(UAnimMontage* InAbilityMontage) { AbilityMontage = InAbilityMontage; }
+protected:
 	UFUNCTION()
 	void OnMontageCompleted();
 	void UpdateFacingDirection();

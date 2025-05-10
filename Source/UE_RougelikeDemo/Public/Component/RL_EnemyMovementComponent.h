@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include <Abilities/GameplayAbility.h>
+#include "Data/RL_EnemyConfig.h"
 #include "RL_EnemyMovementComponent.generated.h"
 
 
@@ -37,20 +38,6 @@ struct FConfrontationConfig
 
 	UPROPERTY(EditAnywhere)
 	float MinDistance = 300.0f;
-
-	// 移动参数
-	UPROPERTY(EditAnywhere)
-	float ChaseSpeed = 600.0f;
-
-	UPROPERTY(EditAnywhere)
-	float SideMoveSpeed = 450.0f;
-
-	// 行为参数
-	UPROPERTY(EditAnywhere)
-	float SideMoveDuration = 2.5f;
-
-	UPROPERTY(EditAnywhere)
-	float DirectionChangeProb = 0.3f;
 };
 
 UENUM(BlueprintType)
@@ -70,10 +57,6 @@ struct FSkillConfig : public FTableRowBase
 	// 基础配置
 	UPROPERTY(EditAnywhere, Category = "Skill")
 	FGameplayTag SkillTag;
-
-	// 触发条件
-	UPROPERTY(EditAnywhere, Category = "Condition")
-	FGameplayTagQuery ActivationQuery;
 
 	// 概率权重
 	UPROPERTY(EditAnywhere, Category = "Probability")
@@ -136,6 +119,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI|Attack")
 	TObjectPtr<UDataTable> SkillConfigTable;
 
+	//敌人配置表
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")
+	TObjectPtr<URL_EnemyConfig> EnemyConfig;
+
 public:	
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	FORCEINLINE UBehaviorTree* GetPatrolSubTree() const { return PatrolSubTree; }
@@ -154,4 +141,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE UDataTable* GetSkillConfigTable() { return SkillConfigTable; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE URL_EnemyConfig* GetEnemyConfige() { return EnemyConfig; }
 };

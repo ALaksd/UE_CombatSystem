@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include <UE_RougelikeDemo/InventorySystem/Fragments/RLItemFragment_Attached.h>
 #include "GameFramework/PlayerState.h"
+#include <UE_RougelikeDemo/InventorySystem/RLItemFragment_EquipDynamicData.h>
 
 
 
@@ -66,13 +67,18 @@ void UCloseCombatComponent::SwitchWeapon(URLInventoryItemInstance* NewWeapon)
 	const URLItemFragment_Attached* Fragment = Cast<URLItemFragment_Attached>(
 		NewWeapon->GetItemDefinition()->FindFragmentByClass(URLItemFragment_Attached::StaticClass()));
 
-	if (Fragment)
+	const URLItemFragment_EquipDynamicData* EquipDynamicData = NewWeapon->FindFragmentByClass<URLItemFragment_EquipDynamicData>();
+
+	if (Fragment && EquipDynamicData)
 	{
 		if (ARL_BaseWeapon* NewWeapon_T = Cast<ARL_BaseWeapon>(Fragment->AttachToActor(GetOwner(),NewWeapon)))
 		{
 			
 			NewWeapon_T->SetActorHiddenInGame(false);
-			CurrentWeapon=NewWeapon_T;
+			NewWeapon_T->SetWeaponOwner(GetOwner());
+			NewWeapon_T->SetWeaponLevel(EquipDynamicData->CurrentLevel);
+
+			CurrentWeapon = NewWeapon_T;
 		}
 	}
 	

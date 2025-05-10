@@ -163,9 +163,21 @@ void AEnemy_Base::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCo
 
 void AEnemy_Base::AddCharacterAbilities()
 {
-	//if (!HasAuthority()) return;
-	UASC_Base* ASC = CastChecked<UASC_Base>(AbilitySystemComponent);
+	if (!AbilitySystemComponent) return;
 
-	ASC->AddCharacterAbilities(Abilites);
+	UASC_Base* ASC = Cast<UASC_Base>(AbilitySystemComponent);
+	if (!ASC) return;
 
+	const URL_EnemyConfig* EnemyConfig = EnemyMovementComponent ? EnemyMovementComponent->GetEnemyConfige() : nullptr;
+	if (!EnemyConfig) return;
+
+	// 合并所有技能
+	TArray<FEnemySkills> AllSkills;
+	AllSkills.Append(EnemyConfig->WakingStateAttackSkills);
+	AllSkills.Append(EnemyConfig->ChaosChaosAttackSkills);
+	AllSkills.Append(EnemyConfig->OtherSkills);
+
+	// 调用 ASC 注册技能
+	ASC->AddEnemyAbilities(AllSkills);
 }
+

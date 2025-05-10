@@ -8,80 +8,78 @@
 
 UBTService_SkillDecision::UBTService_SkillDecision()
 {
-	NodeName = "SkillDecision";
+	NodeName = "Waking State AttackDecision";
 }
 
 void UBTService_SkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaTime)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();
+	if (!AIController) return;
+
 	APawn* ControlledPawn = AIController->GetPawn();
+	if (!ControlledPawn) return;
+
+	// 获取 EnemyMovementComponent
 	URL_EnemyMovementComponent* EnemyMove = ControlledPawn->FindComponentByClass<URL_EnemyMovementComponent>();
+	if (!EnemyMove) return;
 
-	if (EnemyMove)
+	// 获取配置的 EnemyDataAsset
+	const URL_EnemyConfig* EnemyConfig = EnemyMove->GetEnemyConfige();
+	if (!EnemyConfig) return;
+
+	const TArray<FEnemySkills>& WakingSkills = EnemyConfig->WakingStateAttackSkills;
+
+	AvailableSkills.Empty();
+
+	for (const FEnemySkills& Skill : WakingSkills)
 	{
-		UDataTable* SkillConfigTable = EnemyMove->GetSkillConfigTable();
-
-		if (!SkillConfigTable || !ControlledPawn)
-			return;
-
-		// 每帧更新可用技能列表
-		AvailableSkills.Empty();
-
-		// 获取所有技能配置
-		TArray<FSkillConfig*> AllSkills;
-		SkillConfigTable->GetAllRows<FSkillConfig>("", AllSkills);
-
-		// 筛选可用技能
-		for (auto& SkillConfig : AllSkills)
+		if (CheckSkillCondition(Skill, AIController))
 		{
-			if (CheckSkillCondition(*SkillConfig, AIController))
-			{
-				AvailableSkills.Add(*SkillConfig);
-			}
-		}
-
-		// 按优先级排序
-		AvailableSkills.Sort([](const FSkillConfig& A, const FSkillConfig& B) {
-			return A.PriorityLevel > B.PriorityLevel;
-			});
-
-		// 优先执行最高优先级技能
-		if (AvailableSkills.Num() > 0)
-		{
-			FSkillConfig SelectedSkill = SelectSkillByProbability(AvailableSkills);
-			OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedSkillKey.SelectedKeyName,SelectedSkill.SkillTag.GetTagName()); 
+			AvailableSkills.Add(Skill);
 		}
 	}
+
+	// 按优先级排序
+	AvailableSkills.Sort([](const FEnemySkills& A, const FEnemySkills& B) {
+		return A.PriorityLevel > B.PriorityLevel;
+		});
+
+	if (AvailableSkills.Num() > 0)
+	{
+		const FEnemySkills& SelectedSkill = SelectSkillByProbability(AvailableSkills);
+		OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedSkillKey.SelectedKeyName, SelectedSkill.AbilityTag.GetTagName());
+	}
 }
+
 
 void UBTService_SkillDecision::EvaluateSkills(AAIController* AIController, APawn* ControlledPawn)
 {
 	//可以添加评估逻辑
 }
 
-bool UBTService_SkillDecision::CheckSkillCondition(const FSkillConfig& Skill, AAIController* AIController)
+bool UBTService_SkillDecision::CheckSkillCondition(const FEnemySkills& Skill, AAIController* AIController)
 {
 	APawn* Pawn = AIController->GetPawn();
 	UAbilitySystemComponent* ASC = GetAbilitySystem(Pawn);
 
-	// 检查标签条件
-	if (!ASC->MatchesGameplayTagQuery(Skill.ActivationQuery))
-		return false;
+	//// 检查标签条件
+	//if (!ASC->MatchesGameplayTagQuery(Skill.ActivationQuery))
+	//	return false;
 
 	//可添加新的条件
 	return true;
 }
 
-FSkillConfig UBTService_SkillDecision::SelectSkillByProbability(const TArray<FSkillConfig>& ValidSkills)
+FEnemySkills UBTService_SkillDecision::SelectSkillByProbability(const TArray<FEnemySkills>& ValidSkills)
 {
-	// 按优先级分组
-	TMap<int32, TArray<FSkillConfig>> PriorityGroups;
+	// 分组按优先级
+	TMap<int32, TArray<FEnemySkills>> PriorityGroups;
 	for (const auto& Skill : ValidSkills)
 	{
 		PriorityGroups.FindOrAdd(Skill.PriorityLevel).Add(Skill);
 	}
 
-	// 从最高优先级组中选择
+	// 选择最高优先级
 	int32 HighestPriority = TNumericLimits<int32>::Min();
 	for (const auto& Elem : PriorityGroups)
 	{
@@ -91,16 +89,15 @@ FSkillConfig UBTService_SkillDecision::SelectSkillByProbability(const TArray<FSk
 		}
 	}
 
-	const TArray<FSkillConfig>& TopGroup = PriorityGroups[HighestPriority];
+	const TArray<FEnemySkills>& TopGroup = PriorityGroups[HighestPriority];
 
-	// 计算总权重
+	// 权重计算
 	float TotalWeight = 0.0f;
 	for (const auto& Skill : TopGroup)
 	{
 		TotalWeight += Skill.SelectionWeight;
 	}
 
-	// 概率选择
 	float RandomPoint = FMath::FRandRange(0.0f, TotalWeight);
 	for (const auto& Skill : TopGroup)
 	{
@@ -111,8 +108,9 @@ FSkillConfig UBTService_SkillDecision::SelectSkillByProbability(const TArray<FSk
 		RandomPoint -= Skill.SelectionWeight;
 	}
 
-	return TopGroup.Last();
+	return TopGroup.Last(); // Fallback
 }
+
 
 UAbilitySystemComponent* UBTService_SkillDecision::GetAbilitySystem(APawn* Pawn) const
 {
