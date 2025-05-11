@@ -42,6 +42,12 @@ AEnemy_Base::AEnemy_Base()
 	
 }
 
+void AEnemy_Base::TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) const
+{
+	if (AbilitySystemComponent)
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*DamageHandle.Data.Get());
+}
+
 UAnimMontage* AEnemy_Base::GetHitReactMotange_Implementation()
 {
 	return HitReactMontage;
@@ -60,16 +66,29 @@ void AEnemy_Base::SetCombatTarget_Implementation(AActor* InCombatTarget)
 void AEnemy_Base::GuardBroken()
 {
 	AddTag(FName("EnemyState.GuardBroken"));
+	bIsGuardBroken=true;
 	
 	//该状态下敌人无法攻击
 	//受到的伤害增加（受到的伤害*1.2）
 	//并能被处决
 }
 
+void AEnemy_Base::GuardBrokenCallBack()
+{
+	//播放破防动画
+	PlayAnimMontage(Aim_GuardBroken);
+}
+
+
 void AEnemy_Base::Staggered()
 {
 	AddTag(FName("EnemyState.Staggered"));
+	bIsStaggered=true;
+	
+}
 
+void AEnemy_Base::StaggeredCallBack()
+{
 }
 
 void AEnemy_Base::BeginPlay()
@@ -99,9 +118,17 @@ void AEnemy_Base::BeginPlay()
 				OnMaxHealthChanged.Broadcast(Data.NewValue);
 			}
 		);
+		
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetStaminaAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnStaminaChanged.Broadcast(Data.NewValue);
+			}
+		);
 
 		OnHealthChanged.Broadcast(EnemyAttributeSet->GetHealth());
 		OnMaxHealthChanged.Broadcast(EnemyAttributeSet->GetMaxHealth());
+		OnStaminaChanged.Broadcast(EnemyAttributeSet->GetStamina());
 	}
 
 	//绑定标签变化
