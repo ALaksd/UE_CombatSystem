@@ -3,22 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GAS/Abilities/GA_Base.h"
-#include "GA_EnemyAbilityBase.generated.h"
+#include "GAS/Abilities/GA_EnemyAbilityBase.h"
+#include <Data/RL_EnemyConfig.h>
+#include "GA_EnemyAbility_MeeleAttack.generated.h"
 
+
+class UGameplayEffect;
 /**
- * 
+ * 敌人能力基础
  */
 UCLASS()
-class UE_ROUGELIKEDEMO_API UGA_EnemyAbilityBase : public UGA_Base
+class UE_ROUGELIKEDEMO_API UGA_EnemyAbility_MeeleAttack : public UGA_EnemyAbilityBase
 {
 	GENERATED_BODY()
-	
 public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-
 protected:
-	UFUNCTION()
-	void OnMontageCompleted();
+	void UpdateFacingDirection();
+	UAnimMontage* SelectRandomAnimation(const FEnemySkills& Skills, bool& bIsRed);
+
+private:
+	FTimerHandle FacingUpdateTimerHandle;
+
 };

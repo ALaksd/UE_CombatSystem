@@ -123,8 +123,6 @@ protected:
 private:
 	void InitAbilityActorInfo();
 
-	UPROPERTY(EditDefaultsOnly,Category="Initialize")
-	TSubclassOf<UGameplayEffect> PrimariAttribute;
 	void InitializeAttribute();
 
 	// 添加标签

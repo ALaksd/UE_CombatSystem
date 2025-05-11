@@ -23,7 +23,6 @@ class UE_ROUGELIKEDEMO_API UBTService_SkillDecision : public UBTService_Blueprin
 	// 技能选择逻辑
 	void EvaluateSkills(AAIController* AIController, APawn* ControlledPawn);
 	bool CheckSkillCondition(const FEnemySkills& Skill, AAIController* AIController);
-	FEnemySkills SelectSkillByProbability(const TArray<FEnemySkills>& ValidSkills);
 
 	// GAS相关
 	UAbilitySystemComponent* GetAbilitySystem(APawn* Pawn) const;

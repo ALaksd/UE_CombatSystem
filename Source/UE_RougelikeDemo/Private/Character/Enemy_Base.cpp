@@ -18,12 +18,6 @@ AEnemy_Base::AEnemy_Base()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	
-	//创建组件
-	// Capsule=CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
-	// SetRootComponent(Capsule);
-	//
-	// SkeletalMesh=CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMesh");
-	// SkeletalMesh->SetupAttachment(GetRootComponent());
 	
 	AbilitySystemComponent=CreateDefaultSubobject<UASC_Base>("AbilitySystemComponent");
 	AttributeSet = CreateDefaultSubobject<UAS_Enemy>("AttributeSet");
@@ -129,9 +123,9 @@ void AEnemy_Base::InitAbilityActorInfo()
 
 void AEnemy_Base::InitializeAttribute()
 {
-	if (PrimariAttribute && AbilitySystemComponent)
+	if (EnemyMovementComponent && AbilitySystemComponent)
 	{
-		FGameplayEffectSpecHandle GameplayEffect = AbilitySystemComponent->MakeOutgoingSpec(PrimariAttribute,1,AbilitySystemComponent->MakeEffectContext());
+		FGameplayEffectSpecHandle GameplayEffect = AbilitySystemComponent->MakeOutgoingSpec(EnemyMovementComponent->GetEnemyConfig()->PrimariAttribute,1,AbilitySystemComponent->MakeEffectContext());
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*GameplayEffect.Data.Get());
 	}
 }
@@ -168,15 +162,12 @@ void AEnemy_Base::AddCharacterAbilities()
 	UASC_Base* ASC = Cast<UASC_Base>(AbilitySystemComponent);
 	if (!ASC) return;
 
-	const URL_EnemyConfig* EnemyConfig = EnemyMovementComponent ? EnemyMovementComponent->GetEnemyConfige() : nullptr;
+	const URL_EnemyConfig* EnemyConfig = EnemyMovementComponent ? EnemyMovementComponent->GetEnemyConfig() : nullptr;
 	if (!EnemyConfig) return;
 
 	// 合并所有技能
 	TArray<FEnemySkills> AllSkills;
-	AllSkills.Append(EnemyConfig->WakingStateAttackSkills);
-	AllSkills.Append(EnemyConfig->ChaosChaosAttackSkills);
-	AllSkills.Append(EnemyConfig->OtherSkills);
-
+	AllSkills.Append(EnemyConfig->EnemySkills);
 	// 调用 ASC 注册技能
 	ASC->AddEnemyAbilities(AllSkills);
 }

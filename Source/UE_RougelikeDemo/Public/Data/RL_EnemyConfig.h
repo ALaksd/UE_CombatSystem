@@ -9,30 +9,33 @@
 
 
 USTRUCT(BlueprintType)
-struct FEnemyAttributes
+struct FEnemySkillAnimation
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float MaxHealth = 100.f;
+	/** 动画资源 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
+	TObjectPtr<UAnimMontage> Montage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float MaxResilience = 100.f;
+	/** 是否是红光攻击 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
+	bool bRed = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float MaxStamina = 100.f;
+	/** 动画选中权重 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
+	float Weight = 1.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float WalkSpeed = 150.f;
+	/** 攻击范围 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
+	float SkillRangeMin = 50.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float RunSpeed = 150.f;
+	/** 攻击范围 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
+	float SkillRangeMax = 300.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float SightRange = 1000.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float HearingRange = 1200.f;
+	/** 下段连招 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
+	TObjectPtr<UAnimMontage> NextMontage;
 };
 
 USTRUCT(BlueprintType)
@@ -40,33 +43,25 @@ struct FEnemySkills
 {
 	GENERATED_BODY()
 
-	/** 技能对应的 GameplayTag，用于行为树或条件判断 */
+	/** 能力标签*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	FGameplayTag AbilityTag;
 
-	/** 是否是红光攻击（可用于视觉反馈或逻辑区分） */
+	/** 能力使用的类，如播放动画攻击类、投射物类等 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
-	bool bRed = false;
+	TSubclassOf<class UGA_EnemyAbilityBase> AbilityClass;
 
-	/** 技能在被选中时的概率权重，权重大说明更容易被选中 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
-	float SelectionWeight = 1.0f;
-
-	/** 技能的优先级，数值越大越优先执行 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
-	int32 PriorityLevel = 0;
-
-	/** 技能冷却时间（秒） */
+	/** 能力冷却时间 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	float Cooldown = 5.f;
 
-	/** 技能类，必须继承自 UGameplayAbility */
+	/** 优先级 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
-	TSubclassOf<class UGameplayAbility> Skill;
+	int32 PriorityLevel = 0;
 
-	/** 技能使用时的动画 Montage，可用于播放动作 */
+	/** 所有动画条目配置 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
-	TObjectPtr<UAnimMontage> SkillMontage;
+	TArray<FEnemySkillAnimation> Animations;
 };
 
 
@@ -81,21 +76,27 @@ class UE_ROUGELIKEDEMO_API URL_EnemyConfig : public UDataAsset
 public:
 	// 技能
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Skills")
-	TArray<FEnemySkills> WakingStateAttackSkills;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Skills")
-	TArray<FEnemySkills> ChaosChaosAttackSkills;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Skills")
-	TArray<FEnemySkills> OtherSkills;
+	TArray<FEnemySkills> EnemySkills;
 
 	// 初始属性
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Attributes")
-	FEnemyAttributes Attributes;
+	TSubclassOf<UGameplayEffect> PrimariAttribute;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|Weapon")
+	TObjectPtr<UStaticMesh> WeaponSeletakMesh;
+
+
+	//敌人手持武器插槽
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|Weapon")
+	FName WeaponAttachSocket = "WeaponSocket";
+
+	//武器顶端插槽
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|Weapon")
+	FName WeaponTipSocket = "Tip";
 
 	// 敌人类型等扩展参数
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")
