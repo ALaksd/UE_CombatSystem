@@ -143,5 +143,5 @@ public:
 	FORCEINLINE UDataTable* GetSkillConfigTable() { return SkillConfigTable; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FORCEINLINE URL_EnemyConfig* GetEnemyConfige() { return EnemyConfig; }
+	FORCEINLINE URL_EnemyConfig* GetEnemyConfig() { return EnemyConfig; }
 };

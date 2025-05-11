@@ -5,7 +5,7 @@
 
 #include "GAS/Abilities/GA_Base.h"
 #include <AbilitySystemBlueprintLibrary.h>
-#include <GAS/Abilities/GA_EnemyAbilityBase.h>
+#include "GAS/Abilities/GA_EnemyAbilityBase.h"
 
 void UASC_Base::AbilityActorInfoSet()
 {
@@ -32,16 +32,13 @@ void UASC_Base::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>
 
 void UASC_Base::AddEnemyAbility(const FEnemySkills& SkillInfo)
 {
-	if (!SkillInfo.Skill) return;
-
 	// 生成 AbilitySpec（默认等级为 1）
-	FGameplayAbilitySpec AbilitySpec(SkillInfo.Skill, 1);
+	FGameplayAbilitySpec AbilitySpec(SkillInfo.AbilityClass, 1);
 
 	// 提取标签
-	UGA_EnemyAbilityBase* AbilityCDO = Cast<UGA_EnemyAbilityBase>(SkillInfo.Skill->GetDefaultObject());
+	UGA_EnemyAbilityBase* AbilityCDO = Cast<UGA_EnemyAbilityBase>(SkillInfo.AbilityClass->GetDefaultObject());
 	if (AbilityCDO)
 	{
-		AbilityCDO->SetAbilityMontage(SkillInfo.SkillMontage);
 		AbilitySpec.DynamicAbilityTags.AddTag(AbilityCDO->StartInputTag);
 	}
 
@@ -77,7 +74,7 @@ void UASC_Base::AddEnemyAbilities(const TArray<FEnemySkills>& AllSkills)
 {
 	for (const FEnemySkills& Skill : AllSkills)
 	{
-		if (Skill.Skill)
+		if (Skill.AbilityClass)
 		{
 			AddEnemyAbility(Skill);
 		}
