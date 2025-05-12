@@ -5,6 +5,8 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
 #include <AbilitySystemBlueprintLibrary.h>
+
+#include "Character/Enemy_Base.h"
 #include "GameFramework/Character.h"
 
 UAS_Base::UAS_Base()
@@ -45,7 +47,7 @@ void UAS_Base::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float
 
 void UAS_Base::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
-	Super::PreAttributeBaseChange(Attribute,NewValue);
+	Super::PreAttributeChange(Attribute,NewValue);
 }
 
 void UAS_Base::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
@@ -58,11 +60,15 @@ void UAS_Base::PostGameplayEffectExecute(const struct FGameplayEffectModCallback
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
 		//暂存伤害并设置IncomingDamage为0
-		const float LocalIncomingDamage = GetIncomingDamage();
+		float LocalIncomingDamage = GetIncomingDamage();
 		SetIncomingDamage(0.f);
 
 		if (LocalIncomingDamage >= 0.f)
 		{
+			if (AEnemy_Base* Enemy = Cast<AEnemy_Base>(GetOwningActor()))
+				if (Enemy->bIsGuardBroken)
+					LocalIncomingDamage = LocalIncomingDamage*1.2;
+			
 			const float NewHealth = GetHealth() - LocalIncomingDamage;
 			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 

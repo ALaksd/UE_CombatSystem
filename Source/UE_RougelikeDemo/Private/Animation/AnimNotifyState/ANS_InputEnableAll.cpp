@@ -20,6 +20,7 @@ void UANS_InputEnableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
 			{
 				InputSubsystem->RemoveMappingContext(DisableIMC);
 				InputSubsystem->AddMappingContext(DefaultIMC, 0);
+				InputSubsystem->AddMappingContext(MoveIMC, 1);
 			}
 		}
 	}

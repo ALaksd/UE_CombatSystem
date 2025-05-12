@@ -9,7 +9,6 @@
 #include "Interface/RL_ItemInstanceHolder.h"
 #include "RL_BaseWeapon.generated.h"
 
-
 UENUM(BlueprintType)
 enum class WeaponType : uint8
 {
@@ -27,8 +26,7 @@ public:
 
   	FORCEINLINE AActor* GetWeaponOwner() const { return WeaponOwner; }
 	FORCEINLINE void SetWeaponOwner(AActor* InOwner) { WeaponOwner = InOwner; }
-	//武器等级
-	int32 WeaponLevel=1;
+	void SetWeaponLevel(int32 NewLevel);
 
 	//武器种类
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -45,8 +43,6 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly , Category = Mesh)
 	class USkeletalMeshComponent* Mesh;
-
-
 	
 private:
 	UPROPERTY()
@@ -58,6 +54,10 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AActor> WeaponOwner;
+
+	//武器等级
+	UPROPERTY()
+	int32 WeaponLevel = 0;
 	
 	//武器伤害曲线
 	// UPROPERTY(EditDefaultsOnly,Category="AttackCurve")

@@ -31,36 +31,6 @@ void URLInventoryComponent_Equipment::InitializeComponent()
 	}
 }
 
-TArray<FRLInventoryItemSlotHandle> URLInventoryComponent_Equipment::GetSlotsByType(FGameplayTag SlotTypeTag) const
-{
-	TArray<FRLInventoryItemSlotHandle> Result;
-
-	for (const FRLInventoryItemInfoEntry& Entry : EquipmentInfos)
-	{
-		if (Entry.Handle.SlotTags.HasTagExact(SlotTypeTag))
-		{
-			Result.Add(Entry.Handle);
-		}
-	}
-	return Result;
-}
-
-TArray<URLInventoryItemInstance*> URLInventoryComponent_Equipment::GetEquippedItemsByType(FGameplayTag SlotTypeTag)
-{
-	TArray<URLInventoryItemInstance*> Result;
-
-	for (const FRLInventoryItemInfoEntry& Entry : EquipmentInfos)
-	{
-		if (Entry.Handle.SlotTags.HasTagExact(SlotTypeTag))
-		{
-			if (URLInventoryItemInstance* Item = GetItemInstanceInSlot(Entry.Handle))
-			{
-				Result.Add(Item);
-			}
-		}
-	}
-	return Result;
-}
 
 bool URLInventoryComponent_Equipment::PlaceItemSlot(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle)
 {
@@ -69,22 +39,12 @@ bool URLInventoryComponent_Equipment::PlaceItemSlot(URLInventoryItemInstance* It
 	FRLInventoryItemSlot& Slot = GetItemSlot(ItemHandle);
 	URLInventoryItemInstance* PreItem = Slot.ItemInstance;
 	Slot.ItemInstance = Item;
-	// 正确赋值SlotTags，这里暂时不会用CombindTags
-	if (Item->GetItemDefinition())
-	{
-		Slot.SlotTags = Item->GetItemDefinition()->ItemTags.Added;
-	}
-	else
-	{
-		Slot.SlotTags.Reset(); // 没有ItemDefinition则清空
-	}
-
 	OnItemSlotUpdate.Broadcast(this, ItemHandle, Slot.ItemInstance, PreItem);
 
 	return true;
 }
 
-bool URLInventoryComponent_Equipment::RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle)
+bool URLInventoryComponent_Equipment::RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle, int32 RemoveQuantity)
 {
 	FRLInventoryItemSlot& ItemSlot = GetItemSlot(SlotHandle);
 	URLInventoryItemInstance* PreviousItem = ItemSlot.ItemInstance;
@@ -92,35 +52,10 @@ bool URLInventoryComponent_Equipment::RemoveItemFromInventory(const FRLInventory
 	if (!ItemSlot.ItemInstance) return false;
 
 	ItemSlot.ItemInstance = nullptr;
-	ItemSlot.SlotTags.Reset();
 
 	OnItemSlotUpdate.Broadcast(this, SlotHandle, ItemSlot.ItemInstance, PreviousItem);
 
 	return true;
-}
-
-void URLInventoryComponent_Equipment::SwitchWeapon()
-{
-	TArray<URLInventoryItemInstance*> Weapons;
-	TArray<FRLInventoryItemSlotHandle> Handles;
-	URLInventoryItemInstance* OldInstance = CurrentWeapon.ItemInstance;
-	
-	FGameplayTag NewTag = FGameplayTag::RequestGameplayTag(FName("Slot.Weapon"));
-
-	Weapons = GetEquippedItemsByType(NewTag);
-	Handles = GetSlotsByType(NewTag);
-
-	Weapons.Remove(CurrentWeapon.ItemInstance);
-	Handles.Remove(CurrentWeapon.Handle);
-	// 移除手持武器的GA
-	MakeItemUnequipped_Internal(CurrentWeapon.Handle,CurrentWeapon.ItemInstance);
-	// 给予另一把武器的GA
-	MakeItemEquipped_Internal(Handles[0],Weapons[0]);
-	// 设置手持武器
-	CurrentWeapon.Handle = Handles[0];
-	CurrentWeapon.ItemInstance = Weapons[0];
-	// 通知近战攻击组件
-	OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance,OldInstance);
 }
 
 URLInventoryItemInstance* URLInventoryComponent_Equipment::GetEqeippedItemByType(FGameplayTag SlotTypeTag)
@@ -139,6 +74,30 @@ URLInventoryItemInstance* URLInventoryComponent_Equipment::GetEqeippedItemByType
 	return nullptr;
 }
 
+void URLInventoryComponent_Equipment::SwitchWeapon(const FInputActionValue& Value)
+{
+	// 如果只装备一把武器,不进行操作
+	if (Weapon1.ItemInstance == nullptr || Weapon2.ItemInstance == nullptr) return;
+	
+	// 移除手上武器GA
+	// 给予另一把武器GA
+	if (CurrentWeapon==Weapon1)
+	{
+		RemoveAbilityFromPlayer(Weapon1);
+		GiveAbilityToPlayer(Weapon2);
+		CurrentWeapon=Weapon2;
+	}
+	else
+	{
+		RemoveAbilityFromPlayer(Weapon2);
+		GiveAbilityToPlayer(Weapon1);
+		CurrentWeapon=Weapon1;
+	}
+
+	// 通知ClosecombatComponent
+	OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance);
+}
+
 
 void URLInventoryComponent_Equipment::BeginPlay()
 {
@@ -150,14 +109,30 @@ void URLInventoryComponent_Equipment::BeginPlay()
 
 void URLInventoryComponent_Equipment::OnEquipSlotUpdate(URLInventoryComponent* InventoryComponent, const FRLInventoryItemSlotHandle& SlotHandle, URLInventoryItemInstance* ItemInstance, URLInventoryItemInstance* PreviousItemInstance)
 {
-	//前一个装备不为空，则首先将前一个装备脱下；如果当前装备不为空，则将当前装备穿上。
+	/*
+	* 首先脱下前一个装备；
+	* 当前装备等于前一个装备，返回；
+	* 否则穿上；
+	*/
 	if (IsValid(PreviousItemInstance))
 	{
+		// 如果将要装备的物品是武器则调用武器专有装备函数
+		if (SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.1"))) || SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.2"))))
+			UnEquipWeapon(SlotHandle, PreviousItemInstance);
+		else
 		MakeItemUnequipped_Internal(SlotHandle, PreviousItemInstance);
 	}
 	if (IsValid(ItemInstance))
 	{
-		MakeItemEquipped_Internal(SlotHandle, ItemInstance);
+		if (ItemInstance != PreviousItemInstance)
+		{
+			// 如果将要装备的物品是武器则调用武器专有装备函数
+			if (SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.1"))) || SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.2"))))
+				EquipWeapon(SlotHandle, ItemInstance);
+			else
+				MakeItemEquipped_Internal(SlotHandle, ItemInstance);
+		}
+
 	}
 }
 
@@ -226,6 +201,100 @@ bool URLInventoryComponent_Equipment::MakeItemUnequipped_Internal(const FRLInven
 	bOnEquip.ExecuteIfBound(false);
 	return true;
 }
+
+void URLInventoryComponent_Equipment::EquipWeapon(const FRLInventoryItemSlotHandle& SlotHandle,URLInventoryItemInstance* ItemInstance)
+{
+	// 新的武器tag为武器1
+	if (SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.1"))))
+	{
+		Weapon1.SlotTag = SlotHandle.SlotTags.GetByIndex(0);
+		Weapon1.Handle=SlotHandle;
+		Weapon1.ItemInstance = ItemInstance;
+	}
+	else
+	{
+		Weapon2.SlotTag = SlotHandle.SlotTags.GetByIndex(0);
+		Weapon2.Handle=SlotHandle;
+		Weapon2.ItemInstance = ItemInstance;
+	}
+
+	if (CurrentWeapon.ItemInstance == nullptr)
+	{
+		// 目前武器只有一个Tag,暂时这么写
+		if (SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.1"))))
+		{
+			GiveAbilityToPlayer(Weapon1);
+			CurrentWeapon=Weapon1;
+		}
+		else
+		{
+			GiveAbilityToPlayer(Weapon2);
+			CurrentWeapon=Weapon2;
+		}
+		
+		OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance);
+	}
+	FRLInventoryItemInfoEntry Entry(SlotHandle);
+	EquipmentInfos.Add(Entry);
+
+	// 更新物品实例的装备状态
+	ItemInstance->SetbEquiped(true);
+	bOnEquip.ExecuteIfBound(true);
+}
+
+void URLInventoryComponent_Equipment::UnEquipWeapon(const FRLInventoryItemSlotHandle& SlotHandle,URLInventoryItemInstance* ItemInstance)
+{
+	// 如果要卸的武器为当前装备的武器
+	/*
+	 * 移除GA
+	 * 从装备列表移除
+	 */
+	if (!IsValid(ItemInstance)) return;
+
+	if (CurrentWeapon.ItemInstance==ItemInstance)
+	{
+		if (UASC_Base* ASC = Cast<UASC_Base>(GetOwnerAbilitySystemComponent()))
+		{
+			CurrentWeapon.AbilityGrantHandles.TakeFromAbilitySystem(ASC);
+
+			CurrentWeapon.ItemInstance=nullptr;
+		}
+	}
+
+	// 移除条目
+	EquipmentInfos.RemoveAllSwap(
+		[SlotHandle](const FRLInventoryItemInfoEntry& InfoEntry) {
+			return InfoEntry.Handle == SlotHandle;
+		},
+		EAllowShrinking::No);
+
+	// 更新物品实例的装备状态
+	OnEquipUpdate.Broadcast(nullptr);
+	ItemInstance->SetbEquiped(false);
+	bOnEquip.ExecuteIfBound(false);
+}
+
+void URLInventoryComponent_Equipment::GiveAbilityToPlayer(FEquipWeapon& Weapon)
+{
+	if (const URLInventoryFragment_Equipment* EquipmentFragment = Weapon.ItemInstance->FindFragmentByClass<URLInventoryFragment_Equipment>())
+	{
+		if (UAbilitySystemComponent* ASC = GetOwnerAbilitySystemComponent())
+		{
+			FRLInventoryItemInfoEntry Entry(Weapon.Handle);
+			EquipmentFragment->GiveToAbilitySystem(ASC, &Weapon.AbilityGrantHandles, Weapon.ItemInstance);
+		}
+	}
+}
+
+void URLInventoryComponent_Equipment::RemoveAbilityFromPlayer(FEquipWeapon& Weapon)
+{
+	// 移除能力
+	if (UASC_Base* ASC = Cast<UASC_Base>(GetOwnerAbilitySystemComponent()))
+	{
+		Weapon.AbilityGrantHandles.TakeFromAbilitySystem(ASC);
+	}	
+}
+
 
 UAbilitySystemComponent* URLInventoryComponent_Equipment::GetOwnerAbilitySystemComponent()
 {

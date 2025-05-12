@@ -23,4 +23,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UInputMappingContext> DisableIMC;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UInputMappingContext> MoveIMC;
 };

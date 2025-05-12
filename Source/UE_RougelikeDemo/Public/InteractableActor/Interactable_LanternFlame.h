@@ -27,10 +27,11 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category="Components")
 	TObjectPtr<UStaticMeshComponent> StaticMeshCom;
 
+	// 交互回调,由输入处触发
 	virtual void TryInteract() override;
 
 	UPROPERTY(EditDefaultsOnly,Category="Datas")
-	TSubclassOf<UUserWidget> WBP_SavePointClass;
+	TSubclassOf<URL_UserWidget> WBP_SavePointClass;
 	//存档点名字
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Datas")
 	FString LanternFlameName;

@@ -124,9 +124,12 @@ void URL_AbilitySystemLibrary::GetLivePlayerWithRadius(const UObject* WorldConte
 			// 遍历重叠的结果并筛选玩家
 			for (const FOverlapResult& Result : OverlapResults)
 			{
-				if (Result.GetActor()->Implements<URL_CombatInterface>() && !IRL_CombatInterface::Execute_isDead(Result.GetActor()))
+				if (Result.GetActor())
 				{
-					OutOverlappingActors.AddUnique(IRL_CombatInterface::Execute_GetAvatar(Result.GetActor()));
+					if (Result.GetActor()->Implements<URL_CombatInterface>() && !IRL_CombatInterface::Execute_isDead(Result.GetActor()))
+					{
+						OutOverlappingActors.AddUnique(IRL_CombatInterface::Execute_GetAvatar(Result.GetActor()));
+					}
 				}
 			}
 		}

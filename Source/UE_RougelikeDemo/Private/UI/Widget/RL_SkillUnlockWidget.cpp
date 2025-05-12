@@ -13,7 +13,6 @@
 #include "Player/RL_PlayerState.h"
 #include "UI/Widget/RL_SkillSlotWidget.h"
 #include "Styling/CoreStyle.h"
-#include "UI/WidgetController/RL_LanternFlameController.h"
 
 void URL_SkillUnlockWidget::AddSkillSlot(const FSkillList&  SkillInfor)
 {
@@ -72,6 +71,12 @@ void URL_SkillUnlockWidget::AddSkillSlot(const FSkillList&  SkillInfor)
 			
 			break;
 		default:break;
+	}
+
+	if (!bInit)
+	{
+		bInit=true;
+		SkillSlot->SkillSlot_1->OnClicked.Broadcast();
 	}
 }
 

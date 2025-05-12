@@ -7,12 +7,15 @@
 #include "InputAction.h"
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
+#include "UI/Widget/RL_UserWidget.h"
 #include "RL_UIManagerSubsystem.generated.h"
+
 
 /**
  * 用于管理UI的创建和销毁
  * 
  */
+class URL_UserWidget;
 UCLASS()
 class UE_ROUGELIKEDEMO_API URL_UIManagerSubsystem : public UGameInstanceSubsystem
 {
@@ -23,13 +26,16 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
-	//创建新的UI
+	/**
+	 * 创建新的UI并添加到视口
+	 * @ param FWidgetInitParams 可传递的参数集，默认为空
+	 */
 	UFUNCTION(BlueprintCallable)
-	void AddNewWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController);
+	URL_UserWidget* AddNewWidget(TSubclassOf<URL_UserWidget> WidgetClass, APlayerController* PlayerController, const FWidgetInitParams InitParams = FWidgetInitParams());
 
 	//创建支持开关的UI
 	UFUNCTION(BlueprintCallable)
-	void ToggleWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController);
+	void ToggleWidget(TSubclassOf<URL_UserWidget> WidgetClass, APlayerController* PlayerController);
 
 protected:
 	// 配置需要使用的Input资源（在编辑器设置）
@@ -41,10 +47,10 @@ protected:
 
 private:
 	UPROPERTY()
-	TArray<UUserWidget*> WidgetStack; // UI栈
+	TArray<URL_UserWidget*> WidgetStack; // UI栈
 
 	// 压入新UI到栈顶
-	void PushWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController);
+	URL_UserWidget* PushWidget(TSubclassOf<URL_UserWidget> WidgetClass, APlayerController* PlayerController, const FWidgetInitParams& InitParams = FWidgetInitParams());
 	// 弹出栈顶UI
 	void PopWidget(APlayerController* PlayerController);
 

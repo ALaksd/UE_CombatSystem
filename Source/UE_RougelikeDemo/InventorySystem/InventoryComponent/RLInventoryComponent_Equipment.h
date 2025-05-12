@@ -7,6 +7,7 @@
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryItemFragment.h"
 #include "RLInventoryComponent_Equipment.generated.h"
 
+struct  FInputActionValue;
 
 USTRUCT(BlueprintType)
 struct UE_ROUGELIKEDEMO_API FRLInventoryItemInfoEntry
@@ -53,13 +54,28 @@ struct FEquipWeapon
 	GENERATED_BODY()
 	UPROPERTY()
 	URLInventoryItemInstance* ItemInstance;
+	
 	FRLInventoryItemSlotHandle Handle;
+
+	FGameplayTag SlotTag;
+
+	UPROPERTY()
+	FRLAbilitySet_GrantHandles AbilityGrantHandles;
+	
+	bool operator==(const FEquipWeapon& Other) const
+	{
+		if (this->ItemInstance==Other.ItemInstance && this->SlotTag==Other.SlotTag)
+			return true;
+		return false;
+	}
 };
 
 /**
  * 
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipUpdate,URLInventoryItemInstance*, NewItem,URLInventoryItemInstance*, OldItem);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipUpdate,URLInventoryItemInstance*, NewItem,URLInventoryItemInstance*, OldItem);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipUpdate,URLInventoryItemInstance*, NewItem);
 /** 是否装备 */
 DECLARE_DELEGATE_OneParam(FbOnEquip, bool);
 
@@ -80,24 +96,17 @@ public:
 
 	/** 查询接口 */
 
-	// 获取指定类型的槽位
-	UFUNCTION(BlueprintCallable, Category = "Equipment")
-	TArray<FRLInventoryItemSlotHandle> GetSlotsByType(FGameplayTag SlotTypeTag) const;
-
-	// 获取当前装备的物品数组（按类型）
-	UFUNCTION(BlueprintCallable, Category = "Equipment")
-	TArray<URLInventoryItemInstance*> GetEquippedItemsByType(FGameplayTag SlotTypeTag);
-
 	virtual bool PlaceItemSlot(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle) override;
 
-	virtual bool RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle) override;
+	/** 装备组件只需要移除ItemInstance,不移除Tag */
+	virtual bool RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle,int32 RemoveQuantity = 1) override;
 
 	// 获取当前装备的物品（按类型）
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	URLInventoryItemInstance* GetEqeippedItemByType(FGameplayTag SlotTypeTag);
 	//武器切换的输入回调函数
 	UFUNCTION()
-	void SwitchWeapon();
+	void SwitchWeapon(const FInputActionValue& Value);
 	
 protected:
 	virtual void BeginPlay() override;
@@ -111,6 +120,15 @@ protected:
 	virtual bool MakeItemEquipped_Internal(const FRLInventoryItemSlotHandle& SlotHandle,URLInventoryItemInstance* ItemInstance);
 	virtual bool MakeItemUnequipped_Internal(const FRLInventoryItemSlotHandle& SlotHandle,URLInventoryItemInstance* ItemInstance);
 
+	// 装备武器
+	void EquipWeapon(const FRLInventoryItemSlotHandle& SlotHandle,URLInventoryItemInstance* ItemInstance);
+	// 卸下武器
+	void UnEquipWeapon(const FRLInventoryItemSlotHandle& SlotHandle,URLInventoryItemInstance* ItemInstance);
+	// 将武器GA给到玩家
+	void GiveAbilityToPlayer(FEquipWeapon& Weapon);
+	// 移除武器GA
+	void RemoveAbilityFromPlayer(FEquipWeapon& Weapon);
+	
 	UFUNCTION()
 	UAbilitySystemComponent* GetOwnerAbilitySystemComponent();
 
@@ -123,6 +141,8 @@ protected:
 
 private:
 	// 标识当前装备的武器
-	UPROPERTY()
 	FEquipWeapon CurrentWeapon;
+	FEquipWeapon Weapon1;
+	FEquipWeapon Weapon2;
 };
+

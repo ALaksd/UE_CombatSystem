@@ -9,32 +9,40 @@
 #include "Interface/RL_EnemyInterface.h"
 #include "UI/WidgetController/RL_OverlayWidgetController.h"
 #include "GameFramework/Character.h"
+#include "Interface/RL_DamageInterface.h"
 #include "Enemy_Base.generated.h"
 
 class UBehaviorTree;
 class ARL_AIController;
 class UWidgetComponent;
+class URL_EnemyMovementComponent;
+class USplineComponent;
 
 UCLASS()
-class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface,public IRL_CombatInterface,public IRL_EnemyInterface
+class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface,
+	public IRL_CombatInterface,public IRL_EnemyInterface,public IRL_DamageInterface
 {
 	GENERATED_BODY()
 
 public:
 	AEnemy_Base();
 
-
-private:
-	UPROPERTY(EditDefaultsOnly)
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Components")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+private:
+	
 	//属性
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAttributeSet> AttributeSet;
 
-
-
+	// 存储状态相关的标签(暂时只放破防与蹒跚状态)
+	FGameplayTagContainer StateTags;
 
 public:
+	// 接收伤害
+	virtual void TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) const override;
+	
 	inline  virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override {return AbilitySystemComponent;}
 
 	/** ComvatInterface */
@@ -47,12 +55,53 @@ public:
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 
 	/** End EnemyInterface */
+
+	// 体力减少回调
+	UFUNCTION(BlueprintImplementableEvent)
+	void StaminaReduceCallBack();
+	// 韧性减少回调
+	UFUNCTION(BlueprintImplementableEvent)
+	void ResilienceReduceCallBack();
+
+	// 破防动画
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
+	TObjectPtr<UAnimMontage> Aim_GuardBroken;
+
+	// 蹒跚动画
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
+	TObjectPtr<UAnimMontage> Aim_Staggered;
+
+	// 处决动画
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
+	TObjectPtr<UAnimMontage> Aim_Execute;
+	
+	// 处理破防相关
+	void GuardBroken();
+	// 处理蹒跚相关
+	void Staggered();
+
+	UFUNCTION(BlueprintCallable)
+	void GuardBrokenCallBack();
+	UFUNCTION(BlueprintCallable)
+	void StaggeredCallBack();
+
+	// 破防状态
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="AnimationUpdate | State")
+	bool bIsGuardBroken = false;
+	// 蹒跚状态
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="AnimationUpdate | State")
+	bool bIsStaggered = false;
 	
 protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 
-
+	// 回复体力,韧性
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="GE_Restore")
+	TSubclassOf<UGameplayEffect> GE_RestoreStamina;
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="GE_Restore")
+	TSubclassOf<UGameplayEffect> GE_RestoreResilience;
+	
 	/** AI*/
 
 	UPROPERTY(EditAnywhere, Category = "AI")
@@ -64,6 +113,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<AActor> TargetActor;
 
+	//样条线组件，用于巡逻
+	UPROPERTY(VisibleAnywhere, Category = "AI|Patrol")
+	TObjectPtr<USplineComponent> PatrolSpline;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	TObjectPtr<URL_EnemyMovementComponent> EnemyMovementComponent;
+
 	/** UI */
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> HealthBar;
@@ -73,6 +129,9 @@ protected:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnMaxHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnStaminaChanged;
 
 	/** Hit */
 
@@ -95,8 +154,12 @@ protected:
 private:
 	void InitAbilityActorInfo();
 
-	UPROPERTY(EditDefaultsOnly,Category="Initialize")
-	TSubclassOf<UGameplayEffect> PrimariAttribute;
 	void InitializeAttribute();
-	
+
+	// 添加标签
+	void AddTag(FName Tag);
+	// 移除标签
+	void RemoveTag(FName Tag);
 };
+
+

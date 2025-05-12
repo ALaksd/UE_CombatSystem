@@ -23,18 +23,30 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	FORCEINLINE URLInventoryItemDefinition* GetItemDefinition() const { return ItemDefinition; }
 	FORCEINLINE void SetItemDefinition(URLInventoryItemDefinition* InDefinition) { ItemDefinition = InDefinition; }
+	FORCEINLINE void AddDynamicFragments(URLInventoryItemFragment* NewFragments) { DynamicFragments.Add(NewFragments); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE bool GetbEquiped() { return bEquipped; }
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetbEquiped(bool bInEquipped) { bEquipped = bInEquipped; }
 
+	/** 堆叠 */
+
+	int32 GetCurrentStack() const { return CurrentStack; }
+	// 最大堆叠数量（从定义中获取）
+	int32 GetMaxStack() const;
+
+	//增加堆叠数，返回不可堆叠剩下的数量
+	int32 AddStack(int32 Quantity);
+
+	void SetStack(int32 InitialQuantity = 1);
+
 	/** 物品实例同样也需要GameplayTags去判断类别和属性 */
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
 	/** 根据fragment类获取对应的属性 */
 	UFUNCTION(BlueprintCallable, BlueprintPure = "false", meta = (DeterminesOutputType = FragmentClass))
-	const URLInventoryItemFragment* FindFragmentByClass(TSubclassOf<URLInventoryItemFragment> FragmentClass) const;
+	const URLInventoryItemFragment* FindFragmentByClass(TSubclassOf<URLInventoryItemFragment> FragmentClass) const; 
 
 	template<typename ResultClass>
 	const ResultClass* FindFragmentByClass() const
@@ -50,8 +62,12 @@ protected:
 	UPROPERTY()
 	bool bEquipped = false;
 
+	// 当前堆叠数量
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Inventory")
+	int32 CurrentStack = 1;
 
-	//可动态修改的fragment,暂时没有用到
+
+	//可动态修改的fragments
 	UPROPERTY()
 	TArray<URLInventoryItemFragment*> DynamicFragments;
 };

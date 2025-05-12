@@ -64,4 +64,7 @@ private:
 	FSkillList* CurrentSkill;
 	UFUNCTION()
 	void OnLearnClicked();
+
+	// 用于初始化第一个技能
+	bool bInit=false;
 };

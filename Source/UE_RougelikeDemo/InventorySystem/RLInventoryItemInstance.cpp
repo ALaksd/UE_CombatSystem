@@ -9,7 +9,7 @@ const URLInventoryItemFragment* URLInventoryItemInstance::FindFragmentByClass(TS
 {
 	if (FragmentClass != nullptr)
 	{
-		if (ItemDefinition != nullptr)
+		if (ItemDefinition != nullptr && ItemDefinition->FindFragmentByClass(FragmentClass))
 		{
 			return ItemDefinition->FindFragmentByClass(FragmentClass);
 		}
@@ -22,6 +22,25 @@ const URLInventoryItemFragment* URLInventoryItemInstance::FindFragmentByClass(TS
 		}
 	}
 	return nullptr;
+}
+
+
+int32 URLInventoryItemInstance::GetMaxStack() const
+{
+	return ItemDefinition ? ItemDefinition->MaxStack : 1;
+}
+
+int32 URLInventoryItemInstance::AddStack(int32 Quantity)
+{
+	const int32 AvailableSpace = GetMaxStack() - CurrentStack;
+	const int32 ActualAdd = FMath::Min(AvailableSpace, Quantity);
+	CurrentStack += ActualAdd;
+	return Quantity - ActualAdd;
+}
+
+void URLInventoryItemInstance::SetStack(int32 InitialQuantity)
+{
+	CurrentStack = FMath::Clamp(InitialQuantity, 1, GetMaxStack());
 }
 
 void URLInventoryItemInstance::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const

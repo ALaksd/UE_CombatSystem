@@ -6,7 +6,11 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "Interface/RL_DamageInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "UE_RougelikeDemo/InventorySystem/RLItemFragment_EquipDynamicData.h"
+#include "UE_RougelikeDemo/InventorySystem/Fragments/RLItemFragment_WeaponLevelData.h"
+#include "UE_RougelikeDemo/InventorySystem/RLInventoryItemInstance.h"
 
 // Sets default values
 ARL_BaseWeapon::ARL_BaseWeapon()
@@ -20,14 +24,47 @@ ARL_BaseWeapon::ARL_BaseWeapon()
 	WeaponASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	WeaponAttribute = CreateDefaultSubobject<UAS_Weapon>(TEXT("AttributeSet"));
-	WeaponAttribute->InitDamage(10);
-	
+}
+
+
+void ARL_BaseWeapon::SetWeaponLevel(int32 NewLevel)
+{
+	//获取武器等级数据的Fragment
+	if (!ItemInstance) return;
+
+	const URLItemFragment_WeaponLevelData* WeaponLevelDataFrag = ItemInstance->FindFragmentByClass<URLItemFragment_WeaponLevelData>();
+	if (!WeaponLevelDataFrag) return;
+
+	if (NewLevel > WeaponLevelDataFrag->MaxLevel)
+	{
+		return;
+	}
+	WeaponLevel = NewLevel;
+
+
+	if (WeaponAttribute && WeaponASC)
+	{
+		// 创建临时GE修改属性
+		FGameplayEffectContextHandle Context = WeaponASC->MakeEffectContext();
+		Context.AddSourceObject(this);
+
+		UGameplayEffect* GE = NewObject<UGameplayEffect>();
+		GE->DurationPolicy = EGameplayEffectDurationType::Instant;
+
+		//仅设置Damage
+		FGameplayModifierInfo DamageMod;
+		DamageMod.Attribute = UAS_Weapon::GetDamageAttribute();
+		DamageMod.ModifierOp = EGameplayModOp::Override;
+		DamageMod.ModifierMagnitude = FScalableFloat(WeaponLevelDataFrag->GetWeaponLevelData(WeaponLevel).BaseDamage);
+		GE->Modifiers.Add(DamageMod);
+
+		WeaponASC->ApplyGameplayEffectToSelf(GE, 1.0f, Context);
+	}
 }
 
 void ARL_BaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void ARL_BaseWeapon::Tick(float DeltaTime)
@@ -37,7 +74,7 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 	if (bCombat)
 	{
 		GetCurrentPointsLocation();
-
+		 
 		//碰撞检测参数
 		EDrawDebugTrace::Type DrawDebugType = EDrawDebugTrace::ForDuration;
 		FLinearColor TraceColor = FLinearColor::Red;
@@ -64,10 +101,9 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 				 {
 				 	HitActors.Add(HitActor);
 				 	//执行伤害逻辑
-				 	if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor))
+				 	if (IRL_DamageInterface* DamageInterface = Cast<IRL_DamageInterface>(HitActor))
 				 	{
-				 		if (DamageSpecHandle.IsValid())
-				 			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageSpecHandle.Data.Get());
+				 		DamageInterface->TakeDamage(DamageSpecHandle);
 				 	}
 				 }
 			}

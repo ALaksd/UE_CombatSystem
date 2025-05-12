@@ -6,6 +6,10 @@
 #include "RLInventoryItemDefinition.h"
 #include "Fragments/RLItemFragment_Pickup.h"
 #include "Item/Item_Pickup.h"
+#include "RLItemFragment_EquipDynamicData.h"
+#include "Fragments/RLItemFragment_WeaponLevelData.h"
+#include "RLInventoryComponent.h"
+#include <Player/RL_PlayerState.h>
 
 
 URLInventoryItemInstance* URLInventorySubsystem::GenerateItemInstance(URLInventoryItemDefinition* ItemDefinition)
@@ -21,6 +25,11 @@ URLInventoryItemInstance* URLInventorySubsystem::GenerateItemInstance(URLInvento
 	URLInventoryItemInstance* NewInstance = NewObject<URLInventoryItemInstance>(this);
 	NewInstance->SetItemDefinition(ItemDefinition);
 
+	//添加动态实例，这里所有都添加
+
+	URLItemFragment_EquipDynamicData* NewDynamicFragment = NewObject<URLItemFragment_EquipDynamicData>();
+	NewInstance->AddDynamicFragments(NewDynamicFragment);
+	NewDynamicFragment->Owner = NewInstance;
 	return NewInstance;
 }
 
@@ -59,3 +68,88 @@ AActor* URLInventorySubsystem::SpawnItemActorFromDefinition(URLInventoryItemDefi
 	AActor* SpawnedActor = SpawnItemActorFromInstance(NewInstance,Location);
 	return SpawnedActor;
 }
+
+bool URLInventorySubsystem::UpgradeWeapon(URLInventoryItemInstance* WeaponInstance, URLInventoryComponent* OwnerInventory)
+{
+	// 参数有效性检查
+	if (!WeaponInstance || !OwnerInventory)
+	{
+		return false;
+	}
+
+	// 获取等级Fragment
+	const URLItemFragment_WeaponLevelData* LevelFragment = WeaponInstance->FindFragmentByClass<URLItemFragment_WeaponLevelData>();
+	const URLItemFragment_EquipDynamicData* DynamicFragment = WeaponInstance->FindFragmentByClass<URLItemFragment_EquipDynamicData>();
+	if (LevelFragment && DynamicFragment)
+	{
+		//获取相关数据
+		int32 CurrentLevel = DynamicFragment->CurrentLevel;
+		FWeaponLevelData WeaponLevelData = LevelFragment->GetWeaponLevelData(CurrentLevel);
+		int32 NeededFragment = WeaponLevelData.NeededFragment;
+		int32 NeededSoul = WeaponLevelData.NeededCurrency;
+		FGameplayTag NeededTag = WeaponLevelData.FragmentTag;
+
+
+		FRLInventoryItemSlotHandle SlotHandle = OwnerInventory->GetSlotHandleByTag(NeededTag);
+		URLInventoryItemInstance* SlotInstance = OwnerInventory->GetItemInstanceInSlot(SlotHandle);
+		if (SlotHandle.SlotId == -1 || !SlotInstance)
+			return false;
+
+		//背包有的武器强化碎片数量
+		int32 CurrentFragmentNum = SlotInstance->GetCurrentStack();
+
+		//获取所持有的灵魂数量
+		ARL_PlayerState* RL_PlayerState = Cast<ARL_PlayerState>(OwnerInventory->GetOwner());
+		int32 CurrentSoul = RL_PlayerState->GetSoul();
+
+		// 检查材料是否足够
+		if (CurrentFragmentNum >= NeededFragment && CurrentSoul >= NeededSoul)
+		{
+			// 扣除材料
+			OwnerInventory->RemoveItemFromInventory(SlotHandle, NeededFragment);
+			RL_PlayerState->SetSoul(CurrentSoul - NeededSoul);
+
+			//执行升级
+			DynamicFragment->AddLevel();
+
+			return true;
+		}
+		return false;
+	}
+	return false;
+}
+
+FWeaponLevelData URLInventorySubsystem::GetCurrentWeaponLevelData(URLInventoryItemInstance* WeaponInstance)
+{
+	// 获取等级Fragment
+	const URLItemFragment_WeaponLevelData* LevelFragment = WeaponInstance->FindFragmentByClass<URLItemFragment_WeaponLevelData>();
+	const URLItemFragment_EquipDynamicData* DynamicFragment = WeaponInstance->FindFragmentByClass<URLItemFragment_EquipDynamicData>();
+	if (LevelFragment && DynamicFragment)
+	{
+		//获取相关数据
+		int32 CurrentLevel = DynamicFragment->CurrentLevel;
+		FWeaponLevelData WeaponLevelData = LevelFragment->GetWeaponLevelData(CurrentLevel);
+		return WeaponLevelData;
+	}
+	return FWeaponLevelData();
+}
+
+int32 URLInventorySubsystem::GetCurrentWeaponFragmentNum(URLInventoryComponent* OwnerInventory, FGameplayTag ItemTag)
+{
+	FRLInventoryItemSlotHandle SlotHandle = OwnerInventory->GetSlotHandleByTag(ItemTag);
+	URLInventoryItemInstance* SlotInstance = OwnerInventory->GetItemInstanceInSlot(SlotHandle);
+	if (SlotHandle.SlotId == -1 || !SlotInstance)
+		return 0;
+
+	//背包有的武器强化碎片数量
+	int32 CurrentFragmentNum = SlotInstance->GetCurrentStack();
+	return CurrentFragmentNum;
+}
+
+int32 URLInventorySubsystem::GetCurrentSoul(URLInventoryComponent* OwnerInventory)
+{
+	ARL_PlayerState* RL_PlayerState = Cast<ARL_PlayerState>(OwnerInventory->GetOwner());
+	int32 CurrentSoul = RL_PlayerState->GetSoul();
+	return CurrentSoul;
+}
+

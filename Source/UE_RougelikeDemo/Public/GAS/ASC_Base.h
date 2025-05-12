@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "Data/RL_EnemyConfig.h"
 #include "ASC_Base.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /*AssetTags*/);
@@ -19,6 +20,9 @@ public:
 	void AbilityActorInfoSet();
 	void AddCharacterAbility(const TSubclassOf<UGameplayAbility> StartupAbilities);
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
+
+	void AddEnemyAbility(const FEnemySkills& SkillInfo);
+	void AddEnemyAbilities(const TArray<FEnemySkills>& AllSkills);
 
 	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbilities);
 	

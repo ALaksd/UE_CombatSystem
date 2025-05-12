@@ -5,7 +5,6 @@
 
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "Blueprint/UserWidget.h"
 #include "EnhancedInputSubsystems.h"
 #include <Input/RLInputComponent.h>
 
@@ -14,16 +13,16 @@ void URL_UIManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	
 }
 
-void URL_UIManagerSubsystem::AddNewWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController)
+URL_UserWidget* URL_UIManagerSubsystem::AddNewWidget(TSubclassOf<URL_UserWidget> WidgetClass, APlayerController* PlayerController, const FWidgetInitParams InitParams)
 {
-	PushWidget(WidgetClass, PlayerController);
+	return PushWidget(WidgetClass, PlayerController, InitParams);
 }
 
-void URL_UIManagerSubsystem::ToggleWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController)
+void URL_UIManagerSubsystem::ToggleWidget(TSubclassOf<URL_UserWidget> WidgetClass, APlayerController* PlayerController)
 {
 	// 检查是否已存在
 	bool bFound = false;
-	for (UUserWidget* ExistingWidget : WidgetStack)
+	for (URL_UserWidget* ExistingWidget : WidgetStack)
 	{
 		if (ExistingWidget && ExistingWidget->GetClass() == WidgetClass)
 		{
@@ -39,15 +38,19 @@ void URL_UIManagerSubsystem::ToggleWidget(TSubclassOf<UUserWidget> WidgetClass, 
 	}
 }
 
-void URL_UIManagerSubsystem::PushWidget(TSubclassOf<UUserWidget> WidgetClass, APlayerController* PlayerController)
+URL_UserWidget* URL_UIManagerSubsystem::PushWidget(TSubclassOf<URL_UserWidget> WidgetClass, APlayerController* PlayerController, const FWidgetInitParams& InitParams)
 {
-	if (!WidgetClass || !PlayerController) return;
+	if (!WidgetClass || !PlayerController) return nullptr;
 
 	// 创建Widget并添加到视口
-	UUserWidget* NewWidget = CreateWidget<UUserWidget>(PlayerController, WidgetClass);
+	URL_UserWidget* NewWidget = CreateWidget<URL_UserWidget>(PlayerController, WidgetClass);
 	if (NewWidget)
 	{
-		NewWidget->AddToViewport();
+		// 参数初始化（通过接口传递）
+		NewWidget->ApplyInitParams(InitParams);
+
+		const int32 ZOrder = WidgetStack.Num();
+		NewWidget->AddToViewport(ZOrder);
 		WidgetStack.Add(NewWidget);
 
 		// 绑定返回键输入（首次压入时绑定）
@@ -77,7 +80,10 @@ void URL_UIManagerSubsystem::PushWidget(TSubclassOf<UUserWidget> WidgetClass, AP
 		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 		PlayerController->SetInputMode(InputMode);
 		PlayerController->SetShowMouseCursor(true);
+
+		return NewWidget;
 	}
+	return nullptr;
 }
 
 void URL_UIManagerSubsystem::PopWidget(APlayerController* PlayerController)
@@ -85,14 +91,14 @@ void URL_UIManagerSubsystem::PopWidget(APlayerController* PlayerController)
 	if (WidgetStack.Num() == 0 || !PlayerController) return;
 
 	// 移除栈顶Widget
-	UUserWidget* TopWidget = WidgetStack.Last();
+	URL_UserWidget* TopWidget = WidgetStack.Last();
 	TopWidget->RemoveFromParent();
 	WidgetStack.Pop();
 
 	// 更新输入模式
 	if (WidgetStack.Num() > 0)
 	{
-		UUserWidget* NextWidget = WidgetStack.Last();
+		URL_UserWidget* NextWidget = WidgetStack.Last();
 		FInputModeGameAndUI InputMode;
 		InputMode.SetWidgetToFocus(NextWidget->TakeWidget());
 		PlayerController->SetInputMode(InputMode);

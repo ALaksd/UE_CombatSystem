@@ -6,6 +6,7 @@
 #include "GAS/AS/AS_Base.h"
 #include "AS_Enemy.generated.h"
 
+class AEnemy_Base;
 /**
  * 
  */
@@ -14,8 +15,14 @@ class UE_ROUGELIKEDEMO_API UAS_Enemy : public UAS_Base
 {
 	GENERATED_BODY()
 
+public:
+	//体力
+	UPROPERTY(EditDefaultsOnly,Category = "Attribute")
+	FGameplayAttributeData Stamina;
+	ATTRIBUTE_ACCESSORS(UAS_Enemy, Stamina);
+	
 private:
-	//韧性  对应于策划案里怪物体力值
+	//韧性
 	UPROPERTY(EditDefaultsOnly,Category = "Attribute")
 	FGameplayAttributeData Resilience;
 	ATTRIBUTE_ACCESSORS(UAS_Enemy, Resilience);
@@ -24,7 +31,15 @@ private:
 	FGameplayAttributeData MaxResilience;
 	ATTRIBUTE_ACCESSORS(UAS_Enemy, MaxResilience);
 
+	
+	//体力最大值
+	UPROPERTY(EditDefaultsOnly,Category = "Attribute")
+	FGameplayAttributeData MaxStamina;
+	ATTRIBUTE_ACCESSORS(UAS_Enemy, MaxStamina);
 
+	UPROPERTY()
+	TObjectPtr<AEnemy_Base> EnemyRef;
+	
 private:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
 

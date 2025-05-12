@@ -145,7 +145,6 @@ class UE_ROUGELIKEDEMO_API URLInventoryComponent : public UActorComponent
 
 public:	
 	URLInventoryComponent();
-
 	/**
 	 * 委托
 	 */
@@ -162,6 +161,7 @@ public:
 	UFUNCTION(BlueprintCallable,Category = "Inventory")
 	virtual bool LootItem(URLInventoryItemInstance* Item);
 
+	/** 根据Tag放置物品 ,由于指定了插槽，所以不需要扩容,*/
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	virtual bool LootItemByTag(URLInventoryItemInstance* Item,FGameplayTagContainer ItemTags);
 
@@ -171,7 +171,7 @@ public:
 
 	/** 移除指定插槽 */
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	virtual bool RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle);
+	virtual bool RemoveItemFromInventory(const FRLInventoryItemSlotHandle& SlotHandle, int32 RemoveQuantity = 1);
 
 	/** 移除全部插槽 */
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
@@ -184,6 +184,9 @@ public:
 	/** 根据Tag返回插槽钥匙 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Inventory")
 	virtual TArray<FRLInventoryItemSlotHandle> GetSlotHandlesByTags(const FGameplayTagContainer& Tags);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Inventory")
+	virtual FRLInventoryItemSlotHandle GetSlotHandleByTag(const FGameplayTag& Tag);
 
 	/** 获取指定插槽内存放的物品 */
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
@@ -217,6 +220,12 @@ protected:
 
 	/** 判断指定的插槽Item Instance指针是否为空，如果为空则返回true，说明可以放入新的物品 */
 	bool AcceptsItem(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle);
+
+	/** 判断是否可堆叠*/
+	bool CanStackItem(const FRLInventoryItemSlot& Slot, URLInventoryItemInstance* NewItem) const;
+
+	/** 尝试进行堆叠，返回剩余的数量 */
+	int32 AttemptStackItem(FRLInventoryItemSlot& Slot, URLInventoryItemInstance* NewItem);
 
 	/** 插槽数组和钥匙数组 */
 	UPROPERTY()
