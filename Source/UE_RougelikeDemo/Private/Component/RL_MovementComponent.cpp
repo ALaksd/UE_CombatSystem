@@ -364,10 +364,14 @@ void URL_MovementComponent::ToggleLockOn()
 	if (ownerCharacter->Tags.Contains(PlayerLockingTag))
 	{
 		ownerCharacter->Tags.Remove(PlayerLockingTag);
+		characterMovement->bOrientRotationToMovement = true; // 是否朝向移动方向
+		characterMovement->bUseControllerDesiredRotation = false; // 允许控制器控制旋转
 		CurrentTarget = nullptr;
 	}
 	else
 	{
+		characterMovement->bOrientRotationToMovement = false; // 是否朝向移动方向
+		characterMovement->bUseControllerDesiredRotation = true; // 允许控制器控制旋转
 		FindLockOnTarget();
 	}
 }
