@@ -103,30 +103,19 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI|Patrol")
 	FPatrolConfig PatrolConfig;
 
-	//巡逻行为树
-	UPROPERTY(EditAnywhere, Category = "AI|Patrol")
-	TObjectPtr<UBehaviorTree> PatrolSubTree;
-
 	//对峙参数
 	UPROPERTY(EditAnywhere, Category = "AI|Confrontation")
 	FConfrontationConfig ConfrontationConfig;
-
-	//对峙行为树
-	UPROPERTY(EditAnywhere, Category = "AI|Confrontation")
-	TObjectPtr<UBehaviorTree> ConfrontationSubTree;
-
-	// 配置数据引用
-	UPROPERTY(EditAnywhere, Category = "AI|Attack")
-	TObjectPtr<UDataTable> SkillConfigTable;
 
 	//敌人配置表
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")
 	TObjectPtr<URL_EnemyConfig> EnemyConfig;
 
-public:	
-	UFUNCTION(BlueprintCallable,BlueprintPure)
-	FORCEINLINE UBehaviorTree* GetPatrolSubTree() const { return PatrolSubTree; }
-		
+private:
+	UPROPERTY()
+	UStaticMeshComponent* WeaponMeshComponent;
+
+public:			
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE TArray<FVector>& GetPatrolPoints() { return PatrolPoints; }
 
@@ -134,14 +123,11 @@ public:
 	FORCEINLINE FPatrolConfig& GetPatrolConfig() { return PatrolConfig; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FORCEINLINE UBehaviorTree* GetConfrontationSubTree() const { return ConfrontationSubTree; }
-
-	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE FConfrontationConfig& GetConfrontationConfig() { return ConfrontationConfig; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FORCEINLINE UDataTable* GetSkillConfigTable() { return SkillConfigTable; }
+	FORCEINLINE URL_EnemyConfig* GetEnemyConfig() { return EnemyConfig; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FORCEINLINE URL_EnemyConfig* GetEnemyConfig() { return EnemyConfig; }
+	FTransform GetWeaopnSocketTransform();
 };

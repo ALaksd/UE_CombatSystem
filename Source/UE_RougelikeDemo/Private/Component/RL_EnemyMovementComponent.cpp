@@ -3,7 +3,8 @@
 
 #include "Component/RL_EnemyMovementComponent.h"
 #include "Components/SplineComponent.h"
-
+#include "Engine/StaticMeshSocket.h"
+#include <Character/Enemy_Base.h>
 
 URL_EnemyMovementComponent::URL_EnemyMovementComponent()
 {
@@ -25,10 +26,9 @@ void URL_EnemyMovementComponent::InitializeComponent()
 			AActor* OwnerActor = GetOwner();
 
 			// 创建静态网格体组件
-			UStaticMeshComponent* WeaponMeshComponent = NewObject<UStaticMeshComponent>(OwnerActor);
+			WeaponMeshComponent = Cast<AEnemy_Base>(GetOwner())->GetWeaponStaticComponnent();
 			if (WeaponMeshComponent)
 			{
-				WeaponMeshComponent->RegisterComponent();
 				WeaponMeshComponent->SetStaticMesh(const_cast<UStaticMesh*>(WeaponMeshAsset));
 				WeaponMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -58,4 +58,11 @@ void URL_EnemyMovementComponent::BeginPlay()
 	}
 	
 }
+
+FTransform URL_EnemyMovementComponent::GetWeaopnSocketTransform()
+{
+	return WeaponMeshComponent->GetSocketTransform(EnemyConfig->WeaponTipSocket);
+
+}
+
 

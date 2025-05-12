@@ -9,6 +9,7 @@
 
 
 class UGameplayEffect;
+class URL_EnemyMovementComponent;
 /**
  * 
  */
@@ -31,7 +32,13 @@ public:
 
 	// 攻击检测范围
 	UPROPERTY(EditAnywhere, Category = "Detection")
-	float AttackRadius = 100.0f;
+	FVector RectangleParam = FVector(20, 20, 60); // 前向50，横向50，垂直50
+
+	UPROPERTY(EditAnywhere, Category = "Detection")
+	FVector LocationOffset = FVector::ZeroVector; // 相对于骨骼的局部偏移
+
+	UPROPERTY(EditAnywhere, Category = "Detection")
+	FName AttackSocketName = "AttackSocket";
 
 protected:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
@@ -40,9 +47,13 @@ protected:
 
 private:
 	TArray<AActor*> AlreadyHitActors; // 已命中的目标
+
+	UPROPERTY()
 	AActor* OwnerActor; // 攻击者
 
 	void CauseDamage(AActor* TargetActor);
-	void DetectAndApplyDamage(USkeletalMeshComponent* MeshComp);
+	void DetectAndApplyDamage(USkeletalMeshComponent* MeshComp, FVector& Center, FRotator& Rotation);
 
+	// 攻击检测范围
+	FTransform SocketTrans;
 };

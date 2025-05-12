@@ -21,8 +21,13 @@ void UANS_EnemyAttackDecision::NotifyTick(USkeletalMeshComponent* MeshComp, UAni
 {
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
 
-	DetectAndApplyDamage(MeshComp);
+	SocketTrans = MeshComp->GetSocketTransform(AttackSocketName);
+	FVector FinalCenter = SocketTrans.GetLocation() + SocketTrans.GetRotation().RotateVector(LocationOffset);
+	FRotator FinalRotation = SocketTrans.GetRotation().Rotator();
+
+	DetectAndApplyDamage(MeshComp, FinalCenter, FinalRotation);
 }
+
 
 void UANS_EnemyAttackDecision::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
@@ -32,7 +37,7 @@ void UANS_EnemyAttackDecision::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnim
 	AlreadyHitActors.Empty();
 }
 
-void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* MeshComp)
+void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* MeshComp, FVector& Center, FRotator& Rotation)
 {
 	if (!OwnerActor) return;
 
@@ -40,8 +45,17 @@ void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* Mesh
 	TArray<AActor*> ActorsToIgnore;
 	ActorsToIgnore.Add(OwnerActor);
 
-	//这里的起点要改进
-	URL_AbilitySystemLibrary::GetLivePlayerWithRadius(OwnerActor, HitActors, ActorsToIgnore, AttackRadius, MeshComp->GetComponentLocation());
+	URL_AbilitySystemLibrary::GetLivePlayersInEllipse(
+		OwnerActor,
+		HitActors,
+		ActorsToIgnore,
+		Center,
+		RectangleParam, // 前向500，横向300，垂直200
+		Rotation,
+		true,    // 开启调试绘制
+		2.0f,    // 显示2秒
+		FColor::Emerald
+	);
 
 	// 3. 处理命中结果
 	for (AActor* HitActor : HitActors)

@@ -45,28 +45,6 @@ void UASC_Base::AddEnemyAbility(const FEnemySkills& SkillInfo)
 	// 注册能力
 	GiveAbility(AbilitySpec);
 
-	// 应用冷却 GE（动态）
-	if (AbilityCDO)
-	{
-		const UGameplayEffect* CooldownEffect = AbilityCDO->GetCooldownGameplayEffect();
-		if (!CooldownEffect) return;
-
-		// 构建冷却 Spec
-		FGameplayEffectSpecHandle CooldownSpecHandle = MakeOutgoingSpec(CooldownEffect->GetClass(), 1.0f, MakeEffectContext());
-		if (CooldownSpecHandle.IsValid())
-		{
-			FGameplayEffectSpec* Spec = CooldownSpecHandle.Data.Get();
-
-			// 设置 SetByCaller 冷却时间（前提：GE 支持 SetByCaller）
-			Spec->SetSetByCallerMagnitude(FName(TEXT("Data.Cooldown")), SkillInfo.Cooldown);
-
-			// 强制覆盖 Duration（如果没用 SetByCaller）
-			Spec->SetDuration(SkillInfo.Cooldown, true);
-
-			// 应用冷却到自己
-			ApplyGameplayEffectSpecToSelf(*Spec);
-		}
-	}
 }
 
 

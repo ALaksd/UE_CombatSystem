@@ -43,9 +43,8 @@ void UGA_EnemyAbilityBase::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 			if (Task)
 			{
 				Task->OnCompleted.AddDynamic(this, &UGA_EnemyAbilityBase::OnMontageCompleted);
-				Task->OnCancelled.AddDynamic(this, &UGA_EnemyAbilityBase::OnMontageCompleted);
-				Task->OnBlendOut.AddDynamic(this, &UGA_EnemyAbilityBase::OnMontageCompleted);
-				Task->OnInterrupted.AddDynamic(this, &UGA_EnemyAbilityBase::OnMontageCompleted);
+				Task->OnCancelled.AddDynamic(this, &UGA_EnemyAbilityBase::OnMontageCancelled);
+				Task->OnInterrupted.AddDynamic(this, &UGA_EnemyAbilityBase::OnMontageCancelled);
 				Task->ReadyForActivation();
 			}
 		}
@@ -60,6 +59,10 @@ void UGA_EnemyAbilityBase::EndAbility(const FGameplayAbilitySpecHandle Handle, c
 
 void UGA_EnemyAbilityBase::OnMontageCompleted()
 {
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
 
+void UGA_EnemyAbilityBase::OnMontageCancelled()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }

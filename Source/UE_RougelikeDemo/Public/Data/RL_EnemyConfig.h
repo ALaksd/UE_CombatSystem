@@ -17,25 +17,10 @@ struct FEnemySkillAnimation
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	TObjectPtr<UAnimMontage> Montage;
 
-	/** 是否是红光攻击 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
-	bool bRed = false;
-
 	/** 动画选中权重 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	float Weight = 1.0f;
 
-	/** 攻击范围 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
-	float SkillRangeMin = 50.f;
-
-	/** 攻击范围 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
-	float SkillRangeMax = 300.f;
-
-	/** 下段连招 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
-	TObjectPtr<UAnimMontage> NextMontage;
 };
 
 USTRUCT(BlueprintType)
@@ -51,19 +36,55 @@ struct FEnemySkills
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	TSubclassOf<class UGA_EnemyAbilityBase> AbilityClass;
 
-	/** 能力冷却时间 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
-	float Cooldown = 5.f;
-
 	/** 优先级 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	int32 PriorityLevel = 0;
+
+	/** 允许的状态（清醒/混沌） */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
+	FGameplayTagContainer AllowedStates;
+
+	/** 是否为强力攻击 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
+	bool bIsPowerfulAttack = false;
+
+
+	/** 攻击范围 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
+	float SkillRangeMin = 50.f;
+
+	/** 攻击范围 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
+	float SkillRangeMax = 300.f;
 
 	/** 所有动画条目配置 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	TArray<FEnemySkillAnimation> Animations;
 };
 
+UENUM(BlueprintType)
+enum class EEnemyActionState : uint8
+{
+	None        UMETA(DisplayName = "无状态"),
+	Evading     UMETA(DisplayName = "迂回中"),
+	Rolling     UMETA(DisplayName = "翻滚中"),
+	Attacking   UMETA(DisplayName = "攻击中")
+};
+
+USTRUCT(BlueprintType)
+struct FBaseActionWeights
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	float EvadeChance = 0.4f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	float AttackChance = 0.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	float RollChance = 0.1f;
+};
 
 /**
  * 
@@ -77,6 +98,8 @@ public:
 	// 技能
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Skills")
 	TArray<FEnemySkills> EnemySkills;
+
+	FEnemySkills FindSkillsByTag(FGameplayTag SkillTag) const;
 
 	// 初始属性
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Attributes")
@@ -97,6 +120,9 @@ public:
 	//武器顶端插槽
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|Weapon")
 	FName WeaponTipSocket = "Tip";
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|AI")
+	FBaseActionWeights BaseActionWeights;
 
 	// 敌人类型等扩展参数
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")

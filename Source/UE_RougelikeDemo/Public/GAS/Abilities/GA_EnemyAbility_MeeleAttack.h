@@ -21,8 +21,7 @@ public:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 protected:
 	void UpdateFacingDirection();
-	UAnimMontage* SelectRandomAnimation(const FEnemySkills& Skills, bool& bIsRed);
-
+	UAnimMontage* SelectRandomAnimation(const FEnemySkills& Skills);
 private:
 	FTimerHandle FacingUpdateTimerHandle;
 

@@ -21,4 +21,8 @@ public:
 protected:
 	UFUNCTION()
 	void OnMontageCompleted();
+
+	UFUNCTION()
+	void OnMontageCancelled();
+
 };

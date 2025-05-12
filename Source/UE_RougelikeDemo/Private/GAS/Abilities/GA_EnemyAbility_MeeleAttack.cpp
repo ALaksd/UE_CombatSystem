@@ -16,7 +16,6 @@
 		{
 			URL_EnemyMovementComponent* EnemyMove = ActorInfo->AvatarActor->FindComponentByClass<URL_EnemyMovementComponent>();
 			UAnimMontage* MontageToPlay = nullptr;
-			bool bIsRed = false;
 
 			if (EnemyMove)
 			{
@@ -25,7 +24,7 @@
 				{
 					if (AbilityTags.HasTagExact(EnemySkill.AbilityTag))
 					{
-						MontageToPlay = SelectRandomAnimation(EnemySkill, bIsRed);
+						MontageToPlay = SelectRandomAnimation(EnemySkill);
 						break;
 					}
 				}
@@ -43,17 +42,11 @@
 					false
 				);
 
-				if (bIsRed)
-				{
-					//红光攻击，比如播放一个GagmeplayCue
-				}
-
 				if (Task)
 				{
 					Task->OnCompleted.AddDynamic(this, &UGA_EnemyAbility_MeeleAttack::OnMontageCompleted);
-					Task->OnCancelled.AddDynamic(this, &UGA_EnemyAbility_MeeleAttack::OnMontageCompleted);
-					Task->OnBlendOut.AddDynamic(this, &UGA_EnemyAbility_MeeleAttack::OnMontageCompleted);
-					Task->OnInterrupted.AddDynamic(this, &UGA_EnemyAbility_MeeleAttack::OnMontageCompleted);
+					Task->OnCancelled.AddDynamic(this, &UGA_EnemyAbility_MeeleAttack::OnMontageCancelled);
+					Task->OnInterrupted.AddDynamic(this, &UGA_EnemyAbility_MeeleAttack::OnMontageCancelled);
 					Task->ReadyForActivation();
 				}
 			}
@@ -84,7 +77,7 @@
 	}
 
 
-	UAnimMontage* UGA_EnemyAbility_MeeleAttack::SelectRandomAnimation(const FEnemySkills& Skills, bool& bIsRed)
+	UAnimMontage* UGA_EnemyAbility_MeeleAttack::SelectRandomAnimation(const FEnemySkills& Skills)
 	{
 		const TArray<FEnemySkillAnimation>& Anims = Skills.Animations;
 		if (Anims.Num() == 0) return nullptr;
@@ -101,12 +94,9 @@
 		{
 			if (RandomPoint <= Anim.Weight)
 			{
-				bIsRed = Anim.bRed;
 				return Anim.Montage;
 			}
 			RandomPoint -= Anim.Weight;
 		}
-
-		bIsRed = Anims.Last().bRed;
 		return Anims.Last().Montage; // fallback
 	}

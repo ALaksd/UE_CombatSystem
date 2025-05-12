@@ -63,6 +63,9 @@ public:
 	// 处理蹒跚相关
 	void Staggered();
 
+
+
+	FORCEINLINE UStaticMeshComponent* GetWeaponStaticComponnent() { return WeaponStaticMeshComponent; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -88,6 +91,9 @@ protected:
 	//样条线组件，用于巡逻
 	UPROPERTY(VisibleAnywhere, Category = "AI|Patrol")
 	TObjectPtr<USplineComponent> PatrolSpline;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	TObjectPtr<UStaticMeshComponent> WeaponStaticMeshComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<URL_EnemyMovementComponent> EnemyMovementComponent;

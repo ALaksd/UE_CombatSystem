@@ -8,10 +8,22 @@
 
 UBTService_SkillDecision::UBTService_SkillDecision()
 {
-	NodeName = "Waking State AttackDecision";
+	
 }
 
 void UBTService_SkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaTime)
+{
+	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
+
+	// 仅当无当前状态时选择新动作
+	if (Blackboard->GetValueAsEnum(CurrentActionState.SelectedKeyName) == static_cast<uint8>(EEnemyActionState::None))
+	{
+		ChooseNewBaseAction(OwnerComp);
+	}
+}
+
+// 简化后的基础行动选择
+void UBTService_SkillDecision::ChooseNewBaseAction(UBehaviorTreeComponent& OwnerComp)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();
 	if (!AIController) return;
@@ -25,77 +37,26 @@ void UBTService_SkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 
 	// 获取配置的 EnemyDataAsset
 	const URL_EnemyConfig* EnemyConfig = EnemyMove->GetEnemyConfig();
-	if (!EnemyConfig) return;
 
-	// 获取技能列表
-	const TArray<FEnemySkills>& WakingSkills = EnemyConfig->EnemySkills;
+	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
 
-	AvailableSkills.Empty();
+	// 概率计算（示例值）
+	const float Total = EnemyConfig->BaseActionWeights.EvadeChance + EnemyConfig->BaseActionWeights.AttackChance + EnemyConfig->BaseActionWeights.RollChance;
+	const float RandomPick = FMath::FRand() * Total;
 
-	// 遍历所有技能，检查条件并添加到可用列表
-	for (const FEnemySkills& Skill : WakingSkills)
+	// 设置黑板键值
+	if (RandomPick <= EnemyConfig->BaseActionWeights.EvadeChance)
 	{
-		if (CheckSkillCondition(Skill, AIController))
-		{
-			AvailableSkills.Add(Skill);
-		}
+		Blackboard->SetValueAsEnum(CurrentActionState.SelectedKeyName, static_cast<uint8>(EEnemyActionState::Evading));
 	}
-
-	// 根据优先级排序
-	AvailableSkills.Sort([](const FEnemySkills& A, const FEnemySkills& B) {
-		return A.PriorityLevel > B.PriorityLevel;
-		});
-
-	// 如果有可用技能，选择第一个（优先级最高的）
-	if (AvailableSkills.Num() > 0)
+	else if (RandomPick <= (EnemyConfig->BaseActionWeights.EvadeChance + EnemyConfig->BaseActionWeights.AttackChance))
 	{
-		const FEnemySkills& SelectedSkill = AvailableSkills[0];
-		FString String = *SelectedSkill.AbilityTag.ToString();
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, String);
-		OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedSkillKey.SelectedKeyName, SelectedSkill.AbilityTag.GetTagName());
+		Blackboard->SetValueAsEnum(CurrentActionState.SelectedKeyName, static_cast<uint8>(EEnemyActionState::Attacking));
 	}
 	else
 	{
-		// 如果没有可用技能，设置为 None
-		OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedSkillKey.SelectedKeyName, "None");
+		Blackboard->SetValueAsEnum(CurrentActionState.SelectedKeyName, static_cast<uint8>(EEnemyActionState::Rolling));
 	}
 }
 
-
-void UBTService_SkillDecision::EvaluateSkills(AAIController* AIController, APawn* ControlledPawn)
-{
-	//可以添加评估逻辑
-}
-
-bool UBTService_SkillDecision::CheckSkillCondition(const FEnemySkills& Skill, AAIController* AIController)
-{
-	APawn* Pawn = AIController->GetPawn();
-	UAbilitySystemComponent* ASC = GetAbilitySystem(Pawn);
-	if (!ASC) return false;
-
-	// 构造冷却用的 Tag，用 "Cooldown." 前缀 + 能力名字
-	const FGameplayTag CooldownTag = FGameplayTag::RequestGameplayTag(
-		FName(FString::Printf(TEXT("Cooldown.%s"), *Skill.AbilityTag.ToString()))
-	);
-
-	// 检查是否在冷却中
-	if (ASC->HasMatchingGameplayTag(CooldownTag))
-	{
-		// 技能正在冷却，不能选
-		return false;
-	}
-
-	//可添加新的条件
-	return true;
-}
-
-UAbilitySystemComponent* UBTService_SkillDecision::GetAbilitySystem(APawn* Pawn) const
-{
-	UAbilitySystemComponent* ASC = Pawn->FindComponentByClass<UAbilitySystemComponent>();
-	if (ASC)
-	{
-		return ASC;
-	}
-	return nullptr;
-}
 

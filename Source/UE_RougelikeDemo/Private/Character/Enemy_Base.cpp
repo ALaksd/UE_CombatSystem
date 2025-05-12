@@ -27,6 +27,8 @@ AEnemy_Base::AEnemy_Base()
 
 	EnemyMovementComponent = CreateDefaultSubobject<URL_EnemyMovementComponent>("EnemyMovementComponent");
 
+	WeaponStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("WeaponStaticMeshComponent");
+
 	PatrolSpline = CreateDefaultSubobject<USplineComponent>("PatrolSpline");
 	PatrolSpline->SetupAttachment(GetRootComponent());
 	bUseControllerRotationRoll = false;
