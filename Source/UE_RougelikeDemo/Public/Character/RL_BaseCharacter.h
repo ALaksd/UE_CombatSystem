@@ -105,8 +105,7 @@ private:
 	//用于存放一些开始状态激活一次永久存在的技能
 	UPROPERTY(EditDefaultsOnly, Category = "0_RLCharacter|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupPassiveAbilities;
-
-
+	
 public:
 	// Sets default values for this character's properties
 	ARL_BaseCharacter();
@@ -123,7 +122,7 @@ public:
 
 	//初始化玩家技能列表
 	void AddCharacterAbilities();
-	
+
 protected:
 	virtual void BeginPlay() override;
 

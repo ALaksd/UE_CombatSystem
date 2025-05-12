@@ -6,8 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Sound/SoundCue.h"
 #include "Particles/ParticleSystem.h" 
-#include "NiagaraSystem.h"                 // ÒıÈë Niagara ÏµÍ³Í·ÎÄ¼ş
-#include "NiagaraFunctionLibrary.h"        // ÒıÈë Niagara ¹¦ÄÜ¿â£¬ÓÃÓÚ²¥·ÅÌØĞ§
+#include "NiagaraSystem.h"                 // å¼•å…¥ Niagara ç³»ç»Ÿå¤´æ–‡ä»¶
+#include "NiagaraFunctionLibrary.h"        // å¼•å…¥ Niagara åŠŸèƒ½åº“ï¼Œç”¨äºæ’­æ”¾ç‰¹æ•ˆ
 #include "NiagaraTypes.h"
 #include "NiagaraCore.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -23,14 +23,14 @@ public:
 	// Sets default values for this actor's properties
 	ARL_Arrow();
 
-	//·¢Éä
+	//å‘å°„
 	void Fire(FVector Direction, float Strength);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	//ÖØµşÊÂ¼ş
+	//é‡å äº‹ä»¶
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlapedComp,AActor* OtherActor,UPrimitiveComponent* OtherComponent,int OtherBodyIndex,bool bFromSweep,const FHitResult& HitResult);
 	UFUNCTION()
@@ -43,26 +43,26 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UStaticMeshComponent* ArrowStaitcMesh;
 
-	// Ìí¼ÓÅ×ÌåÔË¶¯×é¼ş
+	// æ·»åŠ æŠ›ä½“è¿åŠ¨ç»„ä»¶
 	UPROPERTY(VisibleAnywhere, Category = "Movement")
 	UProjectileMovementComponent* ProjectileMovement;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UStaticMeshComponent* NiagaraAttachComponent;
 
-	//×î´óËÙ¶È
+	//æœ€å¤§é€Ÿåº¦
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Category = Arrow)
 	float MaxSpeed;
 
-	//×îĞ¡ËÙ¶È
+	//æœ€å°é€Ÿåº¦
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Arrow)
 	float MinSpeed;
 
-	//×î´óÖØÁ¦
+	//æœ€å¤§é‡åŠ›
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Arrow)
 	float MaxGravity;
 
-	//×îĞ¡ÖØÁ¦
+	//æœ€å°é‡åŠ›
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Arrow)
 	float MinGravity;
 
@@ -72,15 +72,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Arrow)
 	USoundCue* ArrowHitSound;
 
-	// ÉùÃ÷Á£×ÓÏµÍ³
+	// å£°æ˜ç²’å­ç³»ç»Ÿ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Arrow)
-	UParticleSystem* ParticleEffect;  // Á£×ÓÏµÍ³µÄÖ¸Õë
+	UParticleSystem* ParticleEffect;  // ç²’å­ç³»ç»Ÿçš„æŒ‡é’ˆ
 
-	// ÉùÃ÷ Niagara ÏµÍ³
+	// å£°æ˜ Niagara ç³»ç»Ÿ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrow")
-	UNiagaraSystem* NiagaraEffect; // Niagara ÏµÍ³µÄÖ¸Õë
+	UNiagaraSystem* NiagaraEffect; // Niagara ç³»ç»Ÿçš„æŒ‡é’ˆ
 
-	//¼ıÊ¸µ±Ç°µÄËÙ¶È
+	//ç®­çŸ¢å½“å‰çš„é€Ÿåº¦
 	FVector ArrowVelocity;
 protected:
 
