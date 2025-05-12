@@ -1,6 +1,7 @@
 #include "Component/RL_MovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Character/Enemy_Base.h"
 #include "Character/RL_BaseCharacter.h"
 #include "Component/RL_InputBufferComponent.h"
 #include "Engine/OverlapResult.h"
@@ -71,6 +72,8 @@ void URL_MovementComponent::BeginPlay()
 		RLInputComponent->BindAction(STLAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::SwitchTargetLeft);
 
 		RLInputComponent->BindAction(STRAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::SwitchTargetRight);
+		// 处决
+		RLInputComponent->BindAction(ExecuteAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::Execute);
 
 		// 武器切换
 		if (ARL_PlayerState* PlayerState = CastChecked<ARL_PlayerState>(UGameplayStatics::GetPlayerState(GetWorld(),0)))
@@ -164,6 +167,90 @@ void URL_MovementComponent::Collect(const FInputActionValue& Value)
 			InteractableActor->TryInteract();
 		}
 	}
+}
+
+void URL_MovementComponent::Execute(const FInputActionValue& Value)
+{
+	// 看有无锁定的敌人
+	AEnemy_Base* Enemy = Cast<AEnemy_Base>(CurrentTarget);
+	if (!Enemy || !ownerCharacter) return;
+
+	FVector Direction = ownerCharacter->GetActorLocation() - Enemy->GetActorLocation();
+	FVector EnemyDir = Enemy->GetActorForwardVector();
+	float Distance = Direction.Length();
+	
+	// 正面判定区域
+	float Angle = CalculateAngleBetweenVectors(Direction,EnemyDir);
+	// 背面判定区域
+	float BackAngle = CalculateAngleBetweenVectors(Direction,-EnemyDir);
+
+	// 处决条件
+	/*
+	 * 正面处决
+	 *
+	 * 玩家处在敌人正面
+	 * 敌人处于破防状态
+	 * 距离合适
+	 */
+	if (ExecuteAngle >= Angle && Distance <= ExecuteDistance && Enemy->bIsGuardBroken)
+	{
+		// 角度与距离判定   敌人破防状态判定
+		// 触发处决
+		/*
+		 * 调整玩家到合适位置
+		 * 玩家处决GA
+		 * 敌人播放处决动画
+		 */
+
+		FVector TargetLocation = Enemy->GetMesh()->GetSocketLocation(FName("Socket_Execute_F"));
+		// 计算目标旋转（面向敌人）
+		FRotator TargetRotation = Enemy->GetActorRotation() + FRotator(0, 180.0f, 0);
+		FHitResult SweepHitResult;
+		// 设置位置旋转
+		bool bSweep = ownerCharacter->SetActorLocationAndRotation(TargetLocation,TargetRotation,true,&SweepHitResult,ETeleportType::TeleportPhysics);
+		if (!bSweep)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("发生碰撞,处决取消"));
+		}
+		else
+		{
+			FGameplayTag ExecuteTag = FGameplayTag::RequestGameplayTag(FName("InputTag.FrontExecution"));
+			LMBInputHeldTest(ExecuteTag);
+			Enemy->Execute(true);
+		}
+	}
+
+	
+	
+
+	/*
+	 * 背面处决
+	 *
+	 * 双方不在战斗状态
+	 * 敌人在玩家一定距离内
+	 * 角度合适
+	 */
+
+	if (ExecuteAngle >= Angle && Distance <= ExecuteDistance && !Enemy->bIsFindPlayer)
+	{
+		FVector TargetLocation = Enemy->GetMesh()->GetSocketLocation(FName("Socket_Execute_B"));
+		// 计算目标旋转（面向敌人背部）
+		FRotator TargetRotation = Enemy->GetActorRotation();
+		FHitResult SweepHitResult;
+		// 设置位置旋转
+		bool bSweep = ownerCharacter->SetActorLocationAndRotation(TargetLocation,TargetRotation,true,&SweepHitResult,ETeleportType::TeleportPhysics);
+		if (!bSweep)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("发生碰撞,处决取消"));
+		}
+		else
+		{
+			FGameplayTag ExecuteTag = FGameplayTag::RequestGameplayTag(FName("InputTag.RearExecution"));
+			LMBInputHeldTest(ExecuteTag);
+			Enemy->Execute(false);
+		}
+	}
+	
 }
 
 void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

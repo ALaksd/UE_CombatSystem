@@ -40,6 +40,19 @@ private:
 	FGameplayTagContainer StateTags;
 
 public:
+	// 正面处决动画
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
+	TObjectPtr<UAnimMontage> Aim_Execute_F;
+	// 背面处决动画
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
+	TObjectPtr<UAnimMontage> Aim_Execute_B;
+	// 敌人是否发现玩家的标识
+	bool bIsFindPlayer;
+	// 处理处决
+	void Execute(bool bIsForward);
+
+
+	
 	// 接收伤害
 	virtual void TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) const override;
 	
@@ -71,9 +84,7 @@ public:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
 	TObjectPtr<UAnimMontage> Aim_Staggered;
 
-	// 处决动画
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
-	TObjectPtr<UAnimMontage> Aim_Execute;
+	
 	
 	// 处理破防相关
 	void GuardBroken();

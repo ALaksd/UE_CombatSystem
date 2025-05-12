@@ -36,6 +36,18 @@ AEnemy_Base::AEnemy_Base()
 	
 }
 
+void AEnemy_Base::Execute(bool bIsForward)
+{
+	if (bIsForward)
+	{
+		PlayAnimMontage(Aim_Execute_F);
+	}
+	else
+	{
+		PlayAnimMontage(Aim_Execute_B);
+	}
+}
+
 void AEnemy_Base::TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) const
 {
 	if (AbilitySystemComponent)

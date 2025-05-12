@@ -61,6 +61,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> SwitchWeaponAction;
 
+	//处决
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> ExecuteAction;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Settings")
 	//角色移动状态数据
 	TMap<EMovementState, FMovementSetting> MovementSettingMap;
@@ -72,6 +76,14 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	EMovementState CurrentMovementState;
 
+	// 处决半角
+	UPROPERTY(EditDefaultsOnly,Category = "Attribute | Execute")
+	float ExecuteAngle;
+	
+	// 处决判定距离
+	UPROPERTY(EditDefaultsOnly,Category = "Attribute | Execute")
+	float ExecuteDistance;
+	
 	/***--------------------测试---------------------***/
 
 	void LMBInputPressedTest(FGameplayTag InputTag);
@@ -92,6 +104,8 @@ protected:
 	void RunOver(const FInputActionValue& Value);
 	
 	void Collect(const FInputActionValue& Value);
+	// 处决
+	void Execute(const FInputActionValue& Value);
 
 	//切换锁定敌人（可能需要更改）
 
