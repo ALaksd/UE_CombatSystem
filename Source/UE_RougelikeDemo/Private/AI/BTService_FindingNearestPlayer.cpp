@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BTFunctionLibrary.h"
 #include <Interface/RL_CombatInterface.h>
+
+#include "Character/Enemy_Base.h"
 #include "Interface/RL_EnemyInterface.h"
 
 void UBTService_FindingNearestPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -52,6 +54,11 @@ void UBTService_FindingNearestPlayer::TickNode(UBehaviorTreeComponent& OwnerComp
 		// 设置焦点到目标
 		AIController->SetFocus(ClosestActor);
 		bIsTargetValid = true;
+
+		// 设置发现玩家
+		if (AEnemy_Base* Enemy = Cast<AEnemy_Base>(OwningPawn))
+			Enemy->bIsFindPlayer = true;
+		
 	}
 	else
 	{
@@ -59,6 +66,11 @@ void UBTService_FindingNearestPlayer::TickNode(UBehaviorTreeComponent& OwnerComp
 		AIController->ClearFocus(EAIFocusPriority::Gameplay);
 		ClosestActor = nullptr;
 		ClosestDistance = -1.0f; // 用负值表示无效距离
+
+		// 设置未发现玩家
+		if (AEnemy_Base* Enemy = Cast<AEnemy_Base>(OwningPawn))
+			Enemy->bIsFindPlayer = false;
+		
 	}
 
 	// 更新黑板键值

@@ -9,6 +9,7 @@
 #include "Interface/RL_EnemyInterface.h"
 #include "UI/WidgetController/RL_OverlayWidgetController.h"
 #include "GameFramework/Character.h"
+#include "Interface/RL_DamageInterface.h"
 #include "Enemy_Base.generated.h"
 
 class UBehaviorTree;
@@ -18,7 +19,8 @@ class URL_EnemyMovementComponent;
 class USplineComponent;
 
 UCLASS()
-class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface,public IRL_CombatInterface,public IRL_EnemyInterface
+class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface,
+	public IRL_CombatInterface,public IRL_EnemyInterface,public IRL_DamageInterface
 {
 	GENERATED_BODY()
 
@@ -38,6 +40,22 @@ private:
 	FGameplayTagContainer StateTags;
 
 public:
+	// 正面处决动画
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
+	TObjectPtr<UAnimMontage> Aim_Execute_F;
+	// 背面处决动画
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
+	TObjectPtr<UAnimMontage> Aim_Execute_B;
+	// 敌人是否发现玩家的标识
+	bool bIsFindPlayer;
+	// 处理处决
+	void Execute(bool bIsForward);
+
+
+	
+	// 接收伤害
+	virtual void TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) const override;
+	
 	inline  virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override {return AbilitySystemComponent;}
 
 	/** ComvatInterface */
@@ -57,13 +75,33 @@ public:
 	// 韧性减少回调
 	UFUNCTION(BlueprintImplementableEvent)
 	void ResilienceReduceCallBack();
+
+	// 破防动画
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
+	TObjectPtr<UAnimMontage> Aim_GuardBroken;
+
+	// 蹒跚动画
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
+	TObjectPtr<UAnimMontage> Aim_Staggered;
+
+	
 	
 	// 处理破防相关
 	void GuardBroken();
 	// 处理蹒跚相关
 	void Staggered();
 
+UFUNCTION(BlueprintCallable)
+	void GuardBrokenCallBack();
+	UFUNCTION(BlueprintCallable)
+	void StaggeredCallBack();
 
+	// 破防状态
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="AnimationUpdate | State")
+	bool bIsGuardBroken = false;
+	// 蹒跚状态
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="AnimationUpdate | State")
+	bool bIsStaggered = false;
 
 	FORCEINLINE UStaticMeshComponent* GetWeaponStaticComponnent() { return WeaponStaticMeshComponent; }
 	
@@ -107,6 +145,9 @@ protected:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnMaxHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnStaminaChanged;
 
 	/** Hit */
 

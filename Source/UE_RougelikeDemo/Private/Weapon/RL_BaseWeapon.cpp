@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "Interface/RL_DamageInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "UE_RougelikeDemo/InventorySystem/RLItemFragment_EquipDynamicData.h"
 #include "UE_RougelikeDemo/InventorySystem/Fragments/RLItemFragment_WeaponLevelData.h"
@@ -100,10 +101,9 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 				 {
 				 	HitActors.Add(HitActor);
 				 	//执行伤害逻辑
-				 	if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor))
+				 	if (IRL_DamageInterface* DamageInterface = Cast<IRL_DamageInterface>(HitActor))
 				 	{
-				 		if (DamageSpecHandle.IsValid())
-				 			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageSpecHandle.Data.Get());
+				 		DamageInterface->TakeDamage(DamageSpecHandle);
 				 	}
 				 }
 			}

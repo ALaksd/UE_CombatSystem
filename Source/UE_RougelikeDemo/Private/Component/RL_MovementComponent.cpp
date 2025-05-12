@@ -1,7 +1,10 @@
 #include "Component/RL_MovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Character/Enemy_Base.h"
+#include "Character/RL_BaseCharacter.h"
 #include "Component/RL_InputBufferComponent.h"
+#include "Engine/OverlapResult.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
@@ -14,14 +17,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Player/RL_PlayerState.h"
+#include "UE_RougelikeDemo/UE_RougelikeDemo.h"
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryComponent.h"
 #include "UE_RougelikeDemo/InventorySystem/InventoryComponent/RLInventoryComponent_Equipment.h"
 
 URL_MovementComponent::URL_MovementComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	bIsLockedOn = false;
-	CurrentTarget = nullptr;
 }
 
 void URL_MovementComponent::BeginPlay()
@@ -46,7 +48,7 @@ void URL_MovementComponent::BeginPlay()
 	// 设置移动组件速度
 	if (characterMovement)
 	{
-		characterMovement->MaxWalkSpeed = moveSpeed;
+		UpdateMovementState(EMovementState::Jogging);
 		characterMovement->bOrientRotationToMovement = true; // 是否朝向移动方向
 		characterMovement->bUseControllerDesiredRotation = false; // 允许控制器控制旋转
 		ownerCharacter->bUseControllerRotationYaw = false;
@@ -61,11 +63,17 @@ void URL_MovementComponent::BeginPlay()
 
 		RLInputComponent->BindAction(CollectAction, ETriggerEvent::Started, this, &URL_MovementComponent::Collect);
 
+		RLInputComponent->BindAction(RunAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::Run);
+
+		RLInputComponent->BindAction(RunAction, ETriggerEvent::Completed, this, &URL_MovementComponent::RunOver);
+
 		RLInputComponent->BindAction(LockAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::ToggleLockOn);
-		
+
 		RLInputComponent->BindAction(STLAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::SwitchTargetLeft);
-		
+
 		RLInputComponent->BindAction(STRAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::SwitchTargetRight);
+		// 处决
+		RLInputComponent->BindAction(ExecuteAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::Execute);
 
 		// 武器切换
 		if (ARL_PlayerState* PlayerState = CastChecked<ARL_PlayerState>(UGameplayStatics::GetPlayerState(GetWorld(),0)))
@@ -101,112 +109,17 @@ void URL_MovementComponent::Look(const FInputActionValue& Value)
 	playerController->AddPitchInput(LookAxis.Y);
 }
 
-void URL_MovementComponent::ToggleLockOn(const FInputActionValue& Value)
+void URL_MovementComponent::Run(const FInputActionValue& Value)
 {
-	if (bIsLockedOn)
-	{
-		bIsLockedOn = false;
-		CurrentTarget = nullptr;
-		characterMovement->bOrientRotationToMovement = true;
-	}
-	else
-	{
-		FindLockOnTarget();
-		characterMovement->bOrientRotationToMovement = false;
-	}
-}
+	UAbilitySystemComponent* ASC = Cast<ARL_BaseCharacter>(ownerCharacter)->GetAbilitySystemComponent();
+	ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Run"))));
+}   
 
-void URL_MovementComponent::SwitchTargetLeft(const FInputActionValue& Value)
+void URL_MovementComponent::RunOver(const FInputActionValue& Value)
 {
-	if (!bIsLockedOn || LockableTargets.Num() <= 1) return;
-
-	CurrentTargetIndex = (CurrentTargetIndex - 1 + LockableTargets.Num()) % LockableTargets.Num();
-	CurrentTarget = LockableTargets[CurrentTargetIndex];
-}
-
-void URL_MovementComponent::SwitchTargetRight(const FInputActionValue& Value)
-{
-	if (!bIsLockedOn || LockableTargets.Num() <= 1) return;
-
-	CurrentTargetIndex = (CurrentTargetIndex + 1) % LockableTargets.Num();
-	CurrentTarget = LockableTargets[CurrentTargetIndex];
-}
-
-void URL_MovementComponent::FindLockOnTarget()
-{
-	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
-	if (!OwnerCharacter) return;
-
-	APlayerController* PlayerController = Cast<APlayerController>(OwnerCharacter->GetController());
-	if (!PlayerController) return;
-
-	TArray<AActor*> PotentialTargets;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Enemy"), PotentialTargets);
-
-	FVector2D ScreenCenter;
-	int32 ViewportX, ViewportY;
-	PlayerController->GetViewportSize(ViewportX, ViewportY);
-	ScreenCenter = FVector2D(ViewportX * 0.5f, ViewportY * 0.5f);
-
-	LockableTargets.Empty();
-
-	TArray<TPair<AActor*, float>> TargetScreenDistances;
-
-	for (AActor* Target : PotentialTargets)
-	{
-		FVector WorldLocation = Target->GetActorLocation();
-		FVector2D ScreenPosition;
-		bool bIsOnScreen = PlayerController->ProjectWorldLocationToScreen(WorldLocation, ScreenPosition);
-
-		if (bIsOnScreen)
-		{
-			float DistanceToCenter = FVector2D::Distance(ScreenPosition, ScreenCenter);
-			TargetScreenDistances.Add(TPair<AActor*, float>(Target, DistanceToCenter));
-		}
-	}
-
-	if (TargetScreenDistances.Num() > 0)
-	{
-		// 按屏幕中心距离排序
-		TargetScreenDistances.Sort([](const TPair<AActor*, float>& A, const TPair<AActor*, float>& B)
-		{
-			return A.Value < B.Value;
-		});
-
-		for (auto& Pair : TargetScreenDistances)
-		{
-			LockableTargets.Add(Pair.Key);
-		}
-
-		CurrentTargetIndex = 0; // 锁定离中心最近的敌人
-		CurrentTarget = LockableTargets[CurrentTargetIndex];
-		bIsLockedOn = true;
-	}
-	else
-	{
-		CurrentTarget = nullptr;
-		bIsLockedOn = false;
-	}
-}
-
-void URL_MovementComponent::UpdateLockOnRotation(float DeltaTime)
-{
-	if (!bIsLockedOn || !CurrentTarget) return;
-
-	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
-	if (!OwnerCharacter) return;
-
-	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(OwnerCharacter->GetActorLocation(), CurrentTarget->GetActorLocation());
-	FRotator TargetRotation(0.f, LookAtRotation.Yaw, 0.f);
-
-	FRotator NewRotation = FMath::RInterpTo(OwnerCharacter->GetActorRotation(), TargetRotation, DeltaTime, 10.f);
-	OwnerCharacter->SetActorRotation(NewRotation);
-	
-	AController* Controller = OwnerCharacter->GetController();
-	if (Controller)
-	{
-		Controller->SetControlRotation(TargetRotation);
-	}
+	UAbilitySystemComponent* ASC = Cast<ARL_BaseCharacter>(ownerCharacter)->GetAbilitySystemComponent();
+	UASC_Base* ASCB = Cast<UASC_Base>(ASC);
+	ASCB->AbilityInputTagReleased(FGameplayTag::RequestGameplayTag(FName("Ability.Run")));
 }
 
 void URL_MovementComponent::UpdateMovementState(EMovementState State)
@@ -256,9 +169,94 @@ void URL_MovementComponent::Collect(const FInputActionValue& Value)
 	}
 }
 
+void URL_MovementComponent::Execute(const FInputActionValue& Value)
+{
+	// 看有无锁定的敌人
+	AEnemy_Base* Enemy = Cast<AEnemy_Base>(CurrentTarget);
+	if (!Enemy || !ownerCharacter) return;
+
+	FVector Direction = ownerCharacter->GetActorLocation() - Enemy->GetActorLocation();
+	FVector EnemyDir = Enemy->GetActorForwardVector();
+	float Distance = Direction.Length();
+	
+	// 正面判定区域
+	float Angle = CalculateAngleBetweenVectors(Direction,EnemyDir);
+	// 背面判定区域
+	float BackAngle = CalculateAngleBetweenVectors(Direction,-EnemyDir);
+
+	// 处决条件
+	/*
+	 * 正面处决
+	 *
+	 * 玩家处在敌人正面
+	 * 敌人处于破防状态
+	 * 距离合适
+	 */
+	if (ExecuteAngle >= Angle && Distance <= ExecuteDistance && Enemy->bIsGuardBroken)
+	{
+		// 角度与距离判定   敌人破防状态判定
+		// 触发处决
+		/*
+		 * 调整玩家到合适位置
+		 * 玩家处决GA
+		 * 敌人播放处决动画
+		 */
+
+		FVector TargetLocation = Enemy->GetMesh()->GetSocketLocation(FName("Socket_Execute_F"));
+		// 计算目标旋转（面向敌人）
+		FRotator TargetRotation = Enemy->GetActorRotation() + FRotator(0, 180.0f, 0);
+		FHitResult SweepHitResult;
+		// 设置位置旋转
+		bool bSweep = ownerCharacter->SetActorLocationAndRotation(TargetLocation,TargetRotation,true,&SweepHitResult,ETeleportType::TeleportPhysics);
+		if (!bSweep)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("发生碰撞,处决取消"));
+		}
+		else
+		{
+			FGameplayTag ExecuteTag = FGameplayTag::RequestGameplayTag(FName("InputTag.FrontExecution"));
+			LMBInputHeldTest(ExecuteTag);
+			Enemy->Execute(true);
+		}
+	}
+
+	
+	
+
+	/*
+	 * 背面处决
+	 *
+	 * 双方不在战斗状态
+	 * 敌人在玩家一定距离内
+	 * 角度合适
+	 */
+
+	if (ExecuteAngle >= Angle && Distance <= ExecuteDistance && !Enemy->bIsFindPlayer)
+	{
+		FVector TargetLocation = Enemy->GetMesh()->GetSocketLocation(FName("Socket_Execute_B"));
+		// 计算目标旋转（面向敌人背部）
+		FRotator TargetRotation = Enemy->GetActorRotation();
+		FHitResult SweepHitResult;
+		// 设置位置旋转
+		bool bSweep = ownerCharacter->SetActorLocationAndRotation(TargetLocation,TargetRotation,true,&SweepHitResult,ETeleportType::TeleportPhysics);
+		if (!bSweep)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("发生碰撞,处决取消"));
+		}
+		else
+		{
+			FGameplayTag ExecuteTag = FGameplayTag::RequestGameplayTag(FName("InputTag.RearExecution"));
+			LMBInputHeldTest(ExecuteTag);
+			Enemy->Execute(false);
+		}
+	}
+	
+}
+
 void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
 	UpdateLockOnRotation(DeltaTime);
 
 	if (ItemsCanPickup.Num()>0)
@@ -359,4 +357,131 @@ void URL_MovementComponent::LMBInputReleasedTest(FGameplayTag InputTag)
 {
 	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, FString::Printf(TEXT("Released")));
 	CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityInputTagReleased(InputTag);
+}
+
+void URL_MovementComponent::ToggleLockOn()
+{
+	if (ownerCharacter->Tags.Contains(PlayerLockingTag))
+	{
+		ownerCharacter->Tags.Remove(PlayerLockingTag);
+		characterMovement->bOrientRotationToMovement = true; // 是否朝向移动方向
+		characterMovement->bUseControllerDesiredRotation = false; // 允许控制器控制旋转
+		CurrentTarget = nullptr;
+	}
+	else
+	{
+		characterMovement->bOrientRotationToMovement = false; // 是否朝向移动方向
+		characterMovement->bUseControllerDesiredRotation = true; // 允许控制器控制旋转
+		FindLockOnTarget();
+	}
+}
+
+void URL_MovementComponent::FindLockOnTarget()
+{
+	if (!ownerCharacter || !playerController) return;
+	
+	int32 ViewportX, ViewportY;
+	playerController->GetViewportSize(ViewportX, ViewportY);
+	FVector2D ScreenCenter(ViewportX * 0.5f, ViewportY * 0.5f);
+
+	LockableTargets.Empty();
+	TArray<TPair<AActor*, float>> TargetScreenDistances;
+	
+	TArray<FOverlapResult> Overlaps;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(ownerCharacter);
+
+	float SearchRadius = 2000.0f;
+	bool bHit = GetWorld()->OverlapMultiByChannel(
+		Overlaps,
+		ownerCharacter->GetActorLocation(),
+		FQuat::Identity,
+		ECC_Enemy,
+		FCollisionShape::MakeSphere(SearchRadius),
+		Params
+	);
+
+	if (bHit)
+	{
+		for (auto& Result : Overlaps)
+		{
+			AActor* Target = Result.GetActor();
+			if (!Target) continue;
+			
+			if (!Target->Tags.Contains(LockableTag)) continue;
+			
+			FVector2D ScreenPos;
+			bool bIsOnScreen = playerController->ProjectWorldLocationToScreen(Target->GetActorLocation(), ScreenPos);
+
+			if (bIsOnScreen &&
+				ScreenPos.X >= 0 && ScreenPos.X <= ViewportX &&
+				ScreenPos.Y >= 0 && ScreenPos.Y <= ViewportY)
+			{
+				float DistanceToCenter = FVector2D::Distance(ScreenPos, ScreenCenter);
+				TargetScreenDistances.Add(TPair<AActor*, float>(Target, DistanceToCenter));
+			}
+		}
+	}
+	
+	if (TargetScreenDistances.Num() > 0)
+	{
+		TargetScreenDistances.Sort([](const TPair<AActor*, float>& A, const TPair<AActor*, float>& B)
+		{
+			return A.Value < B.Value;
+		});
+
+		for (auto& Pair : TargetScreenDistances)
+		{
+			LockableTargets.Add(Pair.Key);
+		}
+
+		CurrentTargetIndex = 0;
+		CurrentTarget = LockableTargets[CurrentTargetIndex];
+		
+		if (!ownerCharacter->Tags.Contains(PlayerLockingTag))
+		{
+			ownerCharacter->Tags.Add(PlayerLockingTag);
+		}
+	}
+	else
+	{
+		CurrentTarget = nullptr;
+		if (ownerCharacter->Tags.Contains(PlayerLockingTag))
+		{
+			ownerCharacter->Tags.Remove(PlayerLockingTag);
+		}
+	}
+}
+
+void URL_MovementComponent::UpdateLockOnRotation(float DeltaTime)
+{
+	if (!ownerCharacter->Tags.Contains(PlayerLockingTag) || !CurrentTarget) return;
+
+	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(ownerCharacter->GetActorLocation(), CurrentTarget->GetActorLocation());
+	FRotator TargetRotation(0.f, LookAtRotation.Yaw, 0.f);
+
+	FRotator NewRotation = FMath::RInterpTo(ownerCharacter->GetActorRotation(), TargetRotation, DeltaTime, 10.f);
+	ownerCharacter->SetActorRotation(NewRotation);
+	
+	AController* Controller = ownerCharacter->GetController();
+	if (Controller)
+	{
+		Controller->SetControlRotation(TargetRotation);
+	}
+}
+
+void URL_MovementComponent::SwitchTargetLeft()
+{
+	if (!ownerCharacter->Tags.Contains(PlayerLockingTag) || LockableTargets.Num() <= 1) return;
+
+	CurrentTargetIndex = (CurrentTargetIndex - 1 + LockableTargets.Num()) % LockableTargets.Num();
+	CurrentTarget = LockableTargets[CurrentTargetIndex];
+}
+
+void URL_MovementComponent::SwitchTargetRight()
+{
+	if (!ownerCharacter->Tags.Contains(PlayerLockingTag) || LockableTargets.Num() <= 1) return;
+
+	CurrentTargetIndex = (CurrentTargetIndex + 1) % LockableTargets.Num();
+	CurrentTarget = LockableTargets[CurrentTargetIndex];
 }
