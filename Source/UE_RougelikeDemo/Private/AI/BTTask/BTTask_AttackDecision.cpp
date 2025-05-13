@@ -4,6 +4,7 @@
 #include "AI/BTTask/BTTask_AttackDecision.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
+#include <Data/Enums.h>
 
 UBTTask_AttackDecision::UBTTask_AttackDecision()
 {
@@ -32,13 +33,13 @@ EBTNodeResult::Type UBTTask_AttackDecision::ExecuteTask(UBehaviorTreeComponent& 
 
 	TArray<FEnemySkills> NormalSkills;
 
+
 	// 分类收集可用技能
 	for (const FEnemySkills& Skill : WakingSkills)
 	{
 		if (!Skill.bIsPowerfulAttack)
 			NormalSkills.Add(Skill);
 	}
-
 
 	// 处理普通技能
 	if (NormalSkills.Num() > 0)

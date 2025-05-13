@@ -23,10 +23,15 @@ void UBTSerivice_FindAttackPosition::TickNode(UBehaviorTreeComponent& OwnerComp,
 
 	//设置位置
 	FVector TargetLocation;
+	FRotator TargetRotation;
 	AActor* Target = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetKey.SelectedKeyName));
 
 	if (Target)
+	{
 		TargetLocation = Target->GetActorLocation();
+		TargetRotation = Target->GetActorRotation();
+	}
+		
 
 	FName TagName = OwnerComp.GetBlackboardComponent()->GetValueAsName(SelectedSkillKey.SelectedKeyName);
 	if (TagName == "None")
@@ -37,8 +42,10 @@ void UBTSerivice_FindAttackPosition::TickNode(UBehaviorTreeComponent& OwnerComp,
 	FVector RandomTargetPos = GenerateSkillPositionAroundTarget(
 		TargetLocation,
 		SelectedSkill,
-		OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation() // 可选：传入自身位置用于方向计算
+		TargetRotation
 	);
+
+
 
 	// 设置到黑板
 	OwnerComp.GetBlackboardComponent()->SetValueAsVector(
@@ -47,20 +54,32 @@ void UBTSerivice_FindAttackPosition::TickNode(UBehaviorTreeComponent& OwnerComp,
 	);
 }
 
-FVector UBTSerivice_FindAttackPosition::GenerateSkillPositionAroundTarget(const FVector& TargetLocation, const FEnemySkills& Skill, const FVector& SelfLocation) const
+FVector UBTSerivice_FindAttackPosition::GenerateSkillPositionAroundTarget(const FVector& TargetLocation,const FEnemySkills& Skill,const FRotator& TargetRotation) const  // 新增参数：目标的旋转
 {
+	// 获取目标的正前方方向
+	const FVector ForwardDir = TargetRotation.Vector().GetSafeNormal2D();
 
-	//基于相对位置的扇形分布（更智能）
-	const FVector ToSelfDir = (SelfLocation - TargetLocation).GetSafeNormal2D();
-	const float AngleVariation = FMath::FRandRange(-60.f, 60.f); // 60度扇形
-	const FVector RandomDir = ToSelfDir.RotateAngleAxis(AngleVariation, FVector::UpVector);
+	// 在技能范围内随机距离
 	const float RandomDistance = FMath::FRandRange(Skill.SkillRangeMin, Skill.SkillRangeMax);
 
-    // 生成最终位置
-    FVector FinalPos = TargetLocation + RandomDir * RandomDistance;
+	// 生成基础位置（玩家正前方）
+	FVector FinalPos = TargetLocation + (ForwardDir * RandomDistance);
 
-    // 高度调整（根据需求选择）
-    FinalPos.Z = TargetLocation.Z; // 保持与目标相同高度
+	// 保持与目标相同高度
+	FinalPos.Z = TargetLocation.Z;
 
-    return FinalPos;
+	if (bDrawDebug)
+	{
+		DrawDebugSphere(
+			GetWorld(),
+			FinalPos,
+			50.0f,
+			12,
+			FColor::Green,
+			false,
+			2.0f
+		);
+	}
+
+	return FinalPos;
 }

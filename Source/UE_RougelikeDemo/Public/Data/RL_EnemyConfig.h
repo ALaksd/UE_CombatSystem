@@ -17,6 +17,10 @@ struct FEnemySkillAnimation
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	TObjectPtr<UAnimMontage> Montage;
 
+	/** 允许的状态（清醒/混沌） */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
+	FGameplayTagContainer AllowedStates;
+
 	/** 动画选中权重 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	float Weight = 1.0f;
@@ -34,15 +38,11 @@ struct FEnemySkills
 
 	/** 能力使用的类，如播放动画攻击类、投射物类等 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
-	TSubclassOf<class UGA_EnemyAbilityBase> AbilityClass;
+	TSubclassOf<class UGA_Base> AbilityClass;
 
 	/** 优先级 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	int32 PriorityLevel = 0;
-
-	/** 允许的状态（清醒/混沌） */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
-	FGameplayTagContainer AllowedStates;
 
 	/** 是否为强力攻击 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")

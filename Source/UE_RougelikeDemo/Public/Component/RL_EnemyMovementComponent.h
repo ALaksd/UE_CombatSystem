@@ -115,6 +115,7 @@ private:
 	UPROPERTY()
 	UStaticMeshComponent* WeaponMeshComponent;
 
+
 public:			
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE TArray<FVector>& GetPatrolPoints() { return PatrolPoints; }

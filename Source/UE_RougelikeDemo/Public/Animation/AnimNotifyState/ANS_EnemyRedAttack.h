@@ -6,6 +6,7 @@
 #include "Animation/AnimNotifyState/ANS_EnemyAttackDecision.h"
 #include "ANS_EnemyRedAttack.generated.h"
 
+class UNiagaraSystem;
 /**
  * 
  */
@@ -17,4 +18,5 @@ class UE_ROUGELIKEDEMO_API UANS_EnemyRedAttack : public UANS_EnemyAttackDecision
 public:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference);
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference);
+
 };

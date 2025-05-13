@@ -12,11 +12,13 @@
 #include "Interface/RL_DamageInterface.h"
 #include "Enemy_Base.generated.h"
 
+
 class UBehaviorTree;
 class ARL_AIController;
 class UWidgetComponent;
 class URL_EnemyMovementComponent;
 class USplineComponent;
+class UNiagaraComponent;
 
 UCLASS()
 class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface,
@@ -66,6 +68,7 @@ public:
 	/** EnemyInterface */
 	virtual AActor* GetCombatTarget_Implementation()const override;
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
+	virtual UNiagaraComponent* GetRedAttackNiagaraComponent_Implementation() const override;
 
 	/** End EnemyInterface */
 
@@ -104,6 +107,7 @@ UFUNCTION(BlueprintCallable)
 	bool bIsStaggered = false;
 
 	FORCEINLINE UStaticMeshComponent* GetWeaponStaticComponnent() { return WeaponStaticMeshComponent; }
+	FORCEINLINE UNiagaraComponent* GetNiagaraComponent() { return RedAttackNiagaraComponent; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -132,6 +136,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<UStaticMeshComponent> WeaponStaticMeshComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	TObjectPtr<UNiagaraComponent> RedAttackNiagaraComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<URL_EnemyMovementComponent> EnemyMovementComponent;

@@ -9,6 +9,7 @@
 
 #include "Character/Enemy_Base.h"
 #include "Interface/RL_EnemyInterface.h"
+#include <System/RL_SanitySubsystem.h>
 
 void UBTService_FindingNearestPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
@@ -55,6 +56,12 @@ void UBTService_FindingNearestPlayer::TickNode(UBehaviorTreeComponent& OwnerComp
 		AIController->SetFocus(ClosestActor);
 		bIsTargetValid = true;
 
+		//进入战斗状态持续减少理智
+		URL_SanitySubsystem* SanitySubsystem = UGameInstance::GetSubsystem<URL_SanitySubsystem>(GetWorld()->GetGameInstance());
+		if (SanitySubsystem)
+		{
+			SanitySubsystem->SetCombatState(true);
+		}
 		// 设置发现玩家
 		if (AEnemy_Base* Enemy = Cast<AEnemy_Base>(OwningPawn))
 			Enemy->bIsFindPlayer = true;
@@ -67,6 +74,12 @@ void UBTService_FindingNearestPlayer::TickNode(UBehaviorTreeComponent& OwnerComp
 		ClosestActor = nullptr;
 		ClosestDistance = -1.0f; // 用负值表示无效距离
 
+		//离开战斗状态
+		URL_SanitySubsystem* SanitySubsystem = UGameInstance::GetSubsystem<URL_SanitySubsystem>(GetWorld()->GetGameInstance());
+		if (SanitySubsystem)
+		{
+			SanitySubsystem->SetCombatState(false);
+		}
 		// 设置未发现玩家
 		if (AEnemy_Base* Enemy = Cast<AEnemy_Base>(OwningPawn))
 			Enemy->bIsFindPlayer = false;

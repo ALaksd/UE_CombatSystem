@@ -27,6 +27,7 @@ void URL_EnemyMovementComponent::InitializeComponent()
 
 			// 创建静态网格体组件
 			WeaponMeshComponent = Cast<AEnemy_Base>(GetOwner())->GetWeaponStaticComponnent();
+		
 			if (WeaponMeshComponent)
 			{
 				WeaponMeshComponent->SetStaticMesh(const_cast<UStaticMesh*>(WeaponMeshAsset));

@@ -30,6 +30,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Damage")
 	float Damage = 20.0f;
 
+	//减少理智的量 = Damage * ReduceSantiyFactor
+	UPROPERTY(EditAnywhere, Category = "Damage")
+	float ReduceSantiyFactor = 0.5f;
+
 	// 攻击检测范围
 	UPROPERTY(EditAnywhere, Category = "Detection")
 	FVector RectangleParam = FVector(20, 20, 60); // 前向50，横向50，垂直50

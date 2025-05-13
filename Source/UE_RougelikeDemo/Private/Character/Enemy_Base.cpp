@@ -12,6 +12,7 @@
 #include "Components/WidgetComponent.h"
 #include "Component/RL_EnemyMovementComponent.h"
 #include "Components/SplineComponent.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 AEnemy_Base::AEnemy_Base()
@@ -28,6 +29,9 @@ AEnemy_Base::AEnemy_Base()
 	EnemyMovementComponent = CreateDefaultSubobject<URL_EnemyMovementComponent>("EnemyMovementComponent");
 
 	WeaponStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("WeaponStaticMeshComponent");
+
+	RedAttackNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("RedAttackNiagaraComponent");
+	RedAttackNiagaraComponent->SetupAttachment(GetMesh());
 
 	PatrolSpline = CreateDefaultSubobject<USplineComponent>("PatrolSpline");
 	PatrolSpline->SetupAttachment(GetRootComponent());
@@ -69,6 +73,11 @@ AActor* AEnemy_Base::GetCombatTarget_Implementation() const
 void AEnemy_Base::SetCombatTarget_Implementation(AActor* InCombatTarget)
 {
 	TargetActor = InCombatTarget;
+}
+
+UNiagaraComponent* AEnemy_Base::GetRedAttackNiagaraComponent_Implementation() const
+{
+	return RedAttackNiagaraComponent;
 }
 
 void AEnemy_Base::GuardBroken()

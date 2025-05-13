@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "GAS/RL_AbilitySystemLibrary.h"
+#include <System/RL_SanitySubsystem.h>
 
 void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
@@ -93,5 +94,12 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor)
 	if (TargetASC)
 	{
 		SourceASC->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(), TargetASC);
+	}
+
+	//4. 减少理智值
+	URL_SanitySubsystem* SanitySubsystem = UGameInstance::GetSubsystem<URL_SanitySubsystem>(TargetActor->GetWorld()->GetGameInstance());
+	if (SanitySubsystem)
+	{
+		SanitySubsystem->ReduceSanity(Damage * ReduceSantiyFactor);
 	}
 }

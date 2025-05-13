@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GAS/Abilities/GA_EnemyAbilityBase.h"
+#include "GAS/Abilities/GA_Base.h"
 #include <Data/RL_EnemyConfig.h>
 #include "GA_EnemyAbility_MeeleAttack.generated.h"
 
@@ -13,7 +13,7 @@ class UGameplayEffect;
  * 敌人能力基础
  */
 UCLASS()
-class UE_ROUGELIKEDEMO_API UGA_EnemyAbility_MeeleAttack : public UGA_EnemyAbilityBase
+class UE_ROUGELIKEDEMO_API UGA_EnemyAbility_MeeleAttack : public UGA_Base
 {
 	GENERATED_BODY()
 public:
@@ -22,6 +22,13 @@ public:
 protected:
 	void UpdateFacingDirection();
 	UAnimMontage* SelectRandomAnimation(const FEnemySkills& Skills);
+
+	UFUNCTION()
+	void OnMontageCompleted();
+
+	UFUNCTION()
+	void OnMontageCancelled();
+
 private:
 	FTimerHandle FacingUpdateTimerHandle;
 

@@ -17,7 +17,7 @@ class UE_ROUGELIKEDEMO_API UBTSerivice_FindAttackPosition : public UBTService
 	
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaTime) override;
-	FVector GenerateSkillPositionAroundTarget(const FVector& TargetLocation, const FEnemySkills& Skill, const FVector& SelfLocation) const;
+	FVector GenerateSkillPositionAroundTarget(const FVector& TargetLocation, const FEnemySkills& Skill, const FRotator& TargetRotation) const;
 
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector SelectedSkillKey;
@@ -27,4 +27,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector TargetKey;
+
+	UPROPERTY(EditAnywhere)
+	bool bDrawDebug;
 };
