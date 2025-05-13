@@ -34,6 +34,13 @@
 
 			if (MontageToPlay)
 			{
+
+				//设置目标
+				if (ActorInfo->AvatarActor->Implements<URL_CombatInterface>() && ActorInfo->AvatarActor->Implements<URL_EnemyInterface>())
+				{
+					FVector TargetLocation = IRL_EnemyInterface::Execute_GetCombatTarget(ActorInfo->AvatarActor.Get())->GetActorLocation();
+					IRL_CombatInterface::Execute_SetFacingTarget(ActorInfo->AvatarActor.Get(), TargetLocation);
+				}
 				UAbilityTask_PlayMontageAndWait* Task = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 					this,
 					NAME_None,

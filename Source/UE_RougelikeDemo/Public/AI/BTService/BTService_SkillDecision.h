@@ -28,4 +28,10 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector CurrentActionState;
+
+	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector TargetDistance;
+
+	UPROPERTY(EditAnywhere)
+	float RollMaxDistance;
 };
