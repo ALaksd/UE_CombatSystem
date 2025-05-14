@@ -108,6 +108,8 @@ protected:
 	// 破防时间
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
 	float GuardBrokenTime;
+
+	
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 

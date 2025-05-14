@@ -101,14 +101,14 @@ UNiagaraComponent* AEnemy_Base::GetRedAttackNiagaraComponent_Implementation() co
 
 void AEnemy_Base::StaminaReduceCallBack()
 {
-	GetWorldTimerManager().ClearTimer(StaminaReduceTimer);
-	GetWorldTimerManager().SetTimer(StaminaReduceTimer,[this]()
-	{
-		// 回复体力
-		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
-		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
-
-	},1,false);
+	// GetWorldTimerManager().ClearTimer(StaminaReduceTimer);
+	// GetWorldTimerManager().SetTimer(StaminaReduceTimer,[this]()
+	// {
+	// 	// 回复体力
+	// 	FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
+	// 	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+	//
+	// },1,false);
 	
 }
 
@@ -138,6 +138,10 @@ void AEnemy_Base::GuardBroken()
 	GetWorldTimerManager().SetTimer(GuardBrokenTimer,[this]()
 	{
 		bIsGuardBroken=false;
+
+		// 回复体力
+		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
 	},GuardBrokenTime,false);
 }
 
@@ -150,6 +154,10 @@ void AEnemy_Base::Staggered()
 	GetWorldTimerManager().SetTimer(StaggeredTimer,[this]()
 	{
 		bIsStaggered=false;
+
+		// 回复韧性
+		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreResilience,1,AbilitySystemComponent->MakeEffectContext());
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
 	},StaggeredTime,false);
 }
 
