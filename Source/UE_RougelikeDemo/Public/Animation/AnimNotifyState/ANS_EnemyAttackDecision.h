@@ -44,6 +44,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Detection")
 	FName AttackSocketName = "AttackSocket";
 
+	UPROPERTY(EditDefaultsOnly, Category = "Parry")
+	TSubclassOf<UGameplayEffect> ParryAttributeEffect;
+
 protected:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
 	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference) override;

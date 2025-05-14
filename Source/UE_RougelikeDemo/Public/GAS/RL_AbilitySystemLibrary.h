@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AutomationBlueprintFunctionLibrary.h"
+#include "Data/RL_EnemyConfig.h"
 #include "RL_AbilitySystemLibrary.generated.h"
 
 class URL_OverlayWidgetController;
@@ -50,4 +51,7 @@ public:
 		float DebugDuration = 2.0f,
 		FColor DebugColor = FColor::Green
 	);
+
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	static URL_EnemyConfig* GetEnemyConfig(AActor* Enemy);
 };

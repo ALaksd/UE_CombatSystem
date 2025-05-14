@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "Component/RL_EnemyMovementComponent.h"
 #include "AIController.h"
+#include <GAS/RL_AbilitySystemLibrary.h>
 
 
 
@@ -17,9 +18,6 @@ void UBTSerivice_FindAttackPosition::TickNode(UBehaviorTreeComponent& OwnerComp,
 	APawn* ControlledPawn = AIController->GetPawn();
 	if (!ControlledPawn) return;
 
-	// 获取 EnemyMovementComponent
-	URL_EnemyMovementComponent* EnemyMove = ControlledPawn->FindComponentByClass<URL_EnemyMovementComponent>();
-	if (!EnemyMove) return;
 
 	//设置位置
 	FVector TargetLocation;
@@ -29,7 +27,7 @@ void UBTSerivice_FindAttackPosition::TickNode(UBehaviorTreeComponent& OwnerComp,
 	if (Target)
 	{
 		TargetLocation = Target->GetActorLocation();
-		TargetRotation = Target->GetActorRotation();
+		TargetRotation = Target->GetActorForwardVector().Rotation();
 	}
 		
 
@@ -37,7 +35,7 @@ void UBTSerivice_FindAttackPosition::TickNode(UBehaviorTreeComponent& OwnerComp,
 	if (TagName == "None")
 		return;
 
-	FEnemySkills SelectedSkill = EnemyMove->GetEnemyConfig()->FindSkillsByTag(FGameplayTag::RequestGameplayTag(TagName));
+	FEnemySkills SelectedSkill = URL_AbilitySystemLibrary::GetEnemyConfig(ControlledPawn)->FindSkillsByTag(FGameplayTag::RequestGameplayTag(TagName));
 	// 生成基于目标位置的随机点
 	FVector RandomTargetPos = GenerateSkillPositionAroundTarget(
 		TargetLocation,
@@ -52,6 +50,19 @@ void UBTSerivice_FindAttackPosition::TickNode(UBehaviorTreeComponent& OwnerComp,
 		SkillDistanceKey.SelectedKeyName,
 		RandomTargetPos
 	);
+
+	if (bDrawDebug)
+	{
+		DrawDebugSphere(
+			GetWorld(),
+			RandomTargetPos,
+			50.0f,
+			12,
+			FColor::Green,
+			false,
+			2.0f
+		);
+	}
 }
 
 FVector UBTSerivice_FindAttackPosition::GenerateSkillPositionAroundTarget(const FVector& TargetLocation,const FEnemySkills& Skill,const FRotator& TargetRotation) const  // 新增参数：目标的旋转
@@ -67,19 +78,6 @@ FVector UBTSerivice_FindAttackPosition::GenerateSkillPositionAroundTarget(const 
 
 	// 保持与目标相同高度
 	FinalPos.Z = TargetLocation.Z;
-
-	if (bDrawDebug)
-	{
-		DrawDebugSphere(
-			GetWorld(),
-			FinalPos,
-			50.0f,
-			12,
-			FColor::Green,
-			false,
-			2.0f
-		);
-	}
 
 	return FinalPos;
 }
