@@ -19,6 +19,7 @@
 #include "Player/RL_PlayerState.h"
 #include "UE_RougelikeDemo/UE_RougelikeDemo.h"
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryComponent.h"
+#include "UE_RougelikeDemo/InventorySystem/RLInventoryItemDefinition.h"
 #include "UE_RougelikeDemo/InventorySystem/InventoryComponent/RLInventoryComponent_Equipment.h"
 
 URL_MovementComponent::URL_MovementComponent()
@@ -62,6 +63,10 @@ void URL_MovementComponent::BeginPlay()
 		RLInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::Look);
 
 		RLInputComponent->BindAction(CollectAction, ETriggerEvent::Started, this, &URL_MovementComponent::Collect);
+		
+		RLInputComponent->BindAction(UseAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::UseItem);
+
+		RLInputComponent->BindAction(SwitchPropAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::SwitchUseItem);
 
 		RLInputComponent->BindAction(RunAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::Run);
 
@@ -81,6 +86,14 @@ void URL_MovementComponent::BeginPlay()
 				RLInputComponent->BindAction(SwitchWeaponAction,ETriggerEvent::Started, Equipment, &URLInventoryComponent_Equipment::SwitchWeapon);
 		
 		RLInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::LMBInputPressedTest,&ThisClass::LMBInputReleasedTest,&ThisClass::LMBInputHeldTest);
+	}
+
+	Backpack = ownerCharacter->GetPlayerState()->FindComponentByClass<URLInventoryComponent_Equipment>();
+	Slots = Backpack->GetSlotHandlesByTags(FGameplayTag::RequestGameplayTag("Item.Use").GetSingleTagContainer());
+	if (Slots.Num() > 0)
+	{
+		CurrentUse = Slots[0];
+		UseIndex = 0;
 	}
 }
 
@@ -484,4 +497,42 @@ void URL_MovementComponent::SwitchTargetRight()
 
 	CurrentTargetIndex = (CurrentTargetIndex + 1) % LockableTargets.Num();
 	CurrentTarget = LockableTargets[CurrentTargetIndex];
+}
+
+void URL_MovementComponent::UseItem(const FInputActionValue& Value)
+{
+	URLInventoryItemInstance* item = Backpack->GetItemInstanceInSlot(CurrentUse);
+	if (item != nullptr)
+	{
+		UAbilitySystemComponent* ASC = Cast<ARL_BaseCharacter>(ownerCharacter)->GetAbilitySystemComponent();
+		ASC->TryActivateAbilitiesByTag(item->GetItemDefinition()->ItemTags.Added);
+	}
+}
+
+void URL_MovementComponent::SwitchUseItem(const FInputActionValue& Value)
+{
+	float Updown = Value.Get<float>();
+	if (Updown > 0)
+	{
+		if (UseIndex < 4)
+		{
+			UseIndex++;
+		}
+		else
+		{
+			UseIndex = 0;
+		}
+	}
+	else if (Updown < 0)
+	{
+		if (UseIndex > 0)
+		{
+			UseIndex--;
+		}
+		else
+		{
+			UseIndex = 4;
+		}
+	}
+	CurrentUse = Slots[UseIndex];
 }
