@@ -68,7 +68,6 @@ void UBTTask_ExecuteSkill::OnAbilityEnded(UGameplayAbility* EndedAbility)
 
 		FinishLatentTask(*CachedOwnerComp, bSuccess ? EBTNodeResult::Succeeded : EBTNodeResult::Failed);
 	}
-
 }
 
 UAbilitySystemComponent* UBTTask_ExecuteSkill::GetAbilitySystem(APawn* Pawn) const

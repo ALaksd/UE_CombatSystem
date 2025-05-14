@@ -14,12 +14,23 @@ UBTService_SkillDecision::UBTService_SkillDecision()
 void UBTService_SkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaTime)
 {
 	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
+	UAbilitySystemComponent* ASC =  OwnerComp.GetAIOwner()->GetPawn()->FindComponentByClass<UAbilitySystemComponent>();
+
+	if (ASC->HasAnyMatchingGameplayTags(BrokenTags))
+	{
+		Blackboard->SetValueAsBool(bBroken.SelectedKeyName, true);
+	}
+	else
+	{
+		Blackboard->SetValueAsBool(bBroken.SelectedKeyName, false);
+	}
 
 	// 仅当无当前状态时选择新动作
 	if (Blackboard->GetValueAsEnum(CurrentActionState.SelectedKeyName) == static_cast<uint8>(EEnemyActionState::None))
 	{
 		ChooseNewBaseAction(OwnerComp);
 	}
+	
 }
 
 // 简化后的基础行动选择
@@ -40,23 +51,47 @@ void UBTService_SkillDecision::ChooseNewBaseAction(UBehaviorTreeComponent& Owner
 
 	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
 
-	// 概率计算（示例值）
-	const float Total = EnemyConfig->BaseActionWeights.EvadeChance + EnemyConfig->BaseActionWeights.AttackChance + EnemyConfig->BaseActionWeights.RollChance;
+	// 获取与目标距离
+	const float DistanceToPlayer = Blackboard->GetValueAsFloat(TargetDistance.SelectedKeyName);
+
+	// 根据距离动态调整可用动作
+	float ActualEvadeChance = EnemyConfig->BaseActionWeights.EvadeChance;
+	float ActualAttackChance = EnemyConfig->BaseActionWeights.AttackChance;
+	float ActualRollChance = EnemyConfig->BaseActionWeights.RollChance;
+
+	// 如果距离超过允许值，移除翻滚概率
+	if (DistanceToPlayer > RollMaxDistance)
+	{
+		ActualRollChance = 0.0f;
+	}
+
+	// 计算实际总权重
+	const float Total = ActualEvadeChance + ActualAttackChance + ActualRollChance;
+	if (Total <= 0.0f) return;
+
+	// 生成随机选择
 	const float RandomPick = FMath::FRand() * Total;
 
-	// 设置黑板键值
-	if (RandomPick <= EnemyConfig->BaseActionWeights.EvadeChance)
+	// 决策逻辑
+	EEnemyActionState SelectedState = EEnemyActionState::None;
+
+	if (RandomPick <= ActualEvadeChance)
 	{
-		Blackboard->SetValueAsEnum(CurrentActionState.SelectedKeyName, static_cast<uint8>(EEnemyActionState::Evading));
+		SelectedState = EEnemyActionState::Evading;
 	}
-	else if (RandomPick <= (EnemyConfig->BaseActionWeights.EvadeChance + EnemyConfig->BaseActionWeights.AttackChance))
+	else if (RandomPick <= (ActualEvadeChance + ActualAttackChance))
 	{
-		Blackboard->SetValueAsEnum(CurrentActionState.SelectedKeyName, static_cast<uint8>(EEnemyActionState::Attacking));
+		SelectedState = EEnemyActionState::Attacking;
 	}
 	else
 	{
-		Blackboard->SetValueAsEnum(CurrentActionState.SelectedKeyName, static_cast<uint8>(EEnemyActionState::Rolling));
+		// 仅当距离有效时允许进入翻滚
+		SelectedState = (DistanceToPlayer <= RollMaxDistance) ?
+			EEnemyActionState::Rolling :
+			EEnemyActionState::Evading; // 保底逻辑
 	}
+
+	Blackboard->SetValueAsEnum(CurrentActionState.SelectedKeyName, static_cast<uint8>(SelectedState));
 }
 
 

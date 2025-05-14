@@ -5,8 +5,6 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include <Interface/RL_CombatInterface.h>
-#include <Interface/RL_EnemyInterface.h>
 #include <Component/RL_EnemyMovementComponent.h>
 #include <System/RL_SanitySubsystem.h>
 
@@ -34,6 +32,7 @@
 
 			if (MontageToPlay)
 			{
+
 				UAbilityTask_PlayMontageAndWait* Task = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 					this,
 					NAME_None,
@@ -62,21 +61,6 @@
 		Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
 	}
-
-	void UGA_EnemyAbility_MeeleAttack::UpdateFacingDirection()
-	{
-		AActor* SourceActor = GetAvatarActorFromActorInfo();
-		//获取攻击目标,并将朝向转向攻击目标
-		if (SourceActor->Implements<URL_CombatInterface>())
-		{
-			if (SourceActor->Implements<URL_EnemyInterface>())
-			{
-				FVector TargerLocation = IRL_EnemyInterface::Execute_GetCombatTarget(SourceActor)->GetActorLocation();
-				IRL_CombatInterface::Execute_SetFacingTarget(SourceActor, TargerLocation);
-			}
-		}
-	}
-
 
 	UAnimMontage* UGA_EnemyAbility_MeeleAttack::SelectRandomAnimation(const FEnemySkills& Skills)
 	{

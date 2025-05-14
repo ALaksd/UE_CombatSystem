@@ -6,52 +6,68 @@
 #include "AbilitySystemComponent.h"
 #include "Component/RL_EnemyMovementComponent.h"
 #include "AIController.h"
+#include <GAS/RL_AbilitySystemLibrary.h>
 
 
-
-void UBTSerivice_FindAttackPosition::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaTime)
+EBTNodeResult::Type UBTSerivice_FindAttackPosition::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();
-	if (!AIController) return;
+	if (!AIController) return EBTNodeResult::Failed;
 
 	APawn* ControlledPawn = AIController->GetPawn();
-	if (!ControlledPawn) return;
+	if (!ControlledPawn) return EBTNodeResult::Failed;
 
-	// 获取 EnemyMovementComponent
-	URL_EnemyMovementComponent* EnemyMove = ControlledPawn->FindComponentByClass<URL_EnemyMovementComponent>();
-	if (!EnemyMove) return;
 
 	//设置位置
 	FVector TargetLocation;
+	FVector ControlledPawnLocation = ControlledPawn->GetActorLocation();
 	FRotator TargetRotation;
 	AActor* Target = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetKey.SelectedKeyName));
+	float TargetDistance = OwnerComp.GetBlackboardComponent()->GetValueAsFloat(TargetKey.SelectedKeyName);
 
 	if (Target)
 	{
 		TargetLocation = Target->GetActorLocation();
-		TargetRotation = Target->GetActorRotation();
+		TargetRotation = (ControlledPawn->GetActorLocation() - Target->GetActorLocation()).Rotation();
 	}
-		
+
 
 	FName TagName = OwnerComp.GetBlackboardComponent()->GetValueAsName(SelectedSkillKey.SelectedKeyName);
 	if (TagName == "None")
-		return;
+		return EBTNodeResult::Failed;
 
-	FEnemySkills SelectedSkill = EnemyMove->GetEnemyConfig()->FindSkillsByTag(FGameplayTag::RequestGameplayTag(TagName));
-	// 生成基于目标位置的随机点
-	FVector RandomTargetPos = GenerateSkillPositionAroundTarget(
-		TargetLocation,
-		SelectedSkill,
-		TargetRotation
-	);
+	FEnemySkills SelectedSkill = URL_AbilitySystemLibrary::GetEnemyConfig(ControlledPawn)->FindSkillsByTag(FGameplayTag::RequestGameplayTag(TagName));
+
+	//如果已经在攻击范围内，立即攻击
+	if (TargetDistance >= SelectedSkill.SkillRangeMin && TargetDistance <= SelectedSkill.SkillRangeMax)
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsVector(
+			AttackPositionKey.SelectedKeyName,
+			ControlledPawnLocation);
+		return EBTNodeResult::Succeeded;
+	}
+
+	else
+	{
+		// 生成基于目标位置的随机点
+		FVector RandomTargetPos = GenerateSkillPositionAroundTarget(
+			TargetLocation,
+			SelectedSkill,
+			TargetRotation
+		);
 
 
+		
+		// 设置到黑板
+		OwnerComp.GetBlackboardComponent()->SetValueAsVector(
+			AttackPositionKey.SelectedKeyName,
+			RandomTargetPos
+		);
 
-	// 设置到黑板
-	OwnerComp.GetBlackboardComponent()->SetValueAsVector(
-		SkillDistanceKey.SelectedKeyName,
-		RandomTargetPos
-	);
+	}
+
+	return EBTNodeResult::Succeeded;
+
 }
 
 FVector UBTSerivice_FindAttackPosition::GenerateSkillPositionAroundTarget(const FVector& TargetLocation,const FEnemySkills& Skill,const FRotator& TargetRotation) const  // 新增参数：目标的旋转

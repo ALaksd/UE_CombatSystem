@@ -28,4 +28,16 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector CurrentActionState;
+
+	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector TargetDistance;
+
+	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector bBroken;
+
+	UPROPERTY(EditAnywhere)
+	float RollMaxDistance;
+
+	UPROPERTY(EditAnywhere)
+	FGameplayTagContainer BrokenTags;
 };

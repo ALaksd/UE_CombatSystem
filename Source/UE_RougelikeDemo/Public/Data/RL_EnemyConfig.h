@@ -105,9 +105,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Attributes")
 	TSubclassOf<UGameplayEffect> PrimariAttribute;
 
+
+	// 受击动画
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
+
+	//特殊受击动画(被弹反)
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
+	TObjectPtr<UAnimMontage> ParryHitMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|Weapon")
 	TObjectPtr<UStaticMesh> WeaponSeletakMesh;

@@ -13,6 +13,7 @@
 #include "Component/RL_EnemyMovementComponent.h"
 #include "Components/SplineComponent.h"
 #include "NiagaraComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AEnemy_Base::AEnemy_Base()
@@ -64,7 +65,23 @@ void AEnemy_Base::TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) cons
 
 UAnimMontage* AEnemy_Base::GetHitReactMotange_Implementation()
 {
-	return HitReactMontage;
+	return EnemyMovementComponent->GetEnemyConfig()->HitReactMontage;
+}
+
+void AEnemy_Base::Die_Implementation()
+{
+	WeaponStaticMeshComponent->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+
+	WeaponStaticMeshComponent->SetSimulatePhysics(true);
+	WeaponStaticMeshComponent->SetEnableGravity(true);
+	WeaponStaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 AActor* AEnemy_Base::GetCombatTarget_Implementation() const
@@ -212,6 +229,8 @@ void AEnemy_Base::AddTag(FName Tag)
 {
 	FGameplayTag EnemyTag = FGameplayTag::RequestGameplayTag(Tag);
 	StateTags.AddTag(EnemyTag);
+	AbilitySystemComponent->AddLooseGameplayTag(EnemyTag);
+	AbilitySystemComponent->SetTagMapCount(EnemyTag, 1);
 }
 
 void AEnemy_Base::RemoveTag(FName Tag)
@@ -222,6 +241,8 @@ void AEnemy_Base::RemoveTag(FName Tag)
 		if (EnemyTag == StateTag)
 		{
 			StateTags.RemoveTag(StateTag);
+			AbilitySystemComponent->RemoveLooseGameplayTag(StateTag);
+			AbilitySystemComponent->SetTagMapCount(StateTag, 0);
 			break;
 		}
 	}
