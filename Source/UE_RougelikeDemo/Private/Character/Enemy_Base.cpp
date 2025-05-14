@@ -14,6 +14,7 @@
 #include "Components/SplineComponent.h"
 #include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include <Blueprint/AIBlueprintHelperLibrary.h>
 
 // Sets default values
 AEnemy_Base::AEnemy_Base()
@@ -59,6 +60,28 @@ void AEnemy_Base::TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) cons
 {
 	if (AbilitySystemComponent)
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*DamageHandle.Data.Get());
+
+	//受到伤害后发现敌人
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (!AIController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to get AI Controller"));
+		return;
+	}
+
+	// 获取Blackboard组件
+	UBlackboardComponent* BlackboardComponent = AIController->GetBlackboardComponent();
+	if (!BlackboardComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Missing Blackboard Component"));
+		return;
+	}
+
+	// 设置黑板键（示例）
+	BlackboardComponent->SetValueAsBool(FName("bFindTarget"), true);
+
+	ResilienceReduceCallBack();
+
 	
 	ResilienceReduceCallBack();
 }
