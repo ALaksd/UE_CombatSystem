@@ -60,8 +60,9 @@ public:
 	
 	inline  virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override {return AbilitySystemComponent;}
 
-	/** ComvatInterface */
+	/** CombatInterface */
 	virtual UAnimMontage* GetHitReactMotange_Implementation() override;
+	virtual void Die_Implementation() override;
 
 	/** End ComvatInterface */
 

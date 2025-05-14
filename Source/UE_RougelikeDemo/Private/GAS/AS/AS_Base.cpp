@@ -85,6 +85,14 @@ void UAS_Base::PostGameplayEffectExecute(const struct FGameplayEffectModCallback
 				if (!SourceASC) return;
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
+			else
+			{
+				if (Props.TargetAvatarActor->Implements<URL_CombatInterface>())
+				{
+					IRL_CombatInterface::Execute_Die(Props.TargetAvatarActor);
+				}
+					
+			}
 
 		}
 	}

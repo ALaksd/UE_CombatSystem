@@ -32,5 +32,8 @@ public:
 	bool isDead() const;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void Die();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	AActor* GetAvatar();
 };
