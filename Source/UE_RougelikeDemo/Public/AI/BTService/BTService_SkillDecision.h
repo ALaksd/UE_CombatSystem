@@ -16,24 +16,22 @@ class UE_ROUGELIKEDEMO_API UBTService_SkillDecision : public UBTService_Blueprin
 {
 	GENERATED_BODY()
 
-	// 缓存当前可用技能
-	UPROPERTY()
-	TArray<FEnemySkills> AvailableSkills;
-
-	// 技能选择逻辑
-	void EvaluateSkills(AAIController* AIController, APawn* ControlledPawn);
-	bool CheckSkillCondition(const FEnemySkills& Skill, AAIController* AIController);
-	FEnemySkills SelectSkillByProbability(const TArray<FEnemySkills>& ValidSkills);
-
-	// GAS相关
-	UAbilitySystemComponent* GetAbilitySystem(APawn* Pawn) const;
-
 public:
 	UBTService_SkillDecision();
 
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaTime) override;
 
+
+	void ChooseNewBaseAction(UBehaviorTreeComponent& OwnerComp);
+
+
 	UPROPERTY(EditAnywhere)
-	FBlackboardKeySelector SelectedSkillKey;
+	FBlackboardKeySelector CurrentActionState;
+
+	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector TargetDistance;
+
+	UPROPERTY(EditAnywhere)
+	float RollMaxDistance;
 };

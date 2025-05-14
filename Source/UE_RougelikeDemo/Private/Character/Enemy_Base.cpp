@@ -12,18 +12,13 @@
 #include "Components/WidgetComponent.h"
 #include "Component/RL_EnemyMovementComponent.h"
 #include "Components/SplineComponent.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 AEnemy_Base::AEnemy_Base()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	
-	//创建组件
-	// Capsule=CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
-	// SetRootComponent(Capsule);
-	//
-	// SkeletalMesh=CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMesh");
-	// SkeletalMesh->SetupAttachment(GetRootComponent());
 	
 	AbilitySystemComponent=CreateDefaultSubobject<UASC_Base>("AbilitySystemComponent");
 	AttributeSet = CreateDefaultSubobject<UAS_Enemy>("AttributeSet");
@@ -33,6 +28,11 @@ AEnemy_Base::AEnemy_Base()
 
 	EnemyMovementComponent = CreateDefaultSubobject<URL_EnemyMovementComponent>("EnemyMovementComponent");
 
+	WeaponStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("WeaponStaticMeshComponent");
+
+	RedAttackNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("RedAttackNiagaraComponent");
+	RedAttackNiagaraComponent->SetupAttachment(GetMesh());
+
 	PatrolSpline = CreateDefaultSubobject<USplineComponent>("PatrolSpline");
 	PatrolSpline->SetupAttachment(GetRootComponent());
 	bUseControllerRotationRoll = false;
@@ -40,6 +40,24 @@ AEnemy_Base::AEnemy_Base()
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	
+}
+
+void AEnemy_Base::Execute(bool bIsForward)
+{
+	if (bIsForward)
+	{
+		PlayAnimMontage(Aim_Execute_F);
+	}
+	else
+	{
+		PlayAnimMontage(Aim_Execute_B);
+	}
+}
+
+void AEnemy_Base::TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) const
+{
+	if (AbilitySystemComponent)
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*DamageHandle.Data.Get());
 }
 
 UAnimMontage* AEnemy_Base::GetHitReactMotange_Implementation()
@@ -57,19 +75,37 @@ void AEnemy_Base::SetCombatTarget_Implementation(AActor* InCombatTarget)
 	TargetActor = InCombatTarget;
 }
 
+UNiagaraComponent* AEnemy_Base::GetRedAttackNiagaraComponent_Implementation() const
+{
+	return RedAttackNiagaraComponent;
+}
+
 void AEnemy_Base::GuardBroken()
 {
 	AddTag(FName("EnemyState.GuardBroken"));
+	bIsGuardBroken=true;
 	
 	//该状态下敌人无法攻击
 	//受到的伤害增加（受到的伤害*1.2）
 	//并能被处决
 }
 
+void AEnemy_Base::GuardBrokenCallBack()
+{
+	//播放破防动画
+	PlayAnimMontage(Aim_GuardBroken);
+}
+
+
 void AEnemy_Base::Staggered()
 {
 	AddTag(FName("EnemyState.Staggered"));
+	bIsStaggered=true;
+	
+}
 
+void AEnemy_Base::StaggeredCallBack()
+{
 }
 
 void AEnemy_Base::BeginPlay()
@@ -99,9 +135,17 @@ void AEnemy_Base::BeginPlay()
 				OnMaxHealthChanged.Broadcast(Data.NewValue);
 			}
 		);
+		
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetStaminaAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnStaminaChanged.Broadcast(Data.NewValue);
+			}
+		);
 
 		OnHealthChanged.Broadcast(EnemyAttributeSet->GetHealth());
 		OnMaxHealthChanged.Broadcast(EnemyAttributeSet->GetMaxHealth());
+		OnStaminaChanged.Broadcast(EnemyAttributeSet->GetStamina());
 	}
 
 	//绑定标签变化
@@ -129,9 +173,9 @@ void AEnemy_Base::InitAbilityActorInfo()
 
 void AEnemy_Base::InitializeAttribute()
 {
-	if (PrimariAttribute && AbilitySystemComponent)
+	if (EnemyMovementComponent && AbilitySystemComponent)
 	{
-		FGameplayEffectSpecHandle GameplayEffect = AbilitySystemComponent->MakeOutgoingSpec(PrimariAttribute,1,AbilitySystemComponent->MakeEffectContext());
+		FGameplayEffectSpecHandle GameplayEffect = AbilitySystemComponent->MakeOutgoingSpec(EnemyMovementComponent->GetEnemyConfig()->PrimariAttribute,1,AbilitySystemComponent->MakeEffectContext());
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*GameplayEffect.Data.Get());
 	}
 }
@@ -168,16 +212,14 @@ void AEnemy_Base::AddCharacterAbilities()
 	UASC_Base* ASC = Cast<UASC_Base>(AbilitySystemComponent);
 	if (!ASC) return;
 
-	const URL_EnemyConfig* EnemyConfig = EnemyMovementComponent ? EnemyMovementComponent->GetEnemyConfige() : nullptr;
+	const URL_EnemyConfig* EnemyConfig = EnemyMovementComponent ? EnemyMovementComponent->GetEnemyConfig() : nullptr;
 	if (!EnemyConfig) return;
 
 	// 合并所有技能
 	TArray<FEnemySkills> AllSkills;
-	AllSkills.Append(EnemyConfig->WakingStateAttackSkills);
-	AllSkills.Append(EnemyConfig->ChaosChaosAttackSkills);
-	AllSkills.Append(EnemyConfig->OtherSkills);
-
+	AllSkills.Append(EnemyConfig->EnemySkills);
 	// 调用 ASC 注册技能
 	ASC->AddEnemyAbilities(AllSkills);
+	ASC->AddCharacterAbilities(Abilites);
 }
 

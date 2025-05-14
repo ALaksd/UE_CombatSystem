@@ -52,6 +52,11 @@ public:
 	FGameplayAttributeData AttachResource;
 	ATTRIBUTE_ACCESSORS(UAS_Player,AttachResource);
 
+	//防御力
+	UPROPERTY(EditDefaultsOnly,Category="Attribute")
+	FGameplayAttributeData DefensePower;
+	ATTRIBUTE_ACCESSORS(UAS_Player,DefensePower);
+
 	 //标签和属性对应的键值表
 	TMap<FGameplayTag, FAttributeSignature> TagsToAttribute;
 

@@ -19,7 +19,8 @@ public:
 	/*主要属性*/
 	FGameplayTag Attribute_Primary_Life;              
 	FGameplayTag Attribute_Primary_Vigor;               
-	FGameplayTag Attribute_Primary_Power;               
+	FGameplayTag Attribute_Primary_Power;
+	FGameplayTag Attribute_Primary_DefensePower;
 
 
 	/*次要属性*/

@@ -4,13 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "Data/Enums.h"
 #include "RL_SanitySubsystem.generated.h"
 
-enum class E_SanityState : uint8 ;
-
-
 // 广播理智状态变化
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSanityStateChanged, E_SanityState, ESanityState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSanityStateChanged, E_SanityState, ESanityState,float, CurrentSanity);
 
 /**
  * 理智系统
@@ -39,10 +37,22 @@ public:
 	// 回复理智到最大值
 	void RestoreSanityToMax();
 
+	UFUNCTION(BlueprintCallable, Category = "Sanity System")
+	void SetCombatState(bool bInCombat);
+
 	
 	// 委托
 	UPROPERTY(BlueprintAssignable,BlueprintCallable)
 	FOnSanityStateChanged OnSanityStateChanged;
+
+protected:
+	/** 理智减少间隔 */
+	UPROPERTY(EditDefaultsOnly)
+	float Interval = 0.5f;
+
+	/** 每间隔减少理智数量 */
+	UPROPERTY(EditDefaultsOnly)
+	float DeltaAmount = 0.5f;
 	
 private:
 	// 最大理智值
@@ -56,5 +66,9 @@ private:
 	// 初始化
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
-	
+
+	FTimerHandle AutoReduceSanityTimer;
+	bool bIsInCombat = false;
+
+	void ReduceSanityOverTime();
 };

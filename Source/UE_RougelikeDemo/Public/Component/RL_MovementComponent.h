@@ -40,16 +40,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> LookAction;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> JumpAction;
-
 	//跑步按键
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> RunAction;
-
-	//翻滚按键
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> RollAction;
 
 	//拾取按键
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
@@ -68,6 +61,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> SwitchWeaponAction;
 
+	//处决
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> ExecuteAction;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Settings")
 	//角色移动状态数据
 	TMap<EMovementState, FMovementSetting> MovementSettingMap;
@@ -78,11 +75,15 @@ public:
 	//角色当前移动状态
 	UPROPERTY(BlueprintReadWrite)
 	EMovementState CurrentMovementState;
-	
-	// 移动速度
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float moveSpeed = 600.0f;
 
+	// 处决半角
+	UPROPERTY(EditDefaultsOnly,Category = "Attribute | Execute")
+	float ExecuteAngle;
+	
+	// 处决判定距离
+	UPROPERTY(EditDefaultsOnly,Category = "Attribute | Execute")
+	float ExecuteDistance;
+	
 	/***--------------------测试---------------------***/
 
 	void LMBInputPressedTest(FGameplayTag InputTag);
@@ -93,9 +94,6 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	//更新角色移动状态
-	UFUNCTION(BlueprintCallable)
-	void UpdateMovementState(EMovementState State);
 	
 	void Move(const FInputActionValue& Value);
 
@@ -103,22 +101,15 @@ protected:
 
 	void Run(const FInputActionValue& Value);
 
-	void Roll(const FInputActionValue& Value);
+	void RunOver(const FInputActionValue& Value);
 	
 	void Collect(const FInputActionValue& Value);
+	// 处决
+	void Execute(const FInputActionValue& Value);
 
 	//切换锁定敌人（可能需要更改）
-	void SwitchTargetLeft(const FInputActionValue& Value);
-
-	void SwitchTargetRight(const FInputActionValue& Value);
 
 	/** 锁定/取消锁定目标 */
-	void ToggleLockOn(const FInputActionValue& Value);
-
-	void UpdateLockOnRotation(float DeltaTime);
-
-	/** 搜索锁定目标 */
-	void FindLockOnTarget();
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -137,6 +128,20 @@ public:
 
 	void AddInteractableActor(AInteractable_Base* InteractableActor_T);
 	void RemoveInteractableActor();
+	
+	//更新角色移动状态
+	UFUNCTION(BlueprintCallable)
+	void UpdateMovementState(EMovementState State);
+
+	//镜头锁定
+	/** 锁定/取消锁定目标 */
+	UFUNCTION(BlueprintCallable, Category = "LockOn")
+	void ToggleLockOn();
+
+	/** 搜索锁定目标 */
+	UFUNCTION(BlueprintCallable, Category = "LockOn")
+	void FindLockOnTarget();
+	
 private:
 	TArray<AItem_Pickup*> ItemsCanPickup;
 	AItem_Pickup* ItemToPickup;
@@ -146,22 +151,27 @@ private:
 	AInteractable_Base* InteractableActor;
 	/***--------------------交互相关---------------------***/
 
-	/*** 锁定镜头相关 ***/
+	//锁定镜头相关
 	UPROPERTY(EditAnywhere, Category = "LockOn")
 	AActor* CurrentTarget;
-
-	/** 当前可切换的锁定目标列表 */
+	
 	UPROPERTY(EditAnywhere, Category = "LockOn")
 	TArray<AActor*> LockableTargets;
-
-	/** 当前锁定目标在列表中的索引 */
+	
 	int32 CurrentTargetIndex;
-
-	/** 搜索半径 */
+	
 	UPROPERTY(EditAnywhere, Category = "LockOn")
 	float LockOnRadius = 1000.f;
 
-	/** 锁定状态 */
-	bool bIsLockedOn;
+	UPROPERTY(EditAnywhere, Category = "LockOn")
+	FName LockableTag = FName("Lockable");
 
+	UPROPERTY(EditAnywhere, Category = "LockOn")
+	FName PlayerLockingTag = FName("IsLocking");
+	
+	void UpdateLockOnRotation(float DeltaTime);
+
+	void SwitchTargetLeft();
+
+	void SwitchTargetRight();
 };

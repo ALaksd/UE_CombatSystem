@@ -8,10 +8,22 @@
 
 UBTService_SkillDecision::UBTService_SkillDecision()
 {
-	NodeName = "Waking State AttackDecision";
+	
 }
 
 void UBTService_SkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaTime)
+{
+	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
+
+	// 仅当无当前状态时选择新动作
+	if (Blackboard->GetValueAsEnum(CurrentActionState.SelectedKeyName) == static_cast<uint8>(EEnemyActionState::None))
+	{
+		ChooseNewBaseAction(OwnerComp);
+	}
+}
+
+// 简化后的基础行动选择
+void UBTService_SkillDecision::ChooseNewBaseAction(UBehaviorTreeComponent& OwnerComp)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();
 	if (!AIController) return;
@@ -24,101 +36,51 @@ void UBTService_SkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	if (!EnemyMove) return;
 
 	// 获取配置的 EnemyDataAsset
-	const URL_EnemyConfig* EnemyConfig = EnemyMove->GetEnemyConfige();
-	if (!EnemyConfig) return;
+	const URL_EnemyConfig* EnemyConfig = EnemyMove->GetEnemyConfig();
 
-	const TArray<FEnemySkills>& WakingSkills = EnemyConfig->WakingStateAttackSkills;
+	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
 
-	AvailableSkills.Empty();
+	// 获取与目标距离
+	const float DistanceToPlayer = Blackboard->GetValueAsFloat(TargetDistance.SelectedKeyName);
 
-	for (const FEnemySkills& Skill : WakingSkills)
+	// 根据距离动态调整可用动作
+	float ActualEvadeChance = EnemyConfig->BaseActionWeights.EvadeChance;
+	float ActualAttackChance = EnemyConfig->BaseActionWeights.AttackChance;
+	float ActualRollChance = EnemyConfig->BaseActionWeights.RollChance;
+
+	// 如果距离超过允许值，移除翻滚概率
+	if (DistanceToPlayer > RollMaxDistance)
 	{
-		if (CheckSkillCondition(Skill, AIController))
-		{
-			AvailableSkills.Add(Skill);
-		}
+		ActualRollChance = 0.0f;
 	}
 
-	// 按优先级排序
-	AvailableSkills.Sort([](const FEnemySkills& A, const FEnemySkills& B) {
-		return A.PriorityLevel > B.PriorityLevel;
-		});
+	// 计算实际总权重
+	const float Total = ActualEvadeChance + ActualAttackChance + ActualRollChance;
+	if (Total <= 0.0f) return;
 
-	if (AvailableSkills.Num() > 0)
+	// 生成随机选择
+	const float RandomPick = FMath::FRand() * Total;
+
+	// 决策逻辑
+	EEnemyActionState SelectedState = EEnemyActionState::None;
+
+	if (RandomPick <= ActualEvadeChance)
 	{
-		const FEnemySkills& SelectedSkill = SelectSkillByProbability(AvailableSkills);
-		OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedSkillKey.SelectedKeyName, SelectedSkill.AbilityTag.GetTagName());
+		SelectedState = EEnemyActionState::Evading;
 	}
+	else if (RandomPick <= (ActualEvadeChance + ActualAttackChance))
+	{
+		SelectedState = EEnemyActionState::Attacking;
+	}
+	else
+	{
+		// 仅当距离有效时允许进入翻滚
+		SelectedState = (DistanceToPlayer <= RollMaxDistance) ?
+			EEnemyActionState::Rolling :
+			EEnemyActionState::Evading; // 保底逻辑
+	}
+
+	Blackboard->SetValueAsEnum(CurrentActionState.SelectedKeyName, static_cast<uint8>(SelectedState));
 }
 
-
-void UBTService_SkillDecision::EvaluateSkills(AAIController* AIController, APawn* ControlledPawn)
-{
-	//可以添加评估逻辑
-}
-
-bool UBTService_SkillDecision::CheckSkillCondition(const FEnemySkills& Skill, AAIController* AIController)
-{
-	APawn* Pawn = AIController->GetPawn();
-	UAbilitySystemComponent* ASC = GetAbilitySystem(Pawn);
-
-	//// 检查标签条件
-	//if (!ASC->MatchesGameplayTagQuery(Skill.ActivationQuery))
-	//	return false;
-
-	//可添加新的条件
-	return true;
-}
-
-FEnemySkills UBTService_SkillDecision::SelectSkillByProbability(const TArray<FEnemySkills>& ValidSkills)
-{
-	// 分组按优先级
-	TMap<int32, TArray<FEnemySkills>> PriorityGroups;
-	for (const auto& Skill : ValidSkills)
-	{
-		PriorityGroups.FindOrAdd(Skill.PriorityLevel).Add(Skill);
-	}
-
-	// 选择最高优先级
-	int32 HighestPriority = TNumericLimits<int32>::Min();
-	for (const auto& Elem : PriorityGroups)
-	{
-		if (Elem.Key > HighestPriority)
-		{
-			HighestPriority = Elem.Key;
-		}
-	}
-
-	const TArray<FEnemySkills>& TopGroup = PriorityGroups[HighestPriority];
-
-	// 权重计算
-	float TotalWeight = 0.0f;
-	for (const auto& Skill : TopGroup)
-	{
-		TotalWeight += Skill.SelectionWeight;
-	}
-
-	float RandomPoint = FMath::FRandRange(0.0f, TotalWeight);
-	for (const auto& Skill : TopGroup)
-	{
-		if (RandomPoint <= Skill.SelectionWeight)
-		{
-			return Skill;
-		}
-		RandomPoint -= Skill.SelectionWeight;
-	}
-
-	return TopGroup.Last(); // Fallback
-}
-
-
-UAbilitySystemComponent* UBTService_SkillDecision::GetAbilitySystem(APawn* Pawn) const
-{
-	UAbilitySystemComponent* ASC = Pawn->FindComponentByClass<UAbilitySystemComponent>();
-	if (ASC)
-	{
-		return ASC;
-	}
-	return nullptr;
-}
 

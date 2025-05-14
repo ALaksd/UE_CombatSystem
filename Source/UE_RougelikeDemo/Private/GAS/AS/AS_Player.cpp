@@ -35,6 +35,10 @@ UAS_Player::UAS_Player()
 	FAttributeSignature MaxAttachResourceDelegate;
 	MaxAttachResourceDelegate.BindStatic(GetMaxAttachResourceAttribute);
 	TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxAttachResource, MaxAttachResourceDelegate);
+
+	FAttributeSignature DefensePowerDelegate;
+	DefensePowerDelegate.BindStatic(GetDefensePowerAttribute);
+	TagsToAttribute.Add(GameplayTags.Attribute_Primary_DefensePower, DefensePowerDelegate);
 }
 
 void UAS_Player::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const

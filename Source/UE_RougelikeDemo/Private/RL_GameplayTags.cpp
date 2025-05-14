@@ -20,6 +20,7 @@ void FRLGameplayTags::InitializedNativeGameplayTags()
 	GameplayTags.Attribute_Primary_Life = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Primary.Life"));
 	GameplayTags.Attribute_Primary_Power = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Primary.Power"));
 	GameplayTags.Attribute_Primary_Vigor = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Primary.Vigor"), FString("韧性"));
+	GameplayTags.Attribute_Primary_DefensePower = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Primary.DefensePower"), FString("防御力"));
 
 	/*次要属性*/
 	GameplayTags.Attribute_Secondary_MaxAttachResource = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.MaxAttachResource"));

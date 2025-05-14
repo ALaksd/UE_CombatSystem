@@ -15,6 +15,12 @@ class UE_ROUGELIKEDEMO_API UAS_Enemy : public UAS_Base
 {
 	GENERATED_BODY()
 
+public:
+	//体力
+	UPROPERTY(EditDefaultsOnly,Category = "Attribute")
+	FGameplayAttributeData Stamina;
+	ATTRIBUTE_ACCESSORS(UAS_Enemy, Stamina);
+	
 private:
 	//韧性
 	UPROPERTY(EditDefaultsOnly,Category = "Attribute")
@@ -25,10 +31,7 @@ private:
 	FGameplayAttributeData MaxResilience;
 	ATTRIBUTE_ACCESSORS(UAS_Enemy, MaxResilience);
 
-	//体力
-	UPROPERTY(EditDefaultsOnly,Category = "Attribute")
-	FGameplayAttributeData Stamina;
-	ATTRIBUTE_ACCESSORS(UAS_Enemy, Stamina);
+	
 	//体力最大值
 	UPROPERTY(EditDefaultsOnly,Category = "Attribute")
 	FGameplayAttributeData MaxStamina;

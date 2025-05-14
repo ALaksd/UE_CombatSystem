@@ -9,6 +9,13 @@
 #include "Interface/RL_ItemInstanceHolder.h"
 #include "RL_BaseWeapon.generated.h"
 
+UENUM(BlueprintType)
+enum class WeaponType : uint8
+{
+	Sword,          // 长剑
+	GreatSword,     // 大剑
+};
+
 UCLASS()
 class UE_ROUGELIKEDEMO_API ARL_BaseWeapon : public AActor, public IRL_ItemInstanceHolder
 {
@@ -20,6 +27,10 @@ public:
   	FORCEINLINE AActor* GetWeaponOwner() const { return WeaponOwner; }
 	FORCEINLINE void SetWeaponOwner(AActor* InOwner) { WeaponOwner = InOwner; }
 	void SetWeaponLevel(int32 NewLevel);
+
+	//武器种类
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	WeaponType Type;
 
 	/**
 	 * ItemInstanceHolder Interface
