@@ -41,8 +41,7 @@ void UAS_Enemy::PreAttributeChange(const FGameplayAttribute& Attribute, float& N
 	if (Attribute == GetResilienceAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue,0.f,GetMaxResilience());
-		if (EnemyRef)
-			EnemyRef->ResilienceReduceCallBack();
+
 		if (NewValue == 0)
 		{
 			// 进入蹒跚状态

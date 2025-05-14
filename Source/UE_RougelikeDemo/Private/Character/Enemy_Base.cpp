@@ -58,6 +58,8 @@ void AEnemy_Base::TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) cons
 {
 	if (AbilitySystemComponent)
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*DamageHandle.Data.Get());
+	
+	ResilienceReduceCallBack();
 }
 
 UAnimMontage* AEnemy_Base::GetHitReactMotange_Implementation()
@@ -80,32 +82,58 @@ UNiagaraComponent* AEnemy_Base::GetRedAttackNiagaraComponent_Implementation() co
 	return RedAttackNiagaraComponent;
 }
 
+void AEnemy_Base::StaminaReduceCallBack()
+{
+	GetWorldTimerManager().ClearTimer(StaminaReduceTimer);
+	GetWorldTimerManager().SetTimer(StaminaReduceTimer,[this]()
+	{
+		// 回复体力
+		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+
+	},1,false);
+	
+}
+
+// void AEnemy_Base::ResilienceReduceCallBack()
+// {
+// 	GetWorldTimerManager().ClearTimer(ResilienceReduceTimer);
+// 	GetWorldTimerManager().SetTimer(ResilienceReduceTimer,[this]()
+// 	{
+// 		// 回复韧性
+// 		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreResilience,1,AbilitySystemComponent->MakeEffectContext());
+// 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+//
+// 	},1,false);
+// 	
+// }
+
 void AEnemy_Base::GuardBroken()
 {
 	AddTag(FName("EnemyState.GuardBroken"));
 	bIsGuardBroken=true;
 	
 	//该状态下敌人无法攻击
-	//受到的伤害增加（受到的伤害*1.2）
-	//并能被处决
-}
+	//受到的伤害增加（受到的伤害*1.2)		1
+	//并能被处决							1
 
-void AEnemy_Base::GuardBrokenCallBack()
-{
-	//播放破防动画
-	PlayAnimMontage(Aim_GuardBroken);
+	GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
+	GetWorldTimerManager().SetTimer(GuardBrokenTimer,[this]()
+	{
+		bIsGuardBroken=false;
+	},GuardBrokenTime,false);
 }
-
 
 void AEnemy_Base::Staggered()
 {
 	AddTag(FName("EnemyState.Staggered"));
 	bIsStaggered=true;
-	
-}
 
-void AEnemy_Base::StaggeredCallBack()
-{
+	GetWorldTimerManager().ClearTimer(StaggeredTimer);
+	GetWorldTimerManager().SetTimer(StaggeredTimer,[this]()
+	{
+		bIsStaggered=false;
+	},StaggeredTime,false);
 }
 
 void AEnemy_Base::BeginPlay()

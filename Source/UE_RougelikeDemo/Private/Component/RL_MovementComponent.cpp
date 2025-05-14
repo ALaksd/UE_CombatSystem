@@ -172,8 +172,9 @@ void URL_MovementComponent::Collect(const FInputActionValue& Value)
 void URL_MovementComponent::Execute(const FInputActionValue& Value)
 {
 	// 看有无锁定的敌人
+	if (CurrentTarget == nullptr) return;
 	AEnemy_Base* Enemy = Cast<AEnemy_Base>(CurrentTarget);
-	if (!Enemy || !ownerCharacter) return;
+	if (Enemy == nullptr || ownerCharacter == nullptr) return;
 
 	FVector Direction = ownerCharacter->GetActorLocation() - Enemy->GetActorLocation();
 	FVector EnemyDir = Enemy->GetActorForwardVector();
@@ -408,8 +409,8 @@ void URL_MovementComponent::FindLockOnTarget()
 			AActor* Target = Result.GetActor();
 			if (!Target) continue;
 			
-			if (!Target->Tags.Contains(LockableTag)) continue;
-			
+			if (!Target->Tags.Contains(LockableTag)) continue;			
+
 			FVector2D ScreenPos;
 			bool bIsOnScreen = playerController->ProjectWorldLocationToScreen(Target->GetActorLocation(), ScreenPos);
 
