@@ -11,6 +11,7 @@
 #include "UI/WidgetController/RL_OverlayWidgetController.h"
 #include "Interface/RL_CombatInterface.h"
 #include "Engine/OverlapResult.h"
+#include <Component/RL_EnemyMovementComponent.h>
 
 URL_OverlayWidgetController* URL_AbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
 {
@@ -195,4 +196,16 @@ void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldConte
 			}
 		}
 	}
+}
+
+URL_EnemyConfig* URL_AbilitySystemLibrary::GetEnemyConfig(AActor* Enemy)
+{
+	if (!Enemy)
+		return nullptr;
+	URL_EnemyMovementComponent* EnemyMove = Enemy->FindComponentByClass<URL_EnemyMovementComponent>();
+	if (EnemyMove)
+	{
+		return EnemyMove->GetEnemyConfig();
+	}
+	return nullptr;
 }

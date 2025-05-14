@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BehaviorTree/BTService.h"
+#include "BehaviorTree/BTTaskNode.h"
 #include "Component/RL_EnemyMovementComponent.h"
 #include "BTTask_FindAttackPosition.generated.h"
 
@@ -11,19 +11,23 @@
  * 
  */
 UCLASS()
-class UE_ROUGELIKEDEMO_API UBTSerivice_FindAttackPosition : public UBTService
+class UE_ROUGELIKEDEMO_API UBTSerivice_FindAttackPosition : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
 protected:
-	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaTime) override;
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
 	FVector GenerateSkillPositionAroundTarget(const FVector& TargetLocation, const FEnemySkills& Skill, const FRotator& TargetRotation) const;
 
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector SelectedSkillKey;
 
 	UPROPERTY(EditAnywhere)
-	FBlackboardKeySelector SkillDistanceKey;
+	FBlackboardKeySelector AttackPositionKey;
+
+	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector TargetDistanceKey;
 
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector TargetKey;

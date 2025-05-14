@@ -60,8 +60,9 @@ public:
 	
 	inline  virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override {return AbilitySystemComponent;}
 
-	/** ComvatInterface */
+	/** CombatInterface */
 	virtual UAnimMontage* GetHitReactMotange_Implementation() override;
+	virtual void Die_Implementation() override;
 
 	/** End ComvatInterface */
 
@@ -72,32 +73,20 @@ public:
 
 	/** End EnemyInterface */
 
+	/*-------------------------破防状态相关-------------------------*/
+	FTimerHandle StaminaReduceTimer;
+	FTimerHandle StaggeredTimer;
+	FTimerHandle GuardBrokenTimer;
 	// 体力减少回调
-	UFUNCTION(BlueprintImplementableEvent)
 	void StaminaReduceCallBack();
 	// 韧性减少回调
 	UFUNCTION(BlueprintImplementableEvent)
-	void ResilienceReduceCallBack();
-
-	// 破防动画
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
-	TObjectPtr<UAnimMontage> Aim_GuardBroken;
-
-	// 蹒跚动画
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
-	TObjectPtr<UAnimMontage> Aim_Staggered;
-
-	
+	void ResilienceReduceCallBack() const;
 	
 	// 处理破防相关
 	void GuardBroken();
 	// 处理蹒跚相关
 	void Staggered();
-
-UFUNCTION(BlueprintCallable)
-	void GuardBrokenCallBack();
-	UFUNCTION(BlueprintCallable)
-	void StaggeredCallBack();
 
 	// 破防状态
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="AnimationUpdate | State")
@@ -106,10 +95,21 @@ UFUNCTION(BlueprintCallable)
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="AnimationUpdate | State")
 	bool bIsStaggered = false;
 
+
+	/*-------------------------破防状态相关-------------------------*/
+	
 	FORCEINLINE UStaticMeshComponent* GetWeaponStaticComponnent() { return WeaponStaticMeshComponent; }
 	FORCEINLINE UNiagaraComponent* GetNiagaraComponent() { return RedAttackNiagaraComponent; }
 	
 protected:
+	// 蹒跚时间
+	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
+	float StaggeredTime;
+	// 破防时间
+	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
+	float GuardBrokenTime;
+
+	
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 

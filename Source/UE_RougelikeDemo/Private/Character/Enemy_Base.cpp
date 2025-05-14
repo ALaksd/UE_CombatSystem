@@ -13,6 +13,8 @@
 #include "Component/RL_EnemyMovementComponent.h"
 #include "Components/SplineComponent.h"
 #include "NiagaraComponent.h"
+#include "Components/CapsuleComponent.h"
+#include <Blueprint/AIBlueprintHelperLibrary.h>
 
 // Sets default values
 AEnemy_Base::AEnemy_Base()
@@ -46,11 +48,31 @@ void AEnemy_Base::Execute(bool bIsForward)
 {
 	if (bIsForward)
 	{
-		PlayAnimMontage(Aim_Execute_F);
+		float Time = PlayAnimMontage(Aim_Execute_F);
+		FTimerHandle TimerHandle;
+		GetWorldTimerManager().SetTimer(TimerHandle,[this]()
+		{
+			// 处决完成,退出破防状态,体力值回满
+			bIsGuardBroken=false;
+
+			// 回复体力
+			FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+		},Time,false);
 	}
 	else
 	{
-		PlayAnimMontage(Aim_Execute_B);
+		float Time = PlayAnimMontage(Aim_Execute_B);
+		FTimerHandle TimerHandle;
+		GetWorldTimerManager().SetTimer(TimerHandle,[this]()
+		{
+			// 处决完成,退出破防状态,体力值回满
+			bIsGuardBroken=false;
+
+			// 回复体力
+			FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+		},Time,false);
 	}
 }
 
@@ -58,11 +80,51 @@ void AEnemy_Base::TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) cons
 {
 	if (AbilitySystemComponent)
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*DamageHandle.Data.Get());
+
+	//受到伤害后发现敌人
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (!AIController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to get AI Controller"));
+		return;
+	}
+
+	// 获取Blackboard组件
+	UBlackboardComponent* BlackboardComponent = AIController->GetBlackboardComponent();
+	if (!BlackboardComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Missing Blackboard Component"));
+		return;
+	}
+
+	// 设置黑板键（示例）
+	BlackboardComponent->SetValueAsBool(FName("bFindTarget"), true);
+
+	ResilienceReduceCallBack();
+
+	
+	ResilienceReduceCallBack();
 }
 
 UAnimMontage* AEnemy_Base::GetHitReactMotange_Implementation()
 {
-	return HitReactMontage;
+	return EnemyMovementComponent->GetEnemyConfig()->HitReactMontage;
+}
+
+void AEnemy_Base::Die_Implementation()
+{
+	WeaponStaticMeshComponent->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+
+	WeaponStaticMeshComponent->SetSimulatePhysics(true);
+	WeaponStaticMeshComponent->SetEnableGravity(true);
+	WeaponStaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 AActor* AEnemy_Base::GetCombatTarget_Implementation() const
@@ -80,32 +142,66 @@ UNiagaraComponent* AEnemy_Base::GetRedAttackNiagaraComponent_Implementation() co
 	return RedAttackNiagaraComponent;
 }
 
+void AEnemy_Base::StaminaReduceCallBack()
+{
+	// GetWorldTimerManager().ClearTimer(StaminaReduceTimer);
+	// GetWorldTimerManager().SetTimer(StaminaReduceTimer,[this]()
+	// {
+	// 	// 回复体力
+	// 	FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
+	// 	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+	//
+	// },1,false);
+	
+}
+
+// void AEnemy_Base::ResilienceReduceCallBack()
+// {
+// 	GetWorldTimerManager().ClearTimer(ResilienceReduceTimer);
+// 	GetWorldTimerManager().SetTimer(ResilienceReduceTimer,[this]()
+// 	{
+// 		// 回复韧性
+// 		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreResilience,1,AbilitySystemComponent->MakeEffectContext());
+// 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+//
+// 	},1,false);
+// 	
+// }
+
 void AEnemy_Base::GuardBroken()
 {
 	AddTag(FName("EnemyState.GuardBroken"));
 	bIsGuardBroken=true;
 	
 	//该状态下敌人无法攻击
-	//受到的伤害增加（受到的伤害*1.2）
-	//并能被处决
-}
+	//受到的伤害增加（受到的伤害*1.2)		1
+	//并能被处决							1
 
-void AEnemy_Base::GuardBrokenCallBack()
-{
-	//播放破防动画
-	PlayAnimMontage(Aim_GuardBroken);
-}
+	GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
+	GetWorldTimerManager().SetTimer(GuardBrokenTimer,[this]()
+	{
+		bIsGuardBroken=false;
 
+		// 回复体力
+		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+	},GuardBrokenTime,false);
+}
 
 void AEnemy_Base::Staggered()
 {
 	AddTag(FName("EnemyState.Staggered"));
 	bIsStaggered=true;
-	
-}
 
-void AEnemy_Base::StaggeredCallBack()
-{
+	GetWorldTimerManager().ClearTimer(StaggeredTimer);
+	GetWorldTimerManager().SetTimer(StaggeredTimer,[this]()
+	{
+		bIsStaggered=false;
+
+		// 回复韧性
+		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreResilience,1,AbilitySystemComponent->MakeEffectContext());
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+	},StaggeredTime,false);
 }
 
 void AEnemy_Base::BeginPlay()
@@ -184,6 +280,8 @@ void AEnemy_Base::AddTag(FName Tag)
 {
 	FGameplayTag EnemyTag = FGameplayTag::RequestGameplayTag(Tag);
 	StateTags.AddTag(EnemyTag);
+	AbilitySystemComponent->AddLooseGameplayTag(EnemyTag);
+	AbilitySystemComponent->SetTagMapCount(EnemyTag, 1);
 }
 
 void AEnemy_Base::RemoveTag(FName Tag)
@@ -194,6 +292,8 @@ void AEnemy_Base::RemoveTag(FName Tag)
 		if (EnemyTag == StateTag)
 		{
 			StateTags.RemoveTag(StateTag);
+			AbilitySystemComponent->RemoveLooseGameplayTag(StateTag);
+			AbilitySystemComponent->SetTagMapCount(StateTag, 0);
 			break;
 		}
 	}

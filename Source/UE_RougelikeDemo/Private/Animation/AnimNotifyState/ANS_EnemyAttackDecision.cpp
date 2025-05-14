@@ -8,6 +8,9 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GAS/RL_AbilitySystemLibrary.h"
 #include <System/RL_SanitySubsystem.h>
+#include <AIController.h>
+#include <BehaviorTree/BehaviorTreeComponent.h>
+#include "GAS/RL_AbilitySystemLibrary.h"
 
 void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
@@ -16,6 +19,13 @@ void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAn
 	// 初始化攻击者
 	OwnerActor = MeshComp->GetOwner();
 	AlreadyHitActors.Empty();
+
+	UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OwnerActor);
+	if (SourceASC)
+	{
+		SourceASC->AddLooseGameplayTag(DamageTypeTag);
+		SourceASC->SetTagMapCount(DamageTypeTag, 1);
+	}
 }
 
 void UANS_EnemyAttackDecision::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
@@ -36,6 +46,13 @@ void UANS_EnemyAttackDecision::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnim
 
 	// 清空已命中列表
 	AlreadyHitActors.Empty();
+
+	UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OwnerActor);
+	if (SourceASC)
+	{
+		SourceASC->RemoveLooseGameplayTag(DamageTypeTag);
+		SourceASC->SetTagMapCount(DamageTypeTag, 0);
+	}
 }
 
 void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* MeshComp, FVector& Center, FRotator& Rotation)
@@ -73,32 +90,97 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor)
 {
 	if (!DamageEffectClass || !OwnerActor) return;
 
-	// 1. 创建GE Spec
+	// 获取双方的ASC
 	UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OwnerActor);
-	if (!SourceASC) return;
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	if (!SourceASC || !TargetASC) return;
 
+	// 弹反判断条件 ---------------------------------------------------
+	bool bCanParry = false;
+
+	const FGameplayTag ParryTag = FGameplayTag::RequestGameplayTag("Ability.BounceBack");
+	const FGameplayTag RedDamageTag = FGameplayTag::RequestGameplayTag("damage.Red");
+
+	// 检查玩家是否有弹反Tag
+	bool bPlayerHasParry = TargetASC->HasMatchingGameplayTag(ParryTag);
+
+	// 检查敌人是否有红光攻击Tag
+	bool bEnemyRedAttack = SourceASC->HasMatchingGameplayTag(RedDamageTag);
+
+	bCanParry = bPlayerHasParry && bEnemyRedAttack;
+
+	if (bCanParry)
+	{
+		// 弹反成功处理 -----------------------------------------------
+		// 获取敌人AI相关组件
+		AAIController* AIController = Cast<AAIController>(OwnerActor->GetInstigatorController());
+		UBehaviorTreeComponent* BTComponent = AIController ? AIController->FindComponentByClass<UBehaviorTreeComponent>() : nullptr;
+
+
+		// 1. 停止行为树
+		if (BTComponent)
+		{
+			// 中止当前运行的任务
+			BTComponent->RestartTree();
+		}
+
+		// 2. 播放特殊受击动画
+		if (USkeletalMeshComponent* Mesh = OwnerActor->FindComponentByClass<USkeletalMeshComponent>())
+		{
+			if (UAnimInstance* AnimInstance = Mesh->GetAnimInstance())
+			{
+				// 立即停止所有动画
+				AnimInstance->StopAllMontages(0.1f);
+
+				UAnimMontage* ParryHitMontage = URL_AbilitySystemLibrary::GetEnemyConfig(OwnerActor)->ParryHitMontage;
+				// 播放受击动画
+				if (ParryHitMontage)
+				{
+					AnimInstance->Montage_Play(ParryHitMontage, 1.0f, EMontagePlayReturnType::MontageLength, 0.0f, true);
+				}
+			}
+		}
+
+
+		// 3. 减少属性
+		// 创建临时GE
+		FGameplayEffectContextHandle EffectContext = SourceASC->MakeEffectContext();
+		FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(ParryAttributeEffect, 1, EffectContext);
+
+		if (SpecHandle.IsValid())
+		{
+			SourceASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
+
+		// 弹反成功直接返回，不执行后续伤害逻辑
+		return;
+	}
+
+	/**
+	 * TODO:
+	 * 受击反馈
+	 * 音效
+	 * 特效
+	 */
+
+	// 正常伤害处理 ---------------------------------------------------
 	FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
 	Context.AddSourceObject(OwnerActor);
 
 	FGameplayEffectSpecHandle DamageSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, 1.0f, Context);
 
-	// 2. 设置伤害值
+	// 设置伤害值
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
 		DamageSpecHandle,
 		DamageTypeTag,
 		Damage
 	);
 
-	// 3. 应用伤害
-	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
-	if (TargetASC)
-	{
-		SourceASC->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(), TargetASC);
-	}
+	// 应用伤害
+	SourceASC->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(), TargetASC);
 
-	//4. 减少理智值
-	URL_SanitySubsystem* SanitySubsystem = UGameInstance::GetSubsystem<URL_SanitySubsystem>(TargetActor->GetWorld()->GetGameInstance());
-	if (SanitySubsystem)
+	// 减少理智值
+	if (URL_SanitySubsystem* SanitySubsystem = UGameInstance::GetSubsystem<URL_SanitySubsystem>(TargetActor->GetWorld()->GetGameInstance()))
 	{
 		SanitySubsystem->ReduceSanity(Damage * ReduceSantiyFactor);
 	}

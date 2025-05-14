@@ -18,7 +18,7 @@
 #include "Interface/RL_CharacterAimInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/RL_HUD.h"
-
+#include "Components/CapsuleComponent.h"
 
 
 
@@ -196,4 +196,14 @@ bool ARL_BaseCharacter::isDead_Implementation() const
 AActor* ARL_BaseCharacter::GetAvatar_Implementation()
 {
 	return this;
+}
+
+void ARL_BaseCharacter::Die_Implementation()
+{
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

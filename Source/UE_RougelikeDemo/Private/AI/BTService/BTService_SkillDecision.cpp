@@ -14,12 +14,23 @@ UBTService_SkillDecision::UBTService_SkillDecision()
 void UBTService_SkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaTime)
 {
 	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
+	UAbilitySystemComponent* ASC =  OwnerComp.GetAIOwner()->GetPawn()->FindComponentByClass<UAbilitySystemComponent>();
+
+	if (ASC->HasAnyMatchingGameplayTags(BrokenTags))
+	{
+		Blackboard->SetValueAsBool(bBroken.SelectedKeyName, true);
+	}
+	else
+	{
+		Blackboard->SetValueAsBool(bBroken.SelectedKeyName, false);
+	}
 
 	// 仅当无当前状态时选择新动作
 	if (Blackboard->GetValueAsEnum(CurrentActionState.SelectedKeyName) == static_cast<uint8>(EEnemyActionState::None))
 	{
 		ChooseNewBaseAction(OwnerComp);
 	}
+	
 }
 
 // 简化后的基础行动选择

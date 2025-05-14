@@ -33,5 +33,11 @@ protected:
 	FBlackboardKeySelector TargetDistance;
 
 	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector bBroken;
+
+	UPROPERTY(EditAnywhere)
 	float RollMaxDistance;
+
+	UPROPERTY(EditAnywhere)
+	FGameplayTagContainer BrokenTags;
 };
