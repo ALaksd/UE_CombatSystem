@@ -48,11 +48,31 @@ void AEnemy_Base::Execute(bool bIsForward)
 {
 	if (bIsForward)
 	{
-		PlayAnimMontage(Aim_Execute_F);
+		float Time = PlayAnimMontage(Aim_Execute_F);
+		FTimerHandle TimerHandle;
+		GetWorldTimerManager().SetTimer(TimerHandle,[this]()
+		{
+			// 处决完成,退出破防状态,体力值回满
+			bIsGuardBroken=false;
+
+			// 回复体力
+			FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+		},Time,false);
 	}
 	else
 	{
-		PlayAnimMontage(Aim_Execute_B);
+		float Time = PlayAnimMontage(Aim_Execute_B);
+		FTimerHandle TimerHandle;
+		GetWorldTimerManager().SetTimer(TimerHandle,[this]()
+		{
+			// 处决完成,退出破防状态,体力值回满
+			bIsGuardBroken=false;
+
+			// 回复体力
+			FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+		},Time,false);
 	}
 }
 
