@@ -54,6 +54,7 @@ void AEnemy_Base::Execute(bool bIsForward)
 		{
 			// 处决完成,退出破防状态,体力值回满
 			bIsGuardBroken=false;
+			RemoveTag(FName("EnemyState.GuardBroken"));
 
 			// 回复体力
 			FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
@@ -68,6 +69,7 @@ void AEnemy_Base::Execute(bool bIsForward)
 		{
 			// 处决完成,退出破防状态,体力值回满
 			bIsGuardBroken=false;
+			RemoveTag(FName("EnemyState.GuardBroken"));
 
 			// 回复体力
 			FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
@@ -100,9 +102,6 @@ void AEnemy_Base::TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) cons
 	// 设置黑板键（示例）
 	BlackboardComponent->SetValueAsBool(FName("bFindTarget"), true);
 
-	ResilienceReduceCallBack();
-
-	
 	ResilienceReduceCallBack();
 }
 

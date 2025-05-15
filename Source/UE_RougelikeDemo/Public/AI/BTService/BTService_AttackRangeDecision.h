@@ -25,9 +25,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector TargetDistanceKey;
 
-	UPROPERTY(EditAnywhere)
-	FBlackboardKeySelector TargetKey;
-
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	FBlackboardKeySelector IsInAttackRangeKey; // 新增键：是否在攻击范围
 
