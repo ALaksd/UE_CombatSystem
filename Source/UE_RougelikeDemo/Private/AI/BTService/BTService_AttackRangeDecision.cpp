@@ -16,93 +16,35 @@ void UBTService_AttackRangeDecision::TickNode(UBehaviorTreeComponent& OwnerComp,
 
 	if (!Blackboard || !ControlledPawn) return;
 
-	// 获取目标对象
-	AActor* TargetActor = Cast<AActor>(Blackboard->GetValueAsObject(TargetKey.SelectedKeyName));
-	if (!TargetActor) return;
+	float CurrentDistance = Blackboard->GetValueAsFloat(TargetDistanceKey.SelectedKeyName);
 
-	// 获取当前使用的技能
-	FGameplayTag CurrentSkillTag = FGameplayTag::RequestGameplayTag(
-		Blackboard->GetValueAsName(SelectedSkillKey.SelectedKeyName)
-	);
-
-	// 如果未选择技能则使用默认
-	if (!CurrentSkillTag.IsValid())
+	FName SkillName = Blackboard->GetValueAsName(SelectedSkillKey.SelectedKeyName);
+	if (SkillName != "None")
 	{
-		CurrentSkillTag = DefaultAttackTag;
-		Blackboard->SetValueAsName(SelectedSkillKey.SelectedKeyName, DefaultAttackTag.GetTagName());
-	}
+		FGameplayTag CurrentSkillTag = FGameplayTag::RequestGameplayTag(SkillName);
 
-	// 获取技能配置
-	const FEnemySkills& SelectedSkill = URL_AbilitySystemLibrary::GetEnemyConfig(ControlledPawn)->FindSkillsByTag(CurrentSkillTag);
+		// 如果未选择技能则使用默认
+		if (!CurrentSkillTag.IsValid())
+		{
+			CurrentSkillTag = DefaultAttackTag;
+			Blackboard->SetValueAsName(SelectedSkillKey.SelectedKeyName, DefaultAttackTag.GetTagName());
+		}
 
-	// 计算实际距离
-	const float CurrentDistance = FVector::Distance(
-		ControlledPawn->GetActorLocation(),
-		TargetActor->GetActorLocation()
-	);
+		// 获取技能配置
+		const FEnemySkills& SelectedSkill = URL_AbilitySystemLibrary::GetEnemyConfig(ControlledPawn)->FindSkillsByTag(CurrentSkillTag);
 
-	// 判断是否在攻击范围
-	const bool bCanAttack = (CurrentDistance >= SelectedSkill.SkillRangeMin) &&
-		(CurrentDistance <= SelectedSkill.SkillRangeMax);
 
-	// 设置黑板键
-	Blackboard->SetValueAsBool(IsInAttackRangeKey.SelectedKeyName, bCanAttack);
+		// 判断是否在攻击范围
+		const bool bCanAttack = (CurrentDistance >= SelectedSkill.SkillRangeMin) &&
+			(CurrentDistance <= SelectedSkill.SkillRangeMax);
 
-	if (bCanAttack)
-	{
-		// 在范围内：设置攻击位置为当前位置
-		Blackboard->SetValueAsVector(
-			AttackPositionKey.SelectedKeyName,
-			ControlledPawn->GetActorLocation()
-		);
+		// 设置黑板键
+		Blackboard->SetValueAsBool(IsInAttackRangeKey.SelectedKeyName, bCanAttack);
+
 	}
 	else
 	{
-		// 不在范围：计算理想攻击位置
-		const FRotator TargetRotation = (TargetActor->GetActorLocation() - ControlledPawn->GetActorLocation()).Rotation();
-		const FVector IdealPosition = GenerateIdealAttackPosition(
-			TargetActor->GetActorLocation(),
-			SelectedSkill,
-			TargetRotation
-		);
+		Blackboard->SetValueAsBool(IsInAttackRangeKey.SelectedKeyName, false);
 
-		Blackboard->SetValueAsVector(
-			AttackPositionKey.SelectedKeyName,
-			IdealPosition
-		);
 	}
-
-	// 调试绘制
-	if (bDrawDebug)
-	{
-		DrawDebugSphere(
-			GetWorld(),
-			Blackboard->GetValueAsVector(AttackPositionKey.SelectedKeyName),
-			50.0f,
-			12,
-			bCanAttack ? FColor::Green : FColor::Red,
-			false,
-			1.0f
-		);
-	}
-}
-
-FVector UBTService_AttackRangeDecision::GenerateIdealAttackPosition(
-	const FVector& TargetLocation,
-	const FEnemySkills& SkillConfig,
-	const FRotator& TargetRotation) const
-{
-	// 计算理想距离（取中间值增加成功率）
-	const float IdealDistance = (SkillConfig.SkillRangeMin + SkillConfig.SkillRangeMax) * 0.5f;
-
-	// 获取目标前方方向
-	const FVector ForwardDir = TargetRotation.Vector().GetSafeNormal2D();
-
-	// 生成基础位置
-	FVector NewLocation = TargetLocation + (ForwardDir * IdealDistance);
-
-	// 保持高度一致
-	NewLocation.Z = TargetLocation.Z;
-
-	return NewLocation;
 }
