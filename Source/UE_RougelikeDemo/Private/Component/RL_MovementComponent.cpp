@@ -536,4 +536,5 @@ void URL_MovementComponent::SwitchUseItem(const FInputActionValue& Value)
 		}
 	}
 	CurrentUse = Slots[UseIndex];
+	OnSwitchItem.ExecuteIfBound(UseIndex);
 }

@@ -11,6 +11,7 @@ struct FOnAttributeChangeData;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoulChangedSignature, int32, NewSoul);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelChangedSignature, int32, NewLevel);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSwitchItemSignature, int32, Index);
 
 /**
  * 
@@ -53,4 +54,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "LevelUpInfo") 
 	FOnLevelChangedSignature OnLevelChanged;
+
+	UPROPERTY(BlueprintAssignable) 
+	FOnSwitchItemSignature OnSwitchItemSignature;
 };
