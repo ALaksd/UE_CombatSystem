@@ -9,17 +9,19 @@ void UANS_EnemyRedAttack::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 
-	if (!MeshComp) return;
+	if (!MeshComp || !MeshComp->GetOwner()) return;
+
+	// 获取当前 World 并检查是否为游戏世界
+	UWorld* World = MeshComp->GetWorld();
+	if (!World || !World->IsGameWorld()) return; // 仅在游戏世界执行
 
 	if (MeshComp->GetOwner()->Implements<URL_EnemyInterface>())
 	{
 		UNiagaraComponent* NiagaraComp = IRL_EnemyInterface::Execute_GetRedAttackNiagaraComponent(MeshComp->GetOwner());
-
 		if (NiagaraComp)
 		{
 			NiagaraComp->Activate();
 		}
-		
 	}
 }
 
@@ -27,6 +29,10 @@ void UANS_EnemyRedAttack::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSeque
 {
 	
 	if (!MeshComp) return;
+
+	// 获取当前 World 并检查是否为游戏世界
+	UWorld* World = MeshComp->GetWorld();
+	if (!World || !World->IsGameWorld()) return; // 仅在游戏世界执行
 
 	if (MeshComp->GetOwner()->Implements<URL_EnemyInterface>())
 	{
