@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputActionValue.h"
 #include "UE_RougelikeDemo/InventorySystem//RLInventoryComponent.h"
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryItemFragment.h"
 #include "RLInventoryComponent_Equipment.generated.h"
