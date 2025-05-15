@@ -6,8 +6,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Data/RL_CharacterData.h"
 #include "GameplayTagContainer.h"
+#include "UE_RougelikeDemo/InventorySystem/RLInventoryComponent.h"
 #include "RL_MovementComponent.generated.h"
 
+class URLInventoryComponent_Equipment;
+struct FRLInventoryItemSlotHandle;
 class AInteractable_Base;
 class AItem_Pickup;
 class UInputMappingContext;
@@ -48,6 +51,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> CollectAction;
 
+	//道具使用按键
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> UseAction;
+
+	//道具切换按键
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> SwitchPropAction;
+
 	//锁定敌人按键
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> LockAction;
@@ -75,6 +86,18 @@ public:
 	//角色当前移动状态
 	UPROPERTY(BlueprintReadWrite)
 	EMovementState CurrentMovementState;
+
+	//当前选择的道具
+	UPROPERTY()
+	FRLInventoryItemSlotHandle CurrentUse;
+
+	int UseIndex;
+
+	UPROPERTY()
+	TObjectPtr<URLInventoryComponent_Equipment> Backpack;
+
+	UPROPERTY()
+	TArray<FRLInventoryItemSlotHandle> Slots;
 
 	// 处决半角
 	UPROPERTY(EditDefaultsOnly,Category = "Attribute | Execute")
@@ -104,6 +127,13 @@ protected:
 	void RunOver(const FInputActionValue& Value);
 	
 	void Collect(const FInputActionValue& Value);
+
+	//使用道具
+	void UseItem(const FInputActionValue& Value);
+
+	//切换道具
+	void SwitchUseItem(const FInputActionValue& Value);
+	
 	// 处决
 	void Execute(const FInputActionValue& Value);
 

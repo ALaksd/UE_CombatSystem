@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class UE_ROUGELIKEDEMO_API UBTSerivice_FindAttackPosition : public UBTTaskNode
+class UE_ROUGELIKEDEMO_API UBTTask_FindAttackPosition : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
