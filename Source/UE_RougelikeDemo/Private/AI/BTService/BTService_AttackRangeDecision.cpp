@@ -48,43 +48,43 @@ void UBTService_AttackRangeDecision::TickNode(UBehaviorTreeComponent& OwnerComp,
 	// 设置黑板键
 	Blackboard->SetValueAsBool(IsInAttackRangeKey.SelectedKeyName, bCanAttack);
 
-	if (bCanAttack)
-	{
-		// 在范围内：设置攻击位置为当前位置
-		Blackboard->SetValueAsVector(
-			AttackPositionKey.SelectedKeyName,
-			ControlledPawn->GetActorLocation()
-		);
-	}
-	else
-	{
-		// 不在范围：计算理想攻击位置
-		const FRotator TargetRotation = (TargetActor->GetActorLocation() - ControlledPawn->GetActorLocation()).Rotation();
-		const FVector IdealPosition = GenerateIdealAttackPosition(
-			TargetActor->GetActorLocation(),
-			SelectedSkill,
-			TargetRotation
-		);
+	//if (bCanAttack)
+	//{
+	//	// 在范围内：设置攻击位置为当前位置
+	//	Blackboard->SetValueAsVector(
+	//		AttackPositionKey.SelectedKeyName,
+	//		ControlledPawn->GetActorLocation()
+	//	);
+	//}
+	//else
+	//{
+	//	// 不在范围：计算理想攻击位置
+	//	const FRotator TargetRotation = (TargetActor->GetActorLocation() - ControlledPawn->GetActorLocation()).Rotation();
+	//	const FVector IdealPosition = GenerateIdealAttackPosition(
+	//		TargetActor->GetActorLocation(),
+	//		SelectedSkill,
+	//		TargetRotation
+	//	);
 
-		Blackboard->SetValueAsVector(
-			AttackPositionKey.SelectedKeyName,
-			IdealPosition
-		);
-	}
+	//	Blackboard->SetValueAsVector(
+	//		AttackPositionKey.SelectedKeyName,
+	//		IdealPosition
+	//	);
+	//}
 
-	// 调试绘制
-	if (bDrawDebug)
-	{
-		DrawDebugSphere(
-			GetWorld(),
-			Blackboard->GetValueAsVector(AttackPositionKey.SelectedKeyName),
-			50.0f,
-			12,
-			bCanAttack ? FColor::Green : FColor::Red,
-			false,
-			1.0f
-		);
-	}
+	//// 调试绘制
+	//if (bDrawDebug)
+	//{
+	//	DrawDebugSphere(
+	//		GetWorld(),
+	//		Blackboard->GetValueAsVector(AttackPositionKey.SelectedKeyName),
+	//		50.0f,
+	//		12,
+	//		bCanAttack ? FColor::Green : FColor::Red,
+	//		false,
+	//		1.0f
+	//	);
+	//}
 }
 
 FVector UBTService_AttackRangeDecision::GenerateIdealAttackPosition(

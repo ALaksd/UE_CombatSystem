@@ -22,10 +22,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector SelectedSkillKey;
-
-	UPROPERTY(EditAnywhere)
-	FBlackboardKeySelector AttackPositionKey;
-
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector TargetDistanceKey;
 
