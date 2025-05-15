@@ -200,7 +200,7 @@ TArray<FRLInventoryItemSlotHandle> URLInventoryComponent::GetSlotHandlesByTags(c
 	TArray<FRLInventoryItemSlotHandle> MatchingHandles;
 	for (const FRLInventoryItemSlot& Slot : Inventory.Slots)
 	{
-		if (Slot.ItemInstance && Slot.SlotTags.HasAny(Tags))
+		if (Slot.SlotTags.HasAny(Tags))
 		{
 			MatchingHandles.Add(FRLInventoryItemSlotHandle(Slot, this));
 		}
