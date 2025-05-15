@@ -13,7 +13,7 @@ void UANS_InputDisableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSe
 	if (!Owner) return;
 
 	// 移除输入
-	if (APlayerController* PC = Cast<APlayerController>(Owner->GetInstigatorController()))
+ 	if (APlayerController* PC = Cast<APlayerController>(Owner->GetInstigatorController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 		{

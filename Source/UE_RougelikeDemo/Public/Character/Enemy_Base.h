@@ -77,6 +77,7 @@ public:
 	FTimerHandle StaminaReduceTimer;
 	FTimerHandle StaggeredTimer;
 	FTimerHandle GuardBrokenTimer;
+	FTimerHandle ResilienceReduceTimer;
 	// 体力减少回调
 	void StaminaReduceCallBack();
 	// 韧性减少回调
