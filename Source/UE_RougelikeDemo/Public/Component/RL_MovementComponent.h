@@ -18,6 +18,8 @@ class UInputAction;
 class URL_InputBufferComponent;
 class URLInputConfig;
 
+DECLARE_DELEGATE_OneParam(FOnSwitchItem, int32)
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_ROUGELIKEDEMO_API URL_MovementComponent : public UActorComponent
 {
@@ -91,13 +93,16 @@ public:
 	UPROPERTY()
 	FRLInventoryItemSlotHandle CurrentUse;
 
-	int UseIndex;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 UseIndex;
 
 	UPROPERTY()
 	TObjectPtr<URLInventoryComponent_Equipment> Backpack;
 
 	UPROPERTY()
 	TArray<FRLInventoryItemSlotHandle> Slots;
+	
+	FOnSwitchItem OnSwitchItem;
 
 	// 处决半角
 	UPROPERTY(EditDefaultsOnly,Category = "Attribute | Execute")
@@ -136,10 +141,6 @@ protected:
 	
 	// 处决
 	void Execute(const FInputActionValue& Value);
-
-	//切换锁定敌人（可能需要更改）
-
-	/** 锁定/取消锁定目标 */
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

@@ -5,6 +5,8 @@
 #include "GAS/AS/AS_Player.h"
 #include <Player/RL_PlayerState.h>
 
+#include "Component/RL_MovementComponent.h"
+
 void URL_OverlayWidgetController::BroadcastInitialValue()
 {
 	OnHealthChanged.Broadcast(GetPlayerAS()->GetHealth());
@@ -78,6 +80,15 @@ void URL_OverlayWidgetController::BindCallbacksToDependencies()
 			OnLevelChanged.Broadcast(NewLevel);
 		}
 	);
+
+	URL_MovementComponent* MovementComponent = PlayerController->GetPawn()->FindComponentByClass<URL_MovementComponent>();
+	if (MovementComponent)
+	{
+		MovementComponent->OnSwitchItem.BindLambda([this](int32 Index)
+		{
+			OnSwitchItemSignature.Broadcast(Index);
+		});
+	}
 }
 
 void URL_OverlayWidgetController::UnbindAllDelegate()
