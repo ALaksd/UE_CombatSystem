@@ -98,7 +98,6 @@ void URLInventoryComponent_Equipment::SwitchWeapon(const FInputActionValue& Valu
 	OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance);
 }
 
-
 void URLInventoryComponent_Equipment::BeginPlay()
 {
 	Super::BeginPlay();
@@ -120,7 +119,7 @@ void URLInventoryComponent_Equipment::OnEquipSlotUpdate(URLInventoryComponent* I
 		if (SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.1"))) || SlotHandle.SlotTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Weapon.Slot.2"))))
 			UnEquipWeapon(SlotHandle, PreviousItemInstance);
 		else
-		MakeItemUnequipped_Internal(SlotHandle, PreviousItemInstance);
+			MakeItemUnequipped_Internal(SlotHandle, PreviousItemInstance);
 	}
 	if (IsValid(ItemInstance))
 	{
@@ -161,6 +160,7 @@ bool URLInventoryComponent_Equipment::MakeItemEquipped_Internal(const FRLInvento
 
 	ItemInstance->SetbEquiped(true);
 	bOnEquip.ExecuteIfBound(true);
+	OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance);
 	return true;
 }
 
@@ -199,6 +199,7 @@ bool URLInventoryComponent_Equipment::MakeItemUnequipped_Internal(const FRLInven
 	// 更新物品实例的装备状态
 	ItemInstance->SetbEquiped(false);
 	bOnEquip.ExecuteIfBound(false);
+	OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance);
 	return true;
 }
 
