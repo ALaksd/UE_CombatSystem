@@ -27,6 +27,7 @@ AEnemy_Base::AEnemy_Base()
 
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
+	HealthBar->SetVisibility(false);
 
 	EnemyMovementComponent = CreateDefaultSubobject<URL_EnemyMovementComponent>("EnemyMovementComponent");
 
@@ -101,6 +102,7 @@ void AEnemy_Base::TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) cons
 
 	// 设置黑板键（示例）
 	BlackboardComponent->SetValueAsBool(FName("bFindTarget"), true);
+	HealthBar->SetVisibility(true);
 
 	ResilienceReduceCallBack();
 }
@@ -124,6 +126,26 @@ void AEnemy_Base::Die_Implementation()
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (!AIController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to get AI Controller"));
+		return;
+	}
+
+	// 获取Blackboard组件
+	UBlackboardComponent* BlackboardComponent = AIController->GetBlackboardComponent();
+	if (!BlackboardComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Missing Blackboard Component"));
+		return;
+	}
+
+	// 设置黑板键（示例）
+	BlackboardComponent->SetValueAsBool(FName("bIsDead"), true);
+	HealthBar->SetVisibility(false);
+	SetLifeSpan(5.f);
 }
 
 AActor* AEnemy_Base::GetCombatTarget_Implementation() const
@@ -139,6 +161,11 @@ void AEnemy_Base::SetCombatTarget_Implementation(AActor* InCombatTarget)
 UNiagaraComponent* AEnemy_Base::GetRedAttackNiagaraComponent_Implementation() const
 {
 	return RedAttackNiagaraComponent;
+}
+
+void AEnemy_Base::SetHealthBarVisible_Implementation(bool bVisible) const
+{
+	HealthBar->SetVisibility(bVisible);
 }
 
 void AEnemy_Base::StaminaReduceCallBack()

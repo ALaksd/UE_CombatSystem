@@ -91,7 +91,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsDead;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDead();
 private:
 	//角色状态UI
 	TObjectPtr<URL_PlayerStateWidget> PlayerStateUI;
@@ -132,5 +136,8 @@ protected:
 	void InitAbilityActorInfo();
 	void InitializeAttribute() const;
 	void ApplyGameEffect(TSubclassOf<UGameplayEffect> EffectClass,float Level) const;
+
+	//重生
+	void ReStart();
 };
 

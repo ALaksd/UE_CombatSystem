@@ -8,7 +8,7 @@
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISense_Hearing.h"
 #include "Perception/AIPerceptionSystem.h"
-#include <Component/RL_EnemyMovementComponent.h>
+#include <Interface/RL_EnemyInterface.h>
 
 
 ARL_AIController::ARL_AIController()
@@ -59,6 +59,10 @@ void ARL_AIController::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 	if (Stimulus.WasSuccessfullySensed() && Actor->ActorHasTag("Player"))
 	{
 		GetBlackboardComponent()->SetValueAsBool(FName("bFindTarget"), true);
+	/*	if (Actor->Implements<URL_EnemyInterface>())
+		{
+			IRL_EnemyInterface::Execute_SetHealthBarVisible(Actor,true);
+		}*/
 	}
 	//else
 	//{

@@ -7,106 +7,106 @@
 #include "Interface/RL_GameInstanceInterface.h"
 #include "Kismet/GameplayStatics.h"
 
-void URL_CharacterSelectionWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-	// »ñÈ¡ PlayerController ²¢ÉèÖÃ UI Ä£Ê½ºÍÏÔÊ¾Êó±ê¹â±ê
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-	if (PlayerController)
-	{
-		FInputModeUIOnly InputMode;
-		InputMode.SetWidgetToFocus(this->TakeWidget());  // ÉèÖÃµ±Ç° Widget Îª½¹µã
-		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-
-		PlayerController->SetInputMode(InputMode);
-		PlayerController->bShowMouseCursor = true;
-	}
-
-	if (Button1 && Button2 && Button3 && StartButton)
-	{
-		Button1->OnClicked.AddDynamic(this, &URL_CharacterSelectionWidget::OnButton1Clicked);
-		Button2->OnClicked.AddDynamic(this, &URL_CharacterSelectionWidget::OnButton2Clicked);
-		Button3->OnClicked.AddDynamic(this, &URL_CharacterSelectionWidget::OnButton3Clicked);
-		StartButton->OnClicked.AddDynamic(this, &URL_CharacterSelectionWidget::StartGame);
-	}
-}
-
-void URL_CharacterSelectionWidget::NativePreConstruct()
-{
-	Super::NativePreConstruct();
-}
-
-void URL_CharacterSelectionWidget::OnButtonClicked(int32 ButtonIndex, ECharacterType CharacterType, UButton* SelectedButton)
-{
-	ResetButtonStyles();
-
-	// Ñ¡Ôñ½ÇÉ«
-	SelectCharacter(ButtonIndex);
-
-	 // »ñÈ¡ÓÎÏ·ÊµÀı²¢µ÷ÓÃ½Ó¿Úº¯Êı
-	UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(this);
-	if (IRL_GameInstanceInterface* GameInstanceInterface = Cast<IRL_GameInstanceInterface>(GameInstance))
-	{
-		GameInstanceInterface->SetSelectCharacter(CharacterType);
-	}
-
-
-	// ÉèÖÃ°´Å¥µÄÑ¡ÖĞ×´Ì¬Íâ¹Û
-	SetSelectedButtonStyle(SelectedButton);
-}
-
-// ÕâÈı¸öº¯Êıµ÷ÓÃÍ¨ÓÃº¯Êı£¬²¢´«Èë¾ßÌå²ÎÊı
-void URL_CharacterSelectionWidget::OnButton1Clicked()
-{
-	OnButtonClicked(1, ECharacterType::Warrior, Button1);
-}
-
-void URL_CharacterSelectionWidget::OnButton2Clicked()
-{
-	OnButtonClicked(2, ECharacterType::Archer, Button2);
-}
-
-void URL_CharacterSelectionWidget::OnButton3Clicked()
-{
-	OnButtonClicked(3, ECharacterType::Caster, Button3);
-}
-
-void URL_CharacterSelectionWidget::SelectCharacter(int Index)
-{
-	if (CharacterSelection)
-	{
-		CharacterSelection->SelectCharacter(Index);
-	}
-}
-
-void URL_CharacterSelectionWidget::StartGame()
-{
-	// »ñÈ¡ PlayerController
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-	if (PlayerController)
-	{
-		// ÉèÖÃÊäÈëÄ£Ê½ÎªÓÎÏ·Ä£Ê½
-		FInputModeGameOnly InputMode;
-		PlayerController->SetInputMode(InputMode);
-
-		// Òş²ØÊó±ê¹â±ê
-		PlayerController->bShowMouseCursor = false;
-	}
-
-	// ¼ÓÔØ¹Ø¿¨
-	FName LevelName = TEXT("Combat_Practice1"); // Ìæ»»ÎªÄãÏë¼ÓÔØµÄ¹Ø¿¨Ãû
-	UGameplayStatics::OpenLevel(this, LevelName);
-}
-
-void URL_CharacterSelectionWidget::ResetButtonStyles()
-{
-	if (Button1) Button1->SetColorAndOpacity(FLinearColor::White);  // ÉèÖÃÎªÄ¬ÈÏ°×É«
-	if (Button2) Button2->SetColorAndOpacity(FLinearColor::White);  // ÉèÖÃÎªÄ¬ÈÏ°×É«
-	if (Button3) Button3->SetColorAndOpacity(FLinearColor::White);  // ÉèÖÃÎªÄ¬ÈÏ°×É«
-}
-
-void URL_CharacterSelectionWidget::SetSelectedButtonStyle(UButton* SelectedButton)
-{
-	SelectedButton->SetColorAndOpacity(FLinearColor::Blue);
-}
+//void URL_CharacterSelectionWidget::NativeConstruct()
+//{
+//	Super::NativeConstruct();
+//
+//	// è·å– PlayerController å¹¶è®¾ç½® UI æ¨¡å¼å’Œæ˜¾ç¤ºé¼ æ ‡å…‰æ ‡
+//	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+//	if (PlayerController)
+//	{
+//		FInputModeUIOnly InputMode;
+//		InputMode.SetWidgetToFocus(this->TakeWidget());  // è®¾ç½®å½“å‰ Widget ä¸ºç„¦ç‚¹
+//		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+//
+//		PlayerController->SetInputMode(InputMode);
+//		PlayerController->bShowMouseCursor = true;
+//	}
+//
+//	if (Button1 && Button2 && Button3 && StartButton)
+//	{
+//		Button1->OnClicked.AddDynamic(this, &URL_CharacterSelectionWidget::OnButton1Clicked);
+//		Button2->OnClicked.AddDynamic(this, &URL_CharacterSelectionWidget::OnButton2Clicked);
+//		Button3->OnClicked.AddDynamic(this, &URL_CharacterSelectionWidget::OnButton3Clicked);
+//		StartButton->OnClicked.AddDynamic(this, &URL_CharacterSelectionWidget::StartGame);
+//	}
+//}
+//
+//void URL_CharacterSelectionWidget::NativePreConstruct()
+//{
+//	Super::NativePreConstruct();
+//}
+//
+//void URL_CharacterSelectionWidget::OnButtonClicked(int32 ButtonIndex, ECharacterType CharacterType, UButton* SelectedButton)
+//{
+//	ResetButtonStyles();
+//
+//	// é€‰æ‹©è§’è‰²
+//	SelectCharacter(ButtonIndex);
+//
+//	 // è·å–æ¸¸æˆå®ä¾‹å¹¶è°ƒç”¨æ¥å£å‡½æ•°
+//	UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(this);
+//	if (IRL_GameInstanceInterface* GameInstanceInterface = Cast<IRL_GameInstanceInterface>(GameInstance))
+//	{
+//		GameInstanceInterface->SetSelectCharacter(CharacterType);
+//	}
+//
+//
+//	// è®¾ç½®æŒ‰é’®çš„é€‰ä¸­çŠ¶æ€å¤–è§‚
+//	SetSelectedButtonStyle(SelectedButton);
+//}
+//
+//// è¿™ä¸‰ä¸ªå‡½æ•°è°ƒç”¨é€šç”¨å‡½æ•°ï¼Œå¹¶ä¼ å…¥å…·ä½“å‚æ•°
+//void URL_CharacterSelectionWidget::OnButton1Clicked()
+//{
+//	OnButtonClicked(1, ECharacterType::Warrior, Button1);
+//}
+//
+//void URL_CharacterSelectionWidget::OnButton2Clicked()
+//{
+//	OnButtonClicked(2, ECharacterType::Archer, Button2);
+//}
+//
+//void URL_CharacterSelectionWidget::OnButton3Clicked()
+//{
+//	OnButtonClicked(3, ECharacterType::Caster, Button3);
+//}
+//
+//void URL_CharacterSelectionWidget::SelectCharacter(int Index)
+//{
+//	if (CharacterSelection)
+//	{
+//		CharacterSelection->SelectCharacter(Index);
+//	}
+//}
+//
+//void URL_CharacterSelectionWidget::StartGame()
+//{
+//	// è·å– PlayerController
+//	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+//	if (PlayerController)
+//	{
+//		// è®¾ç½®è¾“å…¥æ¨¡å¼ä¸ºæ¸¸æˆæ¨¡å¼
+//		FInputModeGameOnly InputMode;
+//		PlayerController->SetInputMode(InputMode);
+//
+//		// éšè—é¼ æ ‡å…‰æ ‡
+//		PlayerController->bShowMouseCursor = false;
+//	}
+//
+//	// åŠ è½½å…³å¡
+//	FName LevelName = TEXT("Combat_Practice1"); // æ›¿æ¢ä¸ºä½ æƒ³åŠ è½½çš„å…³å¡å
+//	UGameplayStatics::OpenLevel(this, LevelName);
+//}
+//
+//void URL_CharacterSelectionWidget::ResetButtonStyles()
+//{
+//	if (Button1) Button1->SetColorAndOpacity(FLinearColor::White);  // è®¾ç½®ä¸ºé»˜è®¤ç™½è‰²
+//	if (Button2) Button2->SetColorAndOpacity(FLinearColor::White);  // è®¾ç½®ä¸ºé»˜è®¤ç™½è‰²
+//	if (Button3) Button3->SetColorAndOpacity(FLinearColor::White);  // è®¾ç½®ä¸ºé»˜è®¤ç™½è‰²
+//}
+//
+//void URL_CharacterSelectionWidget::SetSelectedButtonStyle(UButton* SelectedButton)
+//{
+//	SelectedButton->SetColorAndOpacity(FLinearColor::Blue);
+//}

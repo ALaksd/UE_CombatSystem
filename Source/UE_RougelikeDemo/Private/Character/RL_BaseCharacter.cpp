@@ -19,7 +19,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "UI/RL_HUD.h"
 #include "Components/CapsuleComponent.h"
-
+#include "System/RL_SavePointSubsystem.h"
 
 
 // Sets default values
@@ -190,7 +190,7 @@ UAnimMontage* ARL_BaseCharacter::GetHitReactMotange_Implementation()
 
 bool ARL_BaseCharacter::isDead_Implementation() const
 {
-	return false;
+	return bIsDead;
 }
 
 AActor* ARL_BaseCharacter::GetAvatar_Implementation()
@@ -200,10 +200,22 @@ AActor* ARL_BaseCharacter::GetAvatar_Implementation()
 
 void ARL_BaseCharacter::Die_Implementation()
 {
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetEnableGravity(true);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	bIsDead = true;
+	OnDead();
+
+	//这里暂时用Timer延迟5秒执行重生
+	FTimerHandle ReStartTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(ReStartTimerHandle,this,&ARL_BaseCharacter::ReStart,5.f,false);
+}
+
+void ARL_BaseCharacter::ReStart()
+{
+	if (URL_SavePointSubsystem* SavePointSubSystem = GetWorld()->GetGameInstance()->GetSubsystem<URL_SavePointSubsystem>())
+	{
+		SavePointSubSystem->TravelToCurrentPoint();
+		bIsDead = false;
+		OnDead();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
 }

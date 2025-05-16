@@ -70,6 +70,7 @@ public:
 	virtual AActor* GetCombatTarget_Implementation()const override;
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual UNiagaraComponent* GetRedAttackNiagaraComponent_Implementation() const override;
+	virtual void SetHealthBarVisible_Implementation(bool bVisible) const override;
 
 	/** End EnemyInterface */
 

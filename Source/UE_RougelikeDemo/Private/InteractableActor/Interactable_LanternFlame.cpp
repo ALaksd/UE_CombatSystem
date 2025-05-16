@@ -15,6 +15,7 @@
 #include <System/RL_UIManagerSubsystem.h>
 
 #include "System/RL_SanitySubsystem.h"
+#include <System/RL_SavePointSubsystem.h>
 
 AInteractable_LanternFlame::AInteractable_LanternFlame()
 {
@@ -30,34 +31,71 @@ AInteractable_LanternFlame::AInteractable_LanternFlame()
 
 void AInteractable_LanternFlame::TryInteract()
 {
-	if (ARL_HUD* RLHUD = Cast<ARL_HUD>(PlayerController->GetHUD()))
+	//如果已经激活则显示UI
+	if (bIsActive)
 	{
-		if (URL_LanternFlameController* LanternFlameWidgetController = RLHUD->GetLanternFlameWidgetController())
+		if (ARL_HUD* RLHUD = Cast<ARL_HUD>(PlayerController->GetHUD()))
 		{
-			// 初始化数据
-			LanternFlameWidgetController->Initialize(SkillList);
-			
-			
-			UGameInstance* GameInstance = GetWorld()->GetGameInstance();
-			if (GameInstance)
+			if (URL_LanternFlameController* LanternFlameWidgetController = RLHUD->GetLanternFlameWidgetController())
 			{
-				if (URL_UIManagerSubsystem* UIManager = GameInstance->GetSubsystem<URL_UIManagerSubsystem>())
+				// 初始化数据
+				LanternFlameWidgetController->Initialize(SkillList);
+
+
+				UGameInstance* GameInstance = GetWorld()->GetGameInstance();
+				if (GameInstance)
 				{
-					WBP_SavePoint = UIManager->AddNewWidget(WBP_SavePointClass, UGameplayStatics::GetPlayerController(this, 0));
+					if (URL_UIManagerSubsystem* UIManager = GameInstance->GetSubsystem<URL_UIManagerSubsystem>())
+					{
+						WBP_SavePoint = UIManager->AddNewWidget(WBP_SavePointClass, UGameplayStatics::GetPlayerController(this, 0));
+					}
 				}
+
+				// 初始化UI
+				WBP_SavePoint->SetWidgetController(LanternFlameWidgetController);
+				LanternFlameWidgetController->BroadcastInitialValue();
+				InitPointName();
+
+				// 回复理智
+				if (URL_SanitySubsystem* SanitySubsystem = GameInstance->GetSubsystem<URL_SanitySubsystem>())
+					SanitySubsystem->RestoreSanityToMax();
+
+				//设置传送点
+				if (URL_SavePointSubsystem* SavePointSubsystem = GameInstance->GetSubsystem<URL_SavePointSubsystem>())
+				{
+					SavePointSubsystem->SetCurrentSavaPoint(GetFName());
+				}
+
 			}
-
-			// 初始化UI
-			WBP_SavePoint->SetWidgetController(LanternFlameWidgetController);
-			LanternFlameWidgetController->BroadcastInitialValue();
-			InitPointName();
-
-			// 回复理智
-			if (URL_SanitySubsystem* SanitySubsystem = GameInstance->GetSubsystem<URL_SanitySubsystem>())
-				SanitySubsystem->RestoreSanityToMax();
-			
 		}
 	}
+	else //没有激活则激活
+	{
+		ActivatePoint();
+	}
+	
+}
+
+void AInteractable_LanternFlame::ActivatePoint()
+{
+	bIsActive = true;
+
+	// 注册存档点数据
+	if (URL_SavePointSubsystem* SaveSystem = GetGameInstance()->GetSubsystem<URL_SavePointSubsystem>())
+	{
+		FSavePointData NewData;
+		NewData.PointID = FName(GetFName());
+		NewData.DisplayName = FText::FromString(LanternFlameName); // 添加自定义显示名称变量
+		NewData.bActive = true;
+		NewData.Location = GetActorLocation();
+		NewData.Rotation = GetActorRotation();
+		NewData.MapName = FName(GetWorld()->GetMapName());
+
+		SaveSystem->RegisterSavePoint(NewData);
+		SaveSystem->SetCurrentSavaPoint(GetFName());
+	}
+
+	OnPointActivaete();
 }
 
 void AInteractable_LanternFlame::BeginPlay()
@@ -68,6 +106,7 @@ void AInteractable_LanternFlame::BeginPlay()
 	SphereCom->OnComponentEndOverlap.AddDynamic(this,&AInteractable_LanternFlame::OnComEndOverlap);
 
 	PlayerController=Cast<ARL_BasePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(),0));
+
 }
 
 void AInteractable_LanternFlame::OnComBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,

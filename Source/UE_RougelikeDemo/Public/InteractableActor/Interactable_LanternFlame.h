@@ -14,6 +14,7 @@ class USphereComponent;
  * 存档点
  */
 
+//DECLARE_DELEGATE_OneParam()
 UCLASS()
 class UE_ROUGELIKEDEMO_API AInteractable_LanternFlame : public AInteractable_Base
 {
@@ -42,6 +43,13 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void InitPointName();
 	
+protected:
+	void ActivatePoint();
+
+
+	//蓝图实现事件，在ActivatePoint里调用，用于设置激活特效等以及弹出UI等
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPointActivaete();
 private:
 	virtual void BeginPlay() override;
 
@@ -55,4 +63,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<ARL_BasePlayerController> PlayerController;
+
+	//是否激活
+	bool bIsActive;
 };

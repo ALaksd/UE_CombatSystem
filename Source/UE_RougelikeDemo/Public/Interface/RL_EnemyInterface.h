@@ -31,4 +31,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UNiagaraComponent* GetRedAttackNiagaraComponent() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetHealthBarVisible(bool bVisible) const;
 };
