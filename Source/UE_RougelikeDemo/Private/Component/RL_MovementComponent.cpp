@@ -178,6 +178,7 @@ void URL_MovementComponent::Collect(const FInputActionValue& Value)
 		if (InteractableActor)
 		{
 			InteractableActor->TryInteract();
+			ownerCharacter->GetMovementComponent()->Velocity = FVector::ZeroVector;
 		}
 	}
 }
