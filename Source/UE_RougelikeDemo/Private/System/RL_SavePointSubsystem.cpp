@@ -3,6 +3,10 @@
 
 #include "System/RL_SavePointSubsystem.h"
 #include <RL_CharacterSelectionWidget.cpp>
+#include "InteractableActor/Interactable_LanternFlame.h"
+#include <System/RL_UIManagerSubsystem.h>
+#include <Player/RL_PlayerState.h>
+#include "GameFramework/Character.h"
 
 void URL_SavePointSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -48,11 +52,43 @@ void URL_SavePointSubsystem::TravelToSavePoint(const FName& TargetPointID)
 		FString Options = FString::Printf(TEXT("?SavePointID=%s"), *TargetPointID.ToString());
 		UGameplayStatics::OpenLevel(World, TargetData.MapName, true, Options);
 	}
+	
+	Reset(TargetData);
 }
 
 void URL_SavePointSubsystem::TravelToCurrentPoint()
 {
 	TravelToSavePoint(CurrentSavePointID);
+}
+
+void URL_SavePointSubsystem::Reset(const FSavePointData& SavePointData)
+{
+	//重置生成敌人
+	ResetEnemy(SavePointData);
+
+	//重置属性
+	ResetAttributes();	
+
+	//重置血瓶数量，调用仓库System的函数
+}
+
+void URL_SavePointSubsystem::ResetEnemy(const FSavePointData& SavePointData)
+{
+	if (SavePointData.LanternFlamePtr)
+	{
+		SavePointData.LanternFlamePtr->ResetEnemySpawn();
+	}
+}
+
+
+void URL_SavePointSubsystem::ResetAttributes()
+{
+	ARL_PlayerState* PlayerState = Cast<ARL_PlayerState>(UGameplayStatics::GetPlayerCharacter(this, 0)->GetPlayerState());
+	if (PlayerState)
+	{
+		PlayerState->ResetAttribute();
+	}
+
 }
 
 void URL_SavePointSubsystem::HandlePostLoadMap(UWorld* LoadedWorld)

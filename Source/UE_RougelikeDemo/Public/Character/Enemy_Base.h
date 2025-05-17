@@ -102,6 +102,11 @@ public:
 	
 	FORCEINLINE UStaticMeshComponent* GetWeaponStaticComponnent() { return WeaponStaticMeshComponent; }
 	FORCEINLINE UNiagaraComponent* GetNiagaraComponent() { return RedAttackNiagaraComponent; }
+
+	/** Spawner */
+
+	//设置巡逻点
+	void InitializePatrol(USplineComponent* NewPatrolSpline);
 	
 protected:
 	// 蹒跚时间
@@ -131,10 +136,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<AActor> TargetActor;
-
-	//样条线组件，用于巡逻
-	UPROPERTY(VisibleAnywhere, Category = "AI|Patrol")
-	TObjectPtr<USplineComponent> PatrolSpline;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<UStaticMeshComponent> WeaponStaticMeshComponent;

@@ -69,6 +69,9 @@ public:
 	inline virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override{return AbilitySystemComponent;}
 	inline UAttributeSet* GetAttributeSet() const{return AttributeSet;}
 
+	//重置属性
+	void ResetAttribute();
+
 
 protected:
 	virtual void PostInitializeComponents()override;
@@ -108,6 +111,10 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")
 	TObjectPtr<UDataTable>LevelUpInfo;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")
+	TSubclassOf<UGameplayEffect> InitializeAttributeEffect;
+
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void UnBindAllDelegates();

@@ -48,16 +48,24 @@ void URL_EnemyMovementComponent::InitializeComponent()
 
 
 
+void URL_EnemyMovementComponent::InitializePatrolPoints(USplineComponent* NewSpline)
+{
+	PatrolSpline = NewSpline;
+	PatrolPoints.Empty();
+	const int32 NumPoints = PatrolSpline->GetNumberOfSplinePoints();
+
+	for (int32 i = 0; i < NumPoints; ++i)
+	{
+		PatrolPoints.Add(PatrolSpline->GetLocationAtSplinePoint(
+			i,
+			ESplineCoordinateSpace::World // 使用世界坐标系
+		));
+	}
+}
+
 void URL_EnemyMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//初始化路径点数组
-	for (int32 i = 0; i < PatrolSpline->GetNumberOfSplinePoints(); i++)
-	{
-		PatrolPoints.Add(PatrolSpline->GetWorldLocationAtSplinePoint(i));
-	}
-	
 }
 
 FTransform URL_EnemyMovementComponent::GetWeaopnSocketTransform()
