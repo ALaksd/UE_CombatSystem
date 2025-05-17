@@ -13,9 +13,12 @@
 #include "UI/Widget/RL_UserWidget.h"
 #include "UI/WidgetController/RL_LanternFlameController.h"
 #include <System/RL_UIManagerSubsystem.h>
-
-#include "System/RL_SanitySubsystem.h"
 #include <System/RL_SavePointSubsystem.h>
+#include "System/RL_SanitySubsystem.h"
+
+#include "Components/BoxComponent.h"
+#include <Interface/RL_PlayerInterface.h>
+#include "Spawner/RL_EnemySpawnPoint.h"
 
 AInteractable_LanternFlame::AInteractable_LanternFlame()
 {
@@ -26,6 +29,14 @@ AInteractable_LanternFlame::AInteractable_LanternFlame()
 
 	StaticMeshCom = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	StaticMeshCom->SetupAttachment(SphereCom);
+
+	Box = CreateDefaultSubobject<UBoxComponent>("Box");
+	Box->SetupAttachment(GetRootComponent());
+
+	Box->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // 设置碰撞
+	Box->SetCollisionObjectType(ECC_WorldStatic);
+	Box->SetCollisionResponseToAllChannels(ECR_Ignore); // 对所有通道响应为 Overlap
+	Box->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	
 }
 
@@ -40,7 +51,6 @@ void AInteractable_LanternFlame::TryInteract()
 			{
 				// 初始化数据
 				LanternFlameWidgetController->Initialize(SkillList);
-
 
 				UGameInstance* GameInstance = GetWorld()->GetGameInstance();
 				if (GameInstance)
@@ -77,6 +87,19 @@ void AInteractable_LanternFlame::TryInteract()
 	
 }
 
+void AInteractable_LanternFlame::ResetEnemySpawn()
+{
+	for (auto EnemyPoint : SpawnPoints)
+	{
+		if (EnemyPoint)
+		{
+			EnemyPoint->DestroyEnemy();
+		}
+	}
+	bSpawned = false;
+	Box->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // 设置碰撞
+}
+
 void AInteractable_LanternFlame::ActivatePoint()
 {
 	bIsActive = true;
@@ -88,15 +111,34 @@ void AInteractable_LanternFlame::ActivatePoint()
 		NewData.PointID = FName(GetFName());
 		NewData.DisplayName = FText::FromString(LanternFlameName); // 添加自定义显示名称变量
 		NewData.bActive = true;
-		NewData.Location = GetActorLocation();
+		NewData.Location = FVector(GetActorLocation().X,GetActorLocation().Y,GetActorLocation().Z + 150.f);
 		NewData.Rotation = GetActorRotation();
 		NewData.MapName = FName(GetWorld()->GetMapName());
+		NewData.LanternFlamePtr = this;
 
 		SaveSystem->RegisterSavePoint(NewData);
 		SaveSystem->SetCurrentSavaPoint(GetFName());
 	}
 
 	OnPointActivaete();
+}
+
+void AInteractable_LanternFlame::OnBoxOverlap(UPrimitiveComponent* OverlapedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!OtherActor->Implements<URL_PlayerInterface>()) return;
+
+	if (!bSpawned)
+	{
+		for (ARL_EnemySpawnPoint* SpawnPoint : SpawnPoints)
+		{
+			if (IsValid(SpawnPoint))
+			{
+				SpawnPoint->SpawnEnemy();
+			}
+		}
+	}
+	bSpawned = true;
+	Box->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AInteractable_LanternFlame::BeginPlay()
@@ -107,6 +149,8 @@ void AInteractable_LanternFlame::BeginPlay()
 	SphereCom->OnComponentEndOverlap.AddDynamic(this,&AInteractable_LanternFlame::OnComEndOverlap);
 
 	PlayerController=Cast<ARL_BasePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(),0));
+
+	Box->OnComponentBeginOverlap.AddDynamic(this, &AInteractable_LanternFlame::OnBoxOverlap);
 
 }
 

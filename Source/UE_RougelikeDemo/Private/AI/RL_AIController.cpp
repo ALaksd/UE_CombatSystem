@@ -59,10 +59,10 @@ void ARL_AIController::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 	if (Stimulus.WasSuccessfullySensed() && Actor->ActorHasTag("Player"))
 	{
 		GetBlackboardComponent()->SetValueAsBool(FName("bFindTarget"), true);
-	/*	if (Actor->Implements<URL_EnemyInterface>())
+		if (GetPawn()->Implements<URL_EnemyInterface>())
 		{
-			IRL_EnemyInterface::Execute_SetHealthBarVisible(Actor,true);
-		}*/
+			IRL_EnemyInterface::Execute_SetHealthBarVisible(GetPawn(),true);
+		}
 	}
 	//else
 	//{

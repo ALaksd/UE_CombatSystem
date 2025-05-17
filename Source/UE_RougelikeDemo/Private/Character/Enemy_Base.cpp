@@ -11,7 +11,6 @@
 #include <UI/Widget/RL_UserWidget.h>
 #include "Components/WidgetComponent.h"
 #include "Component/RL_EnemyMovementComponent.h"
-#include "Components/SplineComponent.h"
 #include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
@@ -36,8 +35,6 @@ AEnemy_Base::AEnemy_Base()
 	RedAttackNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("RedAttackNiagaraComponent");
 	RedAttackNiagaraComponent->SetupAttachment(GetMesh());
 
-	PatrolSpline = CreateDefaultSubobject<USplineComponent>("PatrolSpline");
-	PatrolSpline->SetupAttachment(GetRootComponent());
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -242,6 +239,15 @@ void AEnemy_Base::Staggered()
 
 		RemoveTag(FName("EnemyState.Staggered"));
 	},StaggeredTime,false);
+}
+
+
+void AEnemy_Base::InitializePatrol(USplineComponent* NewPatrolSpline)
+{
+	if (URL_EnemyMovementComponent* MovementComp = FindComponentByClass<URL_EnemyMovementComponent>())
+	{
+		MovementComp->InitializePatrolPoints(NewPatrolSpline);
+	}
 }
 
 void AEnemy_Base::BeginPlay()

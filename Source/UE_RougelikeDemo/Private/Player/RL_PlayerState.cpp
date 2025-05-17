@@ -66,6 +66,22 @@ void ARL_PlayerState::UnBindAllDelegates()
 	OnSoulChanged.RemoveAll(this);
 }
 
+void ARL_PlayerState::ResetAttribute()
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	if (ASC && InitializeAttributeEffect)
+	{
+		FGameplayEffectContextHandle Context = ASC->MakeEffectContext();
+		FGameplayEffectSpecHandle Spec = ASC->MakeOutgoingSpec(InitializeAttributeEffect, 1.f, Context);
+
+		if (Spec.IsValid())
+		{
+			ASC->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
+		}
+	}
+
+}
+
 void ARL_PlayerState::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();

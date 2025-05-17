@@ -32,6 +32,8 @@ struct FSavePointData
 
 	UPROPERTY(BlueprintReadWrite)
 	FName MapName;
+
+	TObjectPtr<class AInteractable_LanternFlame> LanternFlamePtr;
 };
  
 UCLASS()
@@ -60,6 +62,14 @@ public:
 
 	UFUNCTION()
 	FORCEINLINE void SetCurrentSavaPoint(FName PointID) {CurrentSavePointID = PointID;}
+
+	/** 重置状态 */
+	UFUNCTION(BlueprintCallable)
+	void Reset(const FSavePointData& SavePointData);
+
+	void ResetEnemy(const FSavePointData& SavePointData);
+
+	void ResetAttributes();
 
 private:
 	UPROPERTY()
