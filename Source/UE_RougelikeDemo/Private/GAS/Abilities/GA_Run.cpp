@@ -2,7 +2,7 @@
 
 
 #include "GAS/Abilities/GA_Run.h"
-
+#include "AbilitySystemComponent.h"
 #include "Component/RL_MovementComponent.h"
 
 UGA_Run::UGA_Run()
@@ -18,7 +18,13 @@ void UGA_Run::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 	{
 		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 		ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->UpdateMovementState(EMovementState::Running);
+
+		UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
+		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+		FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(GE_RunCost, 1.f, EffectContextHandle);
+		ActiveRunConstHandle = ASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
 	}
+		
 }
 
 void UGA_Run::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -32,5 +38,7 @@ void UGA_Run::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGame
 {
 	Super::InputReleased(Handle, ActorInfo, ActivationInfo);
 	ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->UpdateMovementState(EMovementState::Jogging);
+	UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
+	ASC->RemoveActiveGameplayEffect(ActiveRunConstHandle);
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }

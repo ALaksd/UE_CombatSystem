@@ -405,13 +405,12 @@ void URL_MovementComponent::FindLockOnTarget()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(ownerCharacter);
 
-	float SearchRadius = 2000.0f;
 	bool bHit = GetWorld()->OverlapMultiByChannel(
 		Overlaps,
 		ownerCharacter->GetActorLocation(),
 		FQuat::Identity,
 		ECC_Enemy,
-		FCollisionShape::MakeSphere(SearchRadius),
+		FCollisionShape::MakeSphere(LockOnRadius),
 		Params
 	);
 
@@ -465,6 +464,115 @@ void URL_MovementComponent::FindLockOnTarget()
 			ownerCharacter->Tags.Remove(PlayerLockingTag);
 		}
 	}
+
+	DebugLockOnTargets(TargetScreenDistances);
+}
+
+void URL_MovementComponent::DebugLockOnTargets(TArray<TPair<AActor*, float>>& TargetScreenDistances)
+{
+	if (!GetWorld() || !ownerCharacter) return;
+
+	// 调试绘制参数
+	const float DebugDuration = 0.0f; // 持续到下一帧
+	const int32 Segments = 48;        // 圆环精度
+	const FColor SearchAreaColor(0, 255, 0, 100); // 半透明绿色
+
+	// 1. 绘制搜索范围球体
+	DrawDebugSphere(
+		GetWorld(),
+		ownerCharacter->GetActorLocation(),
+		LockOnRadius,
+		Segments,
+		SearchAreaColor,
+		false,
+		DebugDuration
+	);
+
+	// 2. 绘制屏幕中心标记
+	if (playerController)
+	{
+		int32 ViewportX, ViewportY;
+		playerController->GetViewportSize(ViewportX, ViewportY);
+
+		// 将屏幕中心转换为世界空间
+		FVector WorldDirection;
+		FVector WorldLocation;
+		playerController->DeprojectScreenPositionToWorld(
+			ViewportX * 0.5f,
+			ViewportY * 0.5f,
+			WorldLocation,
+			WorldDirection
+		);
+
+		// 绘制从摄像机向前的射线
+		FVector RayEnd = WorldLocation + WorldDirection * LockOnRadius;
+		DrawDebugLine(
+			GetWorld(),
+			WorldLocation,
+			RayEnd,
+			FColor::Yellow,
+			false,
+			DebugDuration
+		);
+	}
+
+	// 3. 绘制所有候选目标
+	for (const auto& Pair : TargetScreenDistances)
+	{
+		if (AActor* Target = Pair.Key)
+		{
+			// 绘制目标包围盒
+			DrawDebugBox(
+				GetWorld(),
+				Target->GetActorLocation(),
+				FVector(50, 50, 50),
+				FColor::Cyan,
+				false,
+				DebugDuration
+			);
+
+			// 连线到玩家
+			DrawDebugLine(
+				GetWorld(),
+				ownerCharacter->GetActorLocation(),
+				Target->GetActorLocation(),
+				FColor(0, 255, 255, 128), // 半透明青色
+				false,
+				DebugDuration
+			);
+
+			// 显示调试信息
+			const FString DebugText = FString::Printf(TEXT("%s\nDistance: %.1f"),
+				*Target->GetName(), Pair.Value);
+			DrawDebugString(
+				GetWorld(),
+				Target->GetActorLocation() + FVector(0, 0, 100),
+				DebugText,
+				nullptr,
+				FColor::White,
+				DebugDuration
+			);
+		}
+	}
+
+	// 4. 高亮当前锁定目标
+	if (CurrentTarget)
+	{
+		DrawDebugSphere(
+			GetWorld(),
+			CurrentTarget->GetActorLocation(),
+			100.0f,
+			16,
+			FColor::Red,
+			false,
+			DebugDuration
+		);
+
+		// 输出到日志
+		UE_LOG(LogTemp, Warning, TEXT("Locked Target: %s"),
+			*CurrentTarget->GetName());
+	}
+
 }
 
 void URL_MovementComponent::UpdateLockOnRotation(float DeltaTime)
