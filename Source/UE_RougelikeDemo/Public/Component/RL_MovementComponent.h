@@ -194,7 +194,7 @@ private:
 	int32 CurrentTargetIndex;
 	
 	UPROPERTY(EditAnywhere, Category = "LockOn")
-	float LockOnRadius = 2000.f;
+	float LockOnRadius = 1000.f;
 
 	UPROPERTY(EditAnywhere, Category = "LockOn")
 	FName LockableTag = FName("Lockable");

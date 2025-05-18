@@ -406,7 +406,8 @@ void URL_MovementComponent::FindLockOnTarget()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(ownerCharacter);
 
-	bool bHit = GetWorld()->OverlapMultiByChannel(
+
+	 bool bHit = GetWorld()->OverlapMultiByChannel(
 		Overlaps,
 		ownerCharacter->GetActorLocation(),
 		FQuat::Identity,
