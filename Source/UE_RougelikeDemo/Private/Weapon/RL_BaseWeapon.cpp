@@ -11,6 +11,7 @@
 #include "UE_RougelikeDemo/InventorySystem/RLItemFragment_EquipDynamicData.h"
 #include "UE_RougelikeDemo/InventorySystem/Fragments/RLItemFragment_WeaponLevelData.h"
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryItemInstance.h"
+#include "UE_RougelikeDemo/UE_RougelikeDemo.h"
 
 // Sets default values
 ARL_BaseWeapon::ARL_BaseWeapon()
@@ -89,23 +90,26 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 			TArray<FHitResult> OutHits;
 			TArray<AActor*> ActorsToIgnore;
 			ActorsToIgnore.Add(WeaponOwner);
-			UKismetSystemLibrary::LineTraceMultiForObjects(GetWorld(),Start,End,ObjectTypes,false,ActorsToIgnore,DrawDebugType,OutHits,true,TraceColor,TraceHitColor,DrawTime);
+			//bool bHit = UKismetSystemLibrary::LineTraceMultiForObjects(GetWorld(),Start,End,ObjectTypes,false,ActorsToIgnore,DrawDebugType,OutHits,true,TraceColor,TraceHitColor,DrawTime);
+			bool bHit = GetWorld()->LineTraceMultiByChannel(OutHits, Start, End, ECC_Enemy);
 
-			//DrawDebugLine(GetWorld(),CurrentPoints[0],CurrentPoints[4],FColor::Red,false,DrawTime);
-			for (int j=0;j<OutHits.Num();j++)
+			if (bHit)
 			{
-				AActor* HitActor = OutHits[j].GetActor();
-				//GEngine->AddOnScreenDebugMessage(-1,0.1,FColor::Red,FString::Printf(TEXT("%s"),*HitActor->GetName()));
-				
-				 if (!HitActors.Contains(HitActor))//此Actor没被检测过
-				 {
-				 	HitActors.Add(HitActor);
-				 	//执行伤害逻辑
-				 	if (IRL_DamageInterface* DamageInterface = Cast<IRL_DamageInterface>(HitActor))
-				 	{
-				 		DamageInterface->TakeDamage(DamageSpecHandle);
-				 	}
-				 }
+				for (int j = 0; j < OutHits.Num(); j++)
+				{
+					AActor* HitActor = OutHits[j].GetActor();
+					//GEngine->AddOnScreenDebugMessage(-1,0.1,FColor::Red,FString::Printf(TEXT("%s"),*HitActor->GetName()));
+
+					if (!HitActors.Contains(HitActor))//此Actor没被检测过
+					{
+						HitActors.Add(HitActor);
+						//执行伤害逻辑
+						if (IRL_DamageInterface* DamageInterface = Cast<IRL_DamageInterface>(HitActor))
+						{
+							DamageInterface->TakeDamage(DamageSpecHandle);
+						}
+					}
+				}
 			}
 		}
 		SetLastPointsLocation();

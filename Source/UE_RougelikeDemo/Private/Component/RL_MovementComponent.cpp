@@ -4,6 +4,7 @@
 #include "Character/Enemy_Base.h"
 #include "Character/RL_BaseCharacter.h"
 #include "Component/RL_InputBufferComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Engine/OverlapResult.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -354,6 +355,29 @@ void URL_MovementComponent::RemoveInteractableActor()
 	InteractableActor=nullptr;
 }
 
+void URL_MovementComponent::DisableAllInput()
+{
+	
+	UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
+		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
+	if (InputSubsystem && BaseIMC && MoveIMC)
+	{
+		InputSubsystem->RemoveMappingContext(BaseIMC);
+		InputSubsystem->RemoveMappingContext(MoveIMC);
+	}
+}
+
+void URL_MovementComponent::EnableAllInput()
+{
+	UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
+		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
+	if (InputSubsystem && BaseIMC && MoveIMC)
+	{
+		InputSubsystem->AddMappingContext(BaseIMC, 0);
+		InputSubsystem->AddMappingContext(MoveIMC, 1);
+	}
+}
+
 void URL_MovementComponent::LMBInputPressedTest(FGameplayTag InputTag)
 {
 	//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Pressed")));
@@ -378,16 +402,31 @@ void URL_MovementComponent::ToggleLockOn()
 {
 	if (ownerCharacter->Tags.Contains(PlayerLockingTag))
 	{
-		ownerCharacter->Tags.Remove(PlayerLockingTag);
-		characterMovement->bOrientRotationToMovement = true; // 是否朝向移动方向
-		characterMovement->bUseControllerDesiredRotation = false; // 允许控制器控制旋转
-		CurrentTarget = nullptr;
+		CancelLockOn();
 	}
 	else
 	{
 		characterMovement->bOrientRotationToMovement = false; // 是否朝向移动方向
 		characterMovement->bUseControllerDesiredRotation = true; // 允许控制器控制旋转
 		FindLockOnTarget();
+	}
+}
+
+void URL_MovementComponent::CancelLockOn()
+{
+	//取消锁定
+	ownerCharacter->Tags.Remove(PlayerLockingTag);
+	CurrentTarget = nullptr;
+
+	characterMovement->bOrientRotationToMovement = true; // 是否朝向移动方向
+	characterMovement->bUseControllerDesiredRotation = false; // 允许控制器控制旋转
+
+	//取消摄像机延迟
+	USpringArmComponent* SpringArm = ownerCharacter->FindComponentByClass<USpringArmComponent>();
+	if (SpringArm)
+	{
+		SpringArm->bEnableCameraLag = false;
+		SpringArm->bEnableCameraRotationLag = false;
 	}
 }
 
@@ -406,7 +445,8 @@ void URL_MovementComponent::FindLockOnTarget()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(ownerCharacter);
 
-	bool bHit = GetWorld()->OverlapMultiByChannel(
+
+	 bool bHit = GetWorld()->OverlapMultiByChannel(
 		Overlaps,
 		ownerCharacter->GetActorLocation(),
 		FQuat::Identity,
@@ -455,6 +495,14 @@ void URL_MovementComponent::FindLockOnTarget()
 		if (!ownerCharacter->Tags.Contains(PlayerLockingTag))
 		{
 			ownerCharacter->Tags.Add(PlayerLockingTag);
+
+			//启用摄像机延迟
+			USpringArmComponent* SpringArm = ownerCharacter->FindComponentByClass<USpringArmComponent>();
+			if (SpringArm)
+			{
+				SpringArm->bEnableCameraLag = true;
+				SpringArm->bEnableCameraRotationLag = true;
+			}
 		}
 	}
 	else
@@ -465,132 +513,39 @@ void URL_MovementComponent::FindLockOnTarget()
 			ownerCharacter->Tags.Remove(PlayerLockingTag);
 		}
 	}
-
-	DebugLockOnTargets(TargetScreenDistances);
-}
-
-void URL_MovementComponent::DebugLockOnTargets(TArray<TPair<AActor*, float>>& TargetScreenDistances)
-{
-	if (!GetWorld() || !ownerCharacter) return;
-
-	// 调试绘制参数
-	const float DebugDuration = 0.0f; // 持续到下一帧
-	const int32 Segments = 48;        // 圆环精度
-	const FColor SearchAreaColor(0, 255, 0, 100); // 半透明绿色
-
-	// 1. 绘制搜索范围球体
-	DrawDebugSphere(
-		GetWorld(),
-		ownerCharacter->GetActorLocation(),
-		LockOnRadius,
-		Segments,
-		SearchAreaColor,
-		false,
-		DebugDuration
-	);
-
-	// 2. 绘制屏幕中心标记
-	if (playerController)
-	{
-		int32 ViewportX, ViewportY;
-		playerController->GetViewportSize(ViewportX, ViewportY);
-
-		// 将屏幕中心转换为世界空间
-		FVector WorldDirection;
-		FVector WorldLocation;
-		playerController->DeprojectScreenPositionToWorld(
-			ViewportX * 0.5f,
-			ViewportY * 0.5f,
-			WorldLocation,
-			WorldDirection
-		);
-
-		// 绘制从摄像机向前的射线
-		FVector RayEnd = WorldLocation + WorldDirection * LockOnRadius;
-		DrawDebugLine(
-			GetWorld(),
-			WorldLocation,
-			RayEnd,
-			FColor::Yellow,
-			false,
-			DebugDuration
-		);
-	}
-
-	// 3. 绘制所有候选目标
-	for (const auto& Pair : TargetScreenDistances)
-	{
-		if (AActor* Target = Pair.Key)
-		{
-			// 绘制目标包围盒
-			DrawDebugBox(
-				GetWorld(),
-				Target->GetActorLocation(),
-				FVector(50, 50, 50),
-				FColor::Cyan,
-				false,
-				DebugDuration
-			);
-
-			// 连线到玩家
-			DrawDebugLine(
-				GetWorld(),
-				ownerCharacter->GetActorLocation(),
-				Target->GetActorLocation(),
-				FColor(0, 255, 255, 128), // 半透明青色
-				false,
-				DebugDuration
-			);
-
-			// 显示调试信息
-			const FString DebugText = FString::Printf(TEXT("%s\nDistance: %.1f"),
-				*Target->GetName(), Pair.Value);
-			DrawDebugString(
-				GetWorld(),
-				Target->GetActorLocation() + FVector(0, 0, 100),
-				DebugText,
-				nullptr,
-				FColor::White,
-				DebugDuration
-			);
-		}
-	}
-
-	// 4. 高亮当前锁定目标
-	if (CurrentTarget)
-	{
-		DrawDebugSphere(
-			GetWorld(),
-			CurrentTarget->GetActorLocation(),
-			100.0f,
-			16,
-			FColor::Red,
-			false,
-			DebugDuration
-		);
-
-		// 输出到日志
-		UE_LOG(LogTemp, Warning, TEXT("Locked Target: %s"),
-			*CurrentTarget->GetName());
-	}
-
 }
 
 void URL_MovementComponent::UpdateLockOnRotation(float DeltaTime)
 {
 	if (!ownerCharacter->Tags.Contains(PlayerLockingTag) || !CurrentTarget) return;
+	if (!CurrentTarget->Implements<URL_CombatInterface>()) return;
+
+	//敌人死亡
+	if (IRL_CombatInterface::Execute_isDead(CurrentTarget))
+	{
+		CancelLockOn();
+		return;
+
+	}
 
 	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(ownerCharacter->GetActorLocation(), CurrentTarget->GetActorLocation());
 	FRotator TargetRotation(0.f, LookAtRotation.Yaw, 0.f);
 
 	FRotator NewRotation = FMath::RInterpTo(ownerCharacter->GetActorRotation(), TargetRotation, DeltaTime, 10.f);
 	ownerCharacter->SetActorRotation(NewRotation);
-	
+
 	AController* Controller = ownerCharacter->GetController();
 	if (Controller)
 	{
-		Controller->SetControlRotation(TargetRotation);
+		Controller->SetControlRotation(TargetRotation + RotatorOffest);
 	}
+
+	// 调试绘制
+#if ENABLE_DRAW_DEBUG
+	const FVector TargetLocation = CurrentTarget->GetActorLocation() + FVector(0, 0, 80.f); // 目标高
+	DrawDebugSphere(GetWorld(), TargetLocation, 30, 12, FColor::Red);
+	DrawDebugLine(GetWorld(), ownerCharacter->GetActorLocation(), TargetLocation, FColor::Green);
+#endif
 }
 
 void URL_MovementComponent::SwitchTargetLeft()

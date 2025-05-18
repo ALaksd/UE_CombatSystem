@@ -25,11 +25,11 @@ void UBTService_SkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		Blackboard->SetValueAsBool(bBroken.SelectedKeyName, false);
 	}
 
-	// 仅当无当前状态时选择新动作
-	if (Blackboard->GetValueAsEnum(CurrentActionState.SelectedKeyName) == static_cast<uint8>(EEnemyActionState::None))
-	{
-		ChooseNewBaseAction(OwnerComp);
-	}
+	//// 仅当无当前状态时选择新动作
+	//if (Blackboard->GetValueAsEnum(CurrentActionState.SelectedKeyName) == static_cast<uint8>(EEnemyActionState::None))
+	//{
+	//	ChooseNewBaseAction(OwnerComp);
+	//}
 	
 }
 
