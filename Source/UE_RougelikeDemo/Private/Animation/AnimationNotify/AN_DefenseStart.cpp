@@ -9,10 +9,11 @@ void UAN_DefenseStart::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBas
 	ARL_BaseCharacter* Character = Cast<ARL_BaseCharacter>(MeshComp->GetOwner());
 	if (Character)
 	{
-		UAbilitySystemComponent* ASC = Character->FindComponentByClass<UAbilitySystemComponent>();
+		UAbilitySystemComponent* ASC = Character->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>();
 		if (ASC)
 		{
 			ASC->AddLooseGameplayTag(Tag);
+			ASC->SetTagMapCount(Tag, 1);
 			UE_LOG(LogTemp, Log, TEXT("Invincibility Tag Added"));
 		}
 	}

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UI/WidgetController/RL_WidgetController.h"
+#include "System/RL_SavePointSubsystem.h"
 #include "RL_LanternFlameController.generated.h"
 
 /**
@@ -19,10 +20,12 @@ private:
 	UPROPERTY()
 	TObjectPtr<UDataTable> SkillList;
 
+	//当前传送点数据
+	FSavePointData CurrentSavePointData;
+
 public:
 	void Initialize(UDataTable* SkillList_T);
 
 	UFUNCTION(BlueprintCallable)
 	UDataTable* GetSkillList();
-		
 };

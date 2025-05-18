@@ -20,12 +20,13 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category = "Attribute")
 	FGameplayAttributeData Stamina;
 	ATTRIBUTE_ACCESSORS(UAS_Enemy, Stamina);
-	
-private:
+
 	//韧性
 	UPROPERTY(EditDefaultsOnly,Category = "Attribute")
 	FGameplayAttributeData Resilience;
 	ATTRIBUTE_ACCESSORS(UAS_Enemy, Resilience);
+private:
+	
 	//韧性最大值
 	UPROPERTY(EditDefaultsOnly,Category = "Attribute")
 	FGameplayAttributeData MaxResilience;
@@ -47,5 +48,6 @@ private:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)override;
 	//属性修改后调用
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)override;
-	
+
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 };

@@ -14,53 +14,53 @@ UCLASS()
 class UE_ROUGELIKEDEMO_API URL_CharacterSelectionWidget : public UUserWidget
 {
 	GENERATED_BODY()
-protected:
-	virtual void NativeConstruct() override;
-	// »òÕßÓÃ NativePreConstruct() º¯Êı
-	virtual void NativePreConstruct() override;
-
-
-
+//protected:
+//	virtual void NativeConstruct() override;
+//	// æˆ–è€…ç”¨ NativePreConstruct() å‡½æ•°
+//	virtual void NativePreConstruct() override;
+//
+//
+//
 public:
-	//Ö¸Ïò½ÇÉ«Ñ¡ÔñÆ÷µÄÖ¸Õë
+	//æŒ‡å‘è§’è‰²é€‰æ‹©å™¨çš„æŒ‡é’ˆ
 	class ARL_PlayerSpawner* CharacterSelection;
-protected:
-	// °ó¶¨°´Å¥
-	UPROPERTY(meta = (BindWidget))
-	class UButton* Button1;
-
-	UPROPERTY(meta = (BindWidget))
-	class UButton* Button2;
-
-	UPROPERTY(meta = (BindWidget))
-	class UButton* Button3;
-
-	//¿ªÊ¼ÓÎÏ·°´Å¥
-	UPROPERTY(meta = (BindWidget))
-	class UButton* StartButton;
-
-	//µã»÷°´Å¥Ö´ĞĞµÄÊÂ¼ş
-	void OnButtonClicked(int32 ButtonIndex, ECharacterType CharacterType, UButton* SelectedButton);
-
-	//ÓÃÓÚ°ó¶¨µÄ°´Å¥º¯Êı
-	UFUNCTION()
-	void OnButton1Clicked();
-	UFUNCTION()
-	void OnButton2Clicked();
-	UFUNCTION()
-	void OnButton3Clicked();
-
-	//Ñ¡Ôñ½ÇÉ«
-	UFUNCTION(BlueprintCallable)
-	void SelectCharacter(int Index);
-
-	//¿ªÊ¼ÓÎÏ·
-	UFUNCTION()
-	void StartGame();
-
-	//ÖØÖÃ°´Å¥ÑùÊ½
-	void ResetButtonStyles();
-
-	//ÉèÖÃ°´Å¥ÑùÊ½
-	void SetSelectedButtonStyle(UButton* SelectedButton);
+//protected:
+//	// ç»‘å®šæŒ‰é’®
+//	UPROPERTY(meta = (BindWidget))
+//	class UButton* Button1;
+//
+//	UPROPERTY(meta = (BindWidget))
+//	class UButton* Button2;
+//
+//	UPROPERTY(meta = (BindWidget))
+//	class UButton* Button3;
+//
+//	//å¼€å§‹æ¸¸æˆæŒ‰é’®
+//	UPROPERTY(meta = (BindWidget))
+//	class UButton* StartButton;
+//
+//	//ç‚¹å‡»æŒ‰é’®æ‰§è¡Œçš„äº‹ä»¶
+//	void OnButtonClicked(int32 ButtonIndex, ECharacterType CharacterType, UButton* SelectedButton);
+//
+//	//ç”¨äºç»‘å®šçš„æŒ‰é’®å‡½æ•°
+//	UFUNCTION()
+//	void OnButton1Clicked();
+//	UFUNCTION()
+//	void OnButton2Clicked();
+//	UFUNCTION()
+//	void OnButton3Clicked();
+//
+//	//é€‰æ‹©è§’è‰²
+//	UFUNCTION(BlueprintCallable)
+//	void SelectCharacter(int Index);
+//
+//	//å¼€å§‹æ¸¸æˆ
+//	UFUNCTION()
+//	void StartGame();
+//
+//	//é‡ç½®æŒ‰é’®æ ·å¼
+//	void ResetButtonStyles();
+//
+//	//è®¾ç½®æŒ‰é’®æ ·å¼
+//	void SetSelectedButtonStyle(UButton* SelectedButton);
 };

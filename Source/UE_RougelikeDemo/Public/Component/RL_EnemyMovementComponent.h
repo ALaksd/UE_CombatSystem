@@ -92,6 +92,8 @@ public:
 
 	virtual void InitializeComponent() override;
 
+	void InitializePatrolPoints(USplineComponent* NewSpline);
+
 protected:
 	virtual void BeginPlay() override;
 

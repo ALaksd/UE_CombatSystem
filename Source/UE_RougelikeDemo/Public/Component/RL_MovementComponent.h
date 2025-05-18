@@ -78,6 +78,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ExecuteAction;
 
+	void DisableAllInput();
+
+	void EnableAllInput();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Settings")
 	//角色移动状态数据
 	TMap<EMovementState, FMovementSetting> MovementSettingMap;
@@ -169,6 +173,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LockOn")
 	void ToggleLockOn();
 
+	void CancelLockOn();
+
 	/** 搜索锁定目标 */
 	UFUNCTION(BlueprintCallable, Category = "LockOn")
 	void FindLockOnTarget();
@@ -199,6 +205,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "LockOn")
 	FName PlayerLockingTag = FName("IsLocking");
+
+	UPROPERTY(EditAnywhere, Category = "LockOn")
+	FRotator RotatorOffest;
 	
 	void UpdateLockOnRotation(float DeltaTime);
 
