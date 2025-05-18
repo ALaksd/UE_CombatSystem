@@ -47,7 +47,7 @@ void UAS_Base::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float
 
 void UAS_Base::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
-	Super::PreAttributeChange(Attribute,NewValue);
+	//Super::PreAttributeChange(Attribute,NewValue);
 }
 
 void UAS_Base::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)

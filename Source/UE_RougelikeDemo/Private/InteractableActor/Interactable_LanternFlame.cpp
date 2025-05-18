@@ -66,6 +66,7 @@ void AInteractable_LanternFlame::TryInteract()
 				LanternFlameWidgetController->BroadcastInitialValue();
 				InitPointName();
 
+				
 				// 回复理智
 				if (URL_SanitySubsystem* SanitySubsystem = GameInstance->GetSubsystem<URL_SanitySubsystem>())
 					SanitySubsystem->RestoreSanityToMax();
