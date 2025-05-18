@@ -348,12 +348,9 @@ void AEnemy_Base::RemoveTag(FName Tag)
 
 void AEnemy_Base::StaminaAttributeChangeCallback(const FOnAttributeChangeData& Data)
 {
-	UE_LOG(LogTemp,Error,TEXT("StaminaAttribute OldValue %f"), Data.OldValue);
-	UE_LOG(LogTemp,Warning,TEXT("StaminaAttribute NewValue %f"), Data.NewValue);
-	
-	if (Data.NewValue < Data.OldValue)
+	if (Data.NewValue < Data.OldValue && !bIsGuardBroken)
 		StaminaReduceCallBack();
-	if (Data.NewValue == 0)
+	if (Data.NewValue == 0 && !bIsGuardBroken)
 	{
 		// 进入破防状态
 		GuardBroken();
@@ -362,9 +359,9 @@ void AEnemy_Base::StaminaAttributeChangeCallback(const FOnAttributeChangeData& D
 
 void AEnemy_Base::ResilienceAttributeChangeCallback(const FOnAttributeChangeData& Data)
 {
-	if (Data.NewValue < Data.OldValue)
+	if (Data.NewValue < Data.OldValue && !bIsStaggered)
 		ResilienceReduceCallBack();
-	if (Data.NewValue == 0)
+	if (Data.NewValue == 0 && !bIsStaggered)
 	{
 		// 进入蹒跚状态
 		Staggered();
