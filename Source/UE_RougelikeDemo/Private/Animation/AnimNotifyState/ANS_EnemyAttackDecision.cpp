@@ -141,7 +141,6 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor)
 			}
 		}
 
-
 		// 3. 减少属性
 		// 创建临时GE
 		FGameplayEffectContextHandle EffectContext = SourceASC->MakeEffectContext();
@@ -155,6 +154,14 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor)
 		// 弹反成功直接返回，不执行后续伤害逻辑
 		return;
 	}
+
+	// 无敌条件判断 ---------------------------------------------------
+	const FGameplayTag InvincibleTag = FGameplayTag::RequestGameplayTag("State.Invincible");
+	if (TargetASC->HasMatchingGameplayTag(InvincibleTag))
+	{
+		return;
+	}
+
 
 	/**
 	 * TODO:

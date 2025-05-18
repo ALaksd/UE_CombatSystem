@@ -37,6 +37,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ToggleWidget(TSubclassOf<URL_UserWidget> WidgetClass, APlayerController* PlayerController);
 
+	/*重置UI*/
+	UFUNCTION(BlueprintCallable)
+	void ResetUI();
+
 protected:
 	// 配置需要使用的Input资源（在编辑器设置）
 	UPROPERTY(BlueprintReadWrite, Category = "Input")

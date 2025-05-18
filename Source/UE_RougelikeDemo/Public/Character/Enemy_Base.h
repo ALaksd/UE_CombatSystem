@@ -63,6 +63,7 @@ public:
 	/** CombatInterface */
 	virtual UAnimMontage* GetHitReactMotange_Implementation() override;
 	virtual void Die_Implementation() override;
+	FORCEINLINE virtual bool isDead_Implementation() const override {return bDead;}
 
 	/** End ComvatInterface */
 
@@ -70,19 +71,12 @@ public:
 	virtual AActor* GetCombatTarget_Implementation()const override;
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual UNiagaraComponent* GetRedAttackNiagaraComponent_Implementation() const override;
+	virtual void SetHealthBarVisible_Implementation(bool bVisible) const override;
 
 	/** End EnemyInterface */
 
 	/*-------------------------破防状态相关-------------------------*/
-	FTimerHandle StaminaReduceTimer;
-	FTimerHandle StaggeredTimer;
-	FTimerHandle GuardBrokenTimer;
-	FTimerHandle ResilienceReduceTimer;
-	// 体力减少回调
-	void StaminaReduceCallBack();
-	// 韧性减少回调
-	UFUNCTION(BlueprintImplementableEvent)
-	void ResilienceReduceCallBack() const;
+	
 	
 	// 处理破防相关
 	void GuardBroken();
@@ -101,8 +95,18 @@ public:
 	
 	FORCEINLINE UStaticMeshComponent* GetWeaponStaticComponnent() { return WeaponStaticMeshComponent; }
 	FORCEINLINE UNiagaraComponent* GetNiagaraComponent() { return RedAttackNiagaraComponent; }
+
+	/** Spawner */
+
+	//设置巡逻点
+	void InitializePatrol(USplineComponent* NewPatrolSpline);
 	
 protected:
+	// 处决用
+	bool bIsExecuting = false;
+
+	/*-------------------------破防状态相关-------------------------*/
+	
 	// 蹒跚时间
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
 	float StaggeredTime;
@@ -110,6 +114,23 @@ protected:
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
 	float GuardBrokenTime;
 
+	// 体力减少回复时间
+	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
+	float StaminaReduceTime;
+	// 韧性减少回复时间
+	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
+	float ResilienceReduceTime;
+	
+	FTimerHandle StaminaReduceTimer;
+	FTimerHandle StaggeredTimer;
+	FTimerHandle GuardBrokenTimer;
+	FTimerHandle ResilienceReduceTimer;
+	// 体力减少回调
+	void StaminaReduceCallBack();
+	// 韧性减少回调
+	void ResilienceReduceCallBack();
+
+	/*-------------------------破防状态相关-------------------------*/
 	
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
@@ -130,10 +151,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<AActor> TargetActor;
-
-	//样条线组件，用于巡逻
-	UPROPERTY(VisibleAnywhere, Category = "AI|Patrol")
-	TObjectPtr<USplineComponent> PatrolSpline;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<UStaticMeshComponent> WeaponStaticMeshComponent;
@@ -169,6 +186,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool bDead;
+
 	/** Ability */
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
 	TArray<TSubclassOf<UGameplayAbility>> Abilites;
@@ -184,6 +204,11 @@ private:
 	void AddTag(FName Tag);
 	// 移除标签
 	void RemoveTag(FName Tag);
+
+	// 体力变化回调
+	void StaminaAttributeChangeCallback(const FOnAttributeChangeData& Data);
+	// 韧性变化回调
+	void ResilienceAttributeChangeCallback(const FOnAttributeChangeData& Data);
 };
 
 

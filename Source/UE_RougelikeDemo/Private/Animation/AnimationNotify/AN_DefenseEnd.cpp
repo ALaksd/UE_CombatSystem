@@ -9,10 +9,11 @@ void UAN_DefenseEnd::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase*
 	ARL_BaseCharacter* Character = Cast<ARL_BaseCharacter>(MeshComp->GetOwner());
 	if (Character)
 	{
-		UAbilitySystemComponent* ASC = Character->FindComponentByClass<UAbilitySystemComponent>();
+		UAbilitySystemComponent* ASC = Character->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>();
 		if (ASC)
 		{
 			ASC->RemoveLooseGameplayTag(Tag);
+			ASC->SetTagMapCount(Tag, 0);
 			UE_LOG(LogTemp, Log, TEXT("Invincibility Tag Removed"));
 		}
 	}

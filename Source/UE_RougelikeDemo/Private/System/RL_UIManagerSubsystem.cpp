@@ -169,3 +169,42 @@ void URL_UIManagerSubsystem::Deinitialize()
 	//}
 	//InputHandles.Empty();
 }
+
+void URL_UIManagerSubsystem::ResetUI()
+{
+	// 获取 PlayerController（默认只处理本地 0 号）
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	// 移除所有 UI 控件
+	for (URL_UserWidget* Widget : WidgetStack)
+	{
+		if (Widget && Widget->IsInViewport())
+		{
+			Widget->RemoveFromParent();
+		}
+	}
+	WidgetStack.Empty();
+
+	// 恢复输入模式为游戏模式
+	if (PlayerController)
+	{
+		// 移除 UI 输入映射上下文
+		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			if (const UInputMappingContext* LoadedContext = UIContext.LoadSynchronous())
+			{
+				InputSubsystem->RemoveMappingContext(LoadedContext);
+			}
+		}
+
+		// 设置为游戏模式
+		FInputModeGameOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->SetShowMouseCursor(false);
+
+		// 解绑返回键
+		UnbindBackInput(PlayerController);
+	}
+}
+

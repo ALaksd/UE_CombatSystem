@@ -2,6 +2,7 @@
 
 
 #include "UI/WidgetController/RL_LanternFlameController.h"
+#include <System/RL_SavePointSubsystem.h>
 
 void URL_LanternFlameController::Initialize(UDataTable* SkillList_T)
 {
