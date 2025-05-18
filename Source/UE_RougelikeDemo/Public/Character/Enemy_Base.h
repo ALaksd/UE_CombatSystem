@@ -63,6 +63,7 @@ public:
 	/** CombatInterface */
 	virtual UAnimMontage* GetHitReactMotange_Implementation() override;
 	virtual void Die_Implementation() override;
+	FORCEINLINE virtual bool isDead_Implementation() const override {return bDead;}
 
 	/** End ComvatInterface */
 
@@ -184,6 +185,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bDead;
 
 	/** Ability */
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")

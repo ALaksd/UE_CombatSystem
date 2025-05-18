@@ -126,31 +126,27 @@ void AEnemy_Base::Die_Implementation()
 	WeaponStaticMeshComponent->SetEnableGravity(true);
 	WeaponStaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetEnableGravity(true);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	AAIController* AIController = Cast<AAIController>(GetController());
-	if (!AIController)
+	if (AIController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to get AI Controller"));
-		return;
+		// 停止行为树（如果有）
+		if (AIController->BrainComponent)
+		{
+			AIController->BrainComponent->StopLogic(TEXT("Death"));
+		}
+		AIController->ClearFocus(EAIFocusPriority::Gameplay);
 	}
 
-	// 获取Blackboard组件
-	UBlackboardComponent* BlackboardComponent = AIController->GetBlackboardComponent();
-	if (!BlackboardComponent)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Missing Blackboard Component"));
-		return;
-	}
-
-	// 设置黑板键（示例）
-	BlackboardComponent->SetValueAsBool(FName("bIsDead"), true);
-	HealthBar->SetVisibility(false);
+	bDead = true;
+	bIsGuardBroken = false;
+	bIsStaggered = false;
+	HealthBar->DestroyComponent();
+	
 	SetLifeSpan(5.f);
 }
 
@@ -227,6 +223,7 @@ void AEnemy_Base::Staggered()
 {
 	AddTag(FName("EnemyState.Staggered"));
 	bIsStaggered=true;
+
 
 	GetWorldTimerManager().ClearTimer(StaggeredTimer);
 	GetWorldTimerManager().SetTimer(StaggeredTimer,[this]()

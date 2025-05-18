@@ -204,6 +204,10 @@ void ARL_BaseCharacter::Die_Implementation()
 	bIsDead = true;
 	OnDead();
 
+	//禁止所用输入
+	MovementComponent->DisableAllInput();
+	MovementComponent->CancelLockOn();
+
 	//这里暂时用Timer延迟5秒执行重生
 	FTimerHandle ReStartTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(ReStartTimerHandle,this,&ARL_BaseCharacter::ReStart,5.f,false);
@@ -213,9 +217,12 @@ void ARL_BaseCharacter::ReStart()
 {
 	if (URL_SavePointSubsystem* SavePointSubSystem = GetWorld()->GetGameInstance()->GetSubsystem<URL_SavePointSubsystem>())
 	{
-		SavePointSubSystem->TravelToCurrentPoint();
+		MovementComponent->EnableAllInput();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		bIsDead = false;
 		OnDead();
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+		SavePointSubSystem->TravelToCurrentPoint();
+	
 	}
 }
