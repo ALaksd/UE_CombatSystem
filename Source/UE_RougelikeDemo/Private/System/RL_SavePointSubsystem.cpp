@@ -7,6 +7,7 @@
 #include <System/RL_UIManagerSubsystem.h>
 #include <Player/RL_PlayerState.h>
 #include "GameFramework/Character.h"
+#include <System/RL_SanitySubsystem.h>
 
 void URL_SavePointSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -69,6 +70,21 @@ void URL_SavePointSubsystem::Reset(const FSavePointData& SavePointData)
 	//重置属性
 	ResetAttributes();	
 
+	UGameInstance* GameInstance = GetGameInstance();
+	
+	//重置理智
+	URL_SanitySubsystem* SanitySubsystem = GameInstance->GetSubsystem<URL_SanitySubsystem>();
+	if (SanitySubsystem)
+	{
+		SanitySubsystem->RestoreSanityToMax();
+	}
+
+	//重置UI
+	URL_UIManagerSubsystem* UIManagerSubsystem = GameInstance->GetSubsystem<URL_UIManagerSubsystem>();
+	if (UIManagerSubsystem)
+	{
+		UIManagerSubsystem->ResetUI();
+	}
 	//重置血瓶数量，调用仓库System的函数
 }
 

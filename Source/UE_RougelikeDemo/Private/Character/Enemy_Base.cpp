@@ -14,6 +14,7 @@
 #include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
+#include <System/RL_SanitySubsystem.h>
 
 // Sets default values
 AEnemy_Base::AEnemy_Base()
@@ -140,6 +141,13 @@ void AEnemy_Base::Die_Implementation()
 			AIController->BrainComponent->StopLogic(TEXT("Death"));
 		}
 		AIController->ClearFocus(EAIFocusPriority::Gameplay);
+	}
+
+	//停止减少理智
+	URL_SanitySubsystem* SanitySubsystem = UGameInstance::GetSubsystem<URL_SanitySubsystem>(GetWorld()->GetGameInstance());
+	if (SanitySubsystem)
+	{
+		SanitySubsystem->SetCombatState(false);
 	}
 
 	bDead = true;
