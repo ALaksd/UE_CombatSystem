@@ -247,7 +247,7 @@ void URL_MovementComponent::Execute(const FInputActionValue& Value)
 	 * 角度合适
 	 */
 
-	if (ExecuteAngle >= Angle && Distance <= ExecuteDistance && !Enemy->bIsFindPlayer)
+	if (ExecuteAngle >= BackAngle && Distance <= ExecuteDistance && !Enemy->bIsFindPlayer)
 	{
 		FVector TargetLocation = Enemy->GetMesh()->GetSocketLocation(FName("Socket_Execute_B"));
 		// 计算目标旋转（面向敌人背部）

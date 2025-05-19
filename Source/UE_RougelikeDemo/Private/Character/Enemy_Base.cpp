@@ -367,9 +367,9 @@ void AEnemy_Base::StaminaAttributeChangeCallback(const FOnAttributeChangeData& D
 
 void AEnemy_Base::ResilienceAttributeChangeCallback(const FOnAttributeChangeData& Data)
 {
-	if (Data.NewValue < Data.OldValue && !bIsStaggered)
+	if (Data.NewValue < Data.OldValue && !bIsStaggered && !bIsGuardBroken)
 		ResilienceReduceCallBack();
-	if (Data.NewValue == 0 && !bIsStaggered)
+	if (Data.NewValue == 0 && !bIsStaggered && !bIsGuardBroken)
 	{
 		// 进入蹒跚状态
 		Staggered();
