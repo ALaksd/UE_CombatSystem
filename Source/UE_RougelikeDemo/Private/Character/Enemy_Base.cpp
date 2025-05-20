@@ -48,6 +48,7 @@ void AEnemy_Base::Execute(bool bIsForward)
 	if (bIsExecuting) return ;
 	
 	bIsExecuting = true;
+	AddTag(FName("EnemyState.GuardBroken"));
 	if (bIsForward)
 	{
 		float Time = PlayAnimMontage(Aim_Execute_F);
@@ -334,6 +335,11 @@ void AEnemy_Base::InitializeAttribute()
 void AEnemy_Base::AddTag(FName Tag)
 {
 	FGameplayTag EnemyTag = FGameplayTag::RequestGameplayTag(Tag);
+	for(FGameplayTag StateTag : StateTags)
+	{
+		if (EnemyTag.MatchesTagExact(StateTag))
+			return;
+	}
 	StateTags.AddTag(EnemyTag);
 	AbilitySystemComponent->AddLooseGameplayTag(EnemyTag);
 	AbilitySystemComponent->SetTagMapCount(EnemyTag, 1);
@@ -367,9 +373,9 @@ void AEnemy_Base::StaminaAttributeChangeCallback(const FOnAttributeChangeData& D
 
 void AEnemy_Base::ResilienceAttributeChangeCallback(const FOnAttributeChangeData& Data)
 {
-	if (Data.NewValue < Data.OldValue && !bIsStaggered)
+	if (Data.NewValue < Data.OldValue && !bIsStaggered && !bIsGuardBroken)
 		ResilienceReduceCallBack();
-	if (Data.NewValue == 0 && !bIsStaggered)
+	if (Data.NewValue == 0 && !bIsStaggered && !bIsGuardBroken)
 	{
 		// 进入蹒跚状态
 		Staggered();
