@@ -50,12 +50,10 @@ void UBTService_PowerSkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, 
 		FString String = *SelectedSkill.AbilityTag.ToString();
 		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, String);
 		OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedPowerSkillKey.SelectedKeyName, SelectedSkill.AbilityTag.GetTagName());
-		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(CurrentActionState.SelectedKeyName, static_cast<uint8>(EEnemyActionState::Attacking));
 	}
 	else
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedPowerSkillKey.SelectedKeyName, FName("None"));
-		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(CurrentActionState.SelectedKeyName, static_cast<uint8>(EEnemyActionState::None));
 	}
 
 }

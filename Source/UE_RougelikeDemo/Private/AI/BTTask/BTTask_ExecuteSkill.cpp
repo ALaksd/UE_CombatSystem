@@ -64,7 +64,6 @@ void UBTTask_ExecuteSkill::OnAbilityEnded(UGameplayAbility* EndedAbility)
 		{
 			ASC->AbilityEndedCallbacks.Remove(AbilityEndedDelegateHandle);
 		}
-		CachedOwnerComp->GetBlackboardComponent()->SetValueAsEnum(TEXT("CurrentActionState"),static_cast<uint8>(EEnemyActionState::None));
 
 		FinishLatentTask(*CachedOwnerComp, bSuccess ? EBTNodeResult::Succeeded : EBTNodeResult::Failed);
 	}

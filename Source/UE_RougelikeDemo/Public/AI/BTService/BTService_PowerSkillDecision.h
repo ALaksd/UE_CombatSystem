@@ -25,8 +25,5 @@ protected:
 	FBlackboardKeySelector SelectedPowerSkillKey;
 
 	UPROPERTY(EditAnywhere)
-	FBlackboardKeySelector CurrentActionState;
-
-	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector TargetDistanceKey;
 };
