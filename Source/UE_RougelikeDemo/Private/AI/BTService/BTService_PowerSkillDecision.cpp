@@ -25,15 +25,17 @@ void UBTService_PowerSkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, 
 	// 获取技能列表
 	const TArray<FEnemySkills>& WakingSkills = EnemyConfig->EnemySkills;
 
+	/**
+	 * 收集可用技能
+	 * 1.技能冷却结束
+	 * 2.到达攻击范围
+	 */
 	TArray<FEnemySkills> PowerfulSkills;
-
-	// 收集可用技能
 	for (const FEnemySkills& Skill : WakingSkills)
 	{
 		if (CheckSkillCondition(Skill, AIController))
 		{
-			if (Skill.bIsPowerfulAttack)
-				PowerfulSkills.Add(Skill);
+			PowerfulSkills.Add(Skill);
 		}
 	}
 
@@ -60,9 +62,11 @@ void UBTService_PowerSkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, 
 
 bool UBTService_PowerSkillDecision::CheckSkillCondition(const FEnemySkills& Skill, AAIController* AIController)
 {
-	return !GetAbilitySystem(AIController->GetPawn())->HasMatchingGameplayTag(
+	bool bPower = Skill.bIsPowerfulAttack;
+	bool bNotCoolDown = !GetAbilitySystem(AIController->GetPawn())->HasMatchingGameplayTag(
 		FGameplayTag::RequestGameplayTag(FName(FString::Printf(TEXT("Cooldown.%s"), *Skill.AbilityTag.ToString())))
 	);
+	return bPower && bNotCoolDown;
 }
 
 UAbilitySystemComponent* UBTService_PowerSkillDecision::GetAbilitySystem(APawn* Pawn) const

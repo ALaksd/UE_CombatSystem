@@ -18,7 +18,7 @@ class UE_ROUGELIKEDEMO_API UBTService_PowerSkillDecision : public UBTService
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaTime) override;
 
-	bool CheckSkillCondition(const FEnemySkills& Skill, AAIController* AIController);
+	virtual bool CheckSkillCondition(const FEnemySkills& Skill, AAIController* AIController);
 	UAbilitySystemComponent* GetAbilitySystem(APawn* Pawn) const;
 
 	UPROPERTY(EditAnywhere)
@@ -26,5 +26,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector CurrentActionState;
-	
+
+	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector TargetDistanceKey;
 };

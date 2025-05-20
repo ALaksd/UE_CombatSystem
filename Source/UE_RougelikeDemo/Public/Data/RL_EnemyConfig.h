@@ -27,6 +27,16 @@ struct FEnemySkillAnimation
 
 };
 
+UENUM(BlueprintType)
+enum class EPositionType : uint8
+{
+	Anywhere  UMETA(DisplayName = "任意位置"),
+	Front     UMETA(DisplayName = "前方"),
+	Back      UMETA(DisplayName = "后方"),
+	Left      UMETA(DisplayName = "左侧"),
+	Right     UMETA(DisplayName = "右侧")
+};
+
 USTRUCT(BlueprintType)
 struct FEnemySkills
 {
