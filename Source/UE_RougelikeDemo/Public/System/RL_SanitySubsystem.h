@@ -34,6 +34,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RestoreSanity(float Amount);
 
+	UFUNCTION(BlueprintCallable)
 	// 回复理智到最大值
 	void RestoreSanityToMax();
 
