@@ -7,10 +7,40 @@
 #include "Kismet/GameplayStatics.h"
 #include "EnhancedInputSubsystems.h"
 #include <Input/RLInputComponent.h>
+#include "AssetRegistry/AssetRegistryModule.h"
+#include "Engine/AssetManager.h"
 
 void URL_UIManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-	
+	//文件路径
+	FSoftObjectPath BackActionPath(TEXT("/Game/RLDemo/Input/Actions/UI/IA_UI_BackAction.IA_UI_BackAction"));
+	FSoftObjectPath UIContextPath(TEXT("/Game/RLDemo/Input/IMC_UI.IMC_UI"));
+	FSoftObjectPath MoveContextPath(TEXT("/Game/RLDemo/Input/IMC_Move.IMC_Move"));
+	FSoftObjectPath DefaultContextPath(TEXT("/Game/RLDemo/Input/IMC_Default.IMC_Default"));
+
+	// 创建 StreamableManager
+	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
+
+		// 异步加载多个资源
+	TArray<FSoftObjectPath> AssetsToLoad = { BackActionPath, UIContextPath ,MoveContextPath,DefaultContextPath};
+	Streamable.RequestAsyncLoad(
+		AssetsToLoad,
+		[this, BackActionPath, UIContextPath, MoveContextPath, DefaultContextPath]()
+		{
+			UInputAction* LoadedBackAction = Cast<UInputAction>(BackActionPath.ResolveObject());
+			UInputMappingContext* LoadedUIContext = Cast<UInputMappingContext>(UIContextPath.ResolveObject());
+			UInputMappingContext* LoadedDefaultContext = Cast<UInputMappingContext>(DefaultContextPath.ResolveObject());
+			UInputMappingContext* LoadedMoveContext = Cast<UInputMappingContext>(MoveContextPath.ResolveObject());
+
+			if (LoadedBackAction && LoadedUIContext && LoadedDefaultContext&&LoadedMoveContext)
+			{
+				BackAction = LoadedBackAction;
+				UIContext = LoadedUIContext;
+				DefaultContext = LoadedDefaultContext;
+				MoveContext = LoadedMoveContext;
+			}
+		}
+	);
 }
 
 URL_UserWidget* URL_UIManagerSubsystem::AddNewWidget(TSubclassOf<URL_UserWidget> WidgetClass, APlayerController* PlayerController, const FWidgetInitParams InitParams)
@@ -56,19 +86,27 @@ URL_UserWidget* URL_UIManagerSubsystem::PushWidget(TSubclassOf<URL_UserWidget> W
 		// 绑定返回键输入（首次压入时绑定）
 		if (WidgetStack.Num() == 1)
 		{
-			if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
-				ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+			if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem =ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 			{
 				// 加载配置的资源（确保已设置UIContext）
-				if (const UInputMappingContext* LoadedContext = UIContext.LoadSynchronous())
+				if (const UInputMappingContext* LoadedUIContext = UIContext.LoadSynchronous())
 				{
-					InputSubsystem->AddMappingContext(
-						LoadedContext,
-						1 // 优先级高于默认游戏输入
-					);
+					InputSubsystem->AddMappingContext(LoadedUIContext,1);
+				}
+				if (const UInputMappingContext* LoadedDefaultContext = DefaultContext.LoadSynchronous())
+				{
+					InputSubsystem->RemoveMappingContext(LoadedDefaultContext);
+				}
+				if (const UInputMappingContext* LoadedMoveContext = MoveContext.LoadSynchronous())
+				{
+					InputSubsystem->RemoveMappingContext(LoadedMoveContext);
+
 				}
 			}
 
+			//设置全局时间膨胀
+			UGameplayStatics::SetGlobalTimeDilation(this, 0.f);
+			
 			// 绑定返回键（使用异步加载确保资源可用）
 			BackAction.LoadSynchronous();
 			BindBackInput(PlayerController);
@@ -114,7 +152,21 @@ void URL_UIManagerSubsystem::PopWidget(APlayerController* PlayerController)
 			{
 				InputSubsystem->RemoveMappingContext(LoadedContext);
 			}
+
+			if (const UInputMappingContext* LoadedDefaultContext = DefaultContext.LoadSynchronous())
+			{
+				InputSubsystem->AddMappingContext(LoadedDefaultContext,0);
+			}
+
+			if (const UInputMappingContext* LoadedMoveContext = MoveContext.LoadSynchronous())
+			{
+				InputSubsystem->AddMappingContext(LoadedMoveContext,0);
+
+			}
 		}
+		//恢复时间膨胀
+		UGameplayStatics::SetGlobalTimeDilation(this, 1.f);
+
 		FInputModeGameOnly InputMode;
 		PlayerController->SetInputMode(InputMode);
 		PlayerController->SetShowMouseCursor(false);

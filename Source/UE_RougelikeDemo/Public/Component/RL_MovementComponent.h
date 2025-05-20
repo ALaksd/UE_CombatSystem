@@ -78,6 +78,18 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ExecuteAction;
 
+	// 鼠标左键
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> LMBAction;
+	
+	// //奔跑攻击
+	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	// TObjectPtr<UInputAction> RunAttackAction;
+	//
+	// //跳跃攻击
+	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "0_RLCharacter|Input", meta = (AllowPrivateAccess = "true"))
+	// TObjectPtr<UInputAction> JumpAttackAction;
+
 	void DisableAllInput();
 
 	void EnableAllInput();
@@ -145,6 +157,9 @@ protected:
 	
 	// 处决
 	void Execute(const FInputActionValue& Value);
+
+	// 鼠标左键回调
+	void LMBActionCallBack(const FInputActionValue& Value);
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
