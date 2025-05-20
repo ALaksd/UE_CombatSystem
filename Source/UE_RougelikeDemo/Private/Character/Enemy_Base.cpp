@@ -48,6 +48,7 @@ void AEnemy_Base::Execute(bool bIsForward)
 	if (bIsExecuting) return ;
 	
 	bIsExecuting = true;
+	AddTag(FName("EnemyState.GuardBroken"));
 	if (bIsForward)
 	{
 		float Time = PlayAnimMontage(Aim_Execute_F);
@@ -334,6 +335,11 @@ void AEnemy_Base::InitializeAttribute()
 void AEnemy_Base::AddTag(FName Tag)
 {
 	FGameplayTag EnemyTag = FGameplayTag::RequestGameplayTag(Tag);
+	for(FGameplayTag StateTag : StateTags)
+	{
+		if (EnemyTag.MatchesTagExact(StateTag))
+			return;
+	}
 	StateTags.AddTag(EnemyTag);
 	AbilitySystemComponent->AddLooseGameplayTag(EnemyTag);
 	AbilitySystemComponent->SetTagMapCount(EnemyTag, 1);
