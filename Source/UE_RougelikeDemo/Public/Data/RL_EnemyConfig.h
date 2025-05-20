@@ -72,30 +72,6 @@ struct FEnemySkills
 	TArray<FEnemySkillAnimation> Animations;
 };
 
-UENUM(BlueprintType)
-enum class EEnemyActionState : uint8
-{
-	None        UMETA(DisplayName = "无状态"),
-	Evading     UMETA(DisplayName = "迂回中"),
-	Rolling     UMETA(DisplayName = "翻滚中"),
-	Attacking   UMETA(DisplayName = "攻击中")
-};
-
-USTRUCT(BlueprintType)
-struct FBaseActionWeights
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-	float EvadeChance = 0.4f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-	float AttackChance = 0.5f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-	float RollChance = 0.1f;
-};
-
 /**
  * 
  */
@@ -136,9 +112,6 @@ public:
 	//武器顶端插槽
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|Weapon")
 	FName WeaponTipSocket = "Tip";
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|AI")
-	FBaseActionWeights BaseActionWeights;
 
 	// 敌人类型等扩展参数
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")
