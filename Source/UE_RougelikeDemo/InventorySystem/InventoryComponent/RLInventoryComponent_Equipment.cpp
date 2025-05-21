@@ -160,7 +160,7 @@ bool URLInventoryComponent_Equipment::MakeItemEquipped_Internal(const FRLInvento
 
 	ItemInstance->SetbEquiped(true);
 	bOnEquip.ExecuteIfBound(true);
-	OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance);
+	OnArmorUpdate.Broadcast(ItemInstance);
 	return true;
 }
 
@@ -199,7 +199,7 @@ bool URLInventoryComponent_Equipment::MakeItemUnequipped_Internal(const FRLInven
 	// 更新物品实例的装备状态
 	ItemInstance->SetbEquiped(false);
 	bOnEquip.ExecuteIfBound(false);
-	OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance);
+	OnArmorUpdate.Broadcast(NULL);
 	return true;
 }
 

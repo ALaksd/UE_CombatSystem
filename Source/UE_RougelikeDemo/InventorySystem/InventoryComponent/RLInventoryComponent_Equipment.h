@@ -77,6 +77,7 @@ struct FEquipWeapon
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipUpdate,URLInventoryItemInstance*, NewItem,URLInventoryItemInstance*, OldItem);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipUpdate,URLInventoryItemInstance*, NewItem);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnArmorUpdate,URLInventoryItemInstance*, NewItem);
 /** 是否装备 */
 DECLARE_DELEGATE_OneParam(FbOnEquip, bool);
 
@@ -92,6 +93,8 @@ public:
 	/*委托*/
 	UPROPERTY(BlueprintAssignable)
 	FOnEquipUpdate OnEquipUpdate;
+
+	FOnArmorUpdate OnArmorUpdate;
 
 	FbOnEquip bOnEquip;
 
