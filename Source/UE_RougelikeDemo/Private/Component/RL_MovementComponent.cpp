@@ -80,6 +80,8 @@ void URL_MovementComponent::BeginPlay()
 		RLInputComponent->BindAction(STRAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::SwitchTargetRight);
 		// 处决
 		RLInputComponent->BindAction(ExecuteAction, ETriggerEvent::Triggered, this, &URL_MovementComponent::Execute);
+		// 鼠标左键,暂时做奔跑和跳跃攻击
+		RLInputComponent->BindAction(LMBAction, ETriggerEvent::Started, this, &URL_MovementComponent::LMBActionCallBack);
 
 		// 武器切换
 		if (ARL_PlayerState* PlayerState = CastChecked<ARL_PlayerState>(UGameplayStatics::GetPlayerState(GetWorld(),0)))
@@ -247,7 +249,7 @@ void URL_MovementComponent::Execute(const FInputActionValue& Value)
 	 * 角度合适
 	 */
 
-	if (ExecuteAngle >= Angle && Distance <= ExecuteDistance && !Enemy->bIsFindPlayer)
+	if (ExecuteAngle >= BackAngle && Distance <= ExecuteDistance && !Enemy->bIsFindPlayer)
 	{
 		FVector TargetLocation = Enemy->GetMesh()->GetSocketLocation(FName("Socket_Execute_B"));
 		// 计算目标旋转（面向敌人背部）
@@ -267,6 +269,27 @@ void URL_MovementComponent::Execute(const FInputActionValue& Value)
 		}
 	}
 	
+}
+
+void URL_MovementComponent::LMBActionCallBack(const FInputActionValue& Value)
+{
+	if (!ownerCharacter) return;
+	
+	if (CurrentMovementState == EMovementState::Running)
+	{
+		// 启动奔跑攻击
+		LMBInputHeldTest(FGameplayTag::RequestGameplayTag(FName("InputTag.RunAttack")));
+	}   
+	else if (ownerCharacter->GetMovementComponent()->IsFalling())
+	{
+		// 启动跳跃攻击
+		LMBInputHeldTest(FGameplayTag::RequestGameplayTag(FName("InputTag.JumpAttack")));
+	}
+	else
+	{
+		LMBInputHeldTest(FGameplayTag::RequestGameplayTag(FName("InputTag.LMB")));
+	}
+
 }
 
 void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
