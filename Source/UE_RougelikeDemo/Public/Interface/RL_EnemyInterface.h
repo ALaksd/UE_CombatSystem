@@ -30,6 +30,13 @@ public:
 	AActor* GetCombatTarget() const;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetLockTarget(bool bInLock);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetLockUIRed(bool bInRedLock);
+
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UNiagaraComponent* GetRedAttackNiagaraComponent() const;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)

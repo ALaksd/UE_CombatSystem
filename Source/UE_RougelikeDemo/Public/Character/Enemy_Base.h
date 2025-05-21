@@ -20,6 +20,8 @@ class URL_EnemyMovementComponent;
 class USplineComponent;
 class UNiagaraComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLock, bool, bLock);
+
 UCLASS()
 class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface,
 	public IRL_CombatInterface,public IRL_EnemyInterface,public IRL_DamageInterface
@@ -72,6 +74,8 @@ public:
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual UNiagaraComponent* GetRedAttackNiagaraComponent_Implementation() const override;
 	virtual void SetHealthBarVisible_Implementation(bool bVisible) const override;
+	virtual void SetLockTarget_Implementation(bool bInLock) override;
+	virtual void SetLockUIRed_Implementation(bool bInRedLock) override;
 
 	/** End EnemyInterface */
 
@@ -100,6 +104,10 @@ public:
 
 	//设置巡逻点
 	void InitializePatrol(USplineComponent* NewPatrolSpline);
+
+	/** 锁定 */
+	UPROPERTY(BlueprintAssignable)
+	FOnLock OnLock;
 	
 protected:
 	// 处决用
@@ -209,6 +217,9 @@ private:
 	void StaminaAttributeChangeCallback(const FOnAttributeChangeData& Data);
 	// 韧性变化回调
 	void ResilienceAttributeChangeCallback(const FOnAttributeChangeData& Data);
+
+	bool bLock;
+	bool bRedLock;
 };
 
 
