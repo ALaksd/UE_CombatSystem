@@ -90,8 +90,8 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 			TArray<FHitResult> OutHits;
 			TArray<AActor*> ActorsToIgnore;
 			ActorsToIgnore.Add(WeaponOwner);
-			//bool bHit = UKismetSystemLibrary::LineTraceMultiForObjects(GetWorld(),Start,End,ObjectTypes,false,ActorsToIgnore,DrawDebugType,OutHits,true,TraceColor,TraceHitColor,DrawTime);
-			bool bHit = GetWorld()->LineTraceMultiByChannel(OutHits, Start, End, ECC_Enemy);
+			bool bHit = UKismetSystemLibrary::LineTraceMultiForObjects(GetWorld(),Start,End,ObjectTypes,false,ActorsToIgnore,DrawDebugType,OutHits,true,TraceColor,TraceHitColor,DrawTime);
+			//bool bHit = GetWorld()->LineTraceMultiByChannel(OutHits, Start, End, ECC_Enemy);
 
 			if (bHit)
 			{

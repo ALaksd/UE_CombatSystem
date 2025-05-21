@@ -28,7 +28,7 @@ AEnemy_Base::AEnemy_Base()
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
 	HealthBar->SetVisibility(false);
-
+	
 	EnemyMovementComponent = CreateDefaultSubobject<URL_EnemyMovementComponent>("EnemyMovementComponent");
 
 	WeaponStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("WeaponStaticMeshComponent");

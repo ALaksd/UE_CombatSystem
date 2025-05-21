@@ -44,6 +44,8 @@ private:
 	FGameplayTagContainer StateTags;
 
 public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void ChangeLockPointColor(bool bIsRed);
 	// 正面处决动画
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
 	TObjectPtr<UAnimMontage> Aim_Execute_F;
@@ -168,7 +170,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<URL_EnemyMovementComponent> EnemyMovementComponent;
-
+	
 	/** UI */
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> HealthBar;
