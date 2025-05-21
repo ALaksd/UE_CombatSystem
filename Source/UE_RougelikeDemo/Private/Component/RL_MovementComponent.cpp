@@ -218,6 +218,7 @@ void URL_MovementComponent::Execute(const FInputActionValue& Value)
 		 * 调整玩家到合适位置
 		 * 玩家处决GA
 		 * 敌人播放处决动画
+		 * UI提示
 		 */
 
 		FVector TargetLocation = Enemy->GetMesh()->GetSocketLocation(FName("Socket_Execute_F"));
@@ -439,6 +440,11 @@ void URL_MovementComponent::CancelLockOn()
 {
 	//取消锁定
 	ownerCharacter->Tags.Remove(PlayerLockingTag);
+	if (CurrentTarget->Implements<URL_EnemyInterface>())
+	{
+		IRL_EnemyInterface::Execute_SetLockTarget(CurrentTarget, false);
+	}
+
 	CurrentTarget = nullptr;
 
 	characterMovement->bOrientRotationToMovement = true; // 是否朝向移动方向
@@ -526,6 +532,12 @@ void URL_MovementComponent::FindLockOnTarget()
 				SpringArm->bEnableCameraLag = true;
 				SpringArm->bEnableCameraRotationLag = true;
 			}
+
+			if (CurrentTarget->Implements<URL_EnemyInterface>())
+			{
+				IRL_EnemyInterface::Execute_SetLockTarget(CurrentTarget, true);
+			}
+
 		}
 	}
 	else

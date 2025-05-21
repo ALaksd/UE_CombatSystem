@@ -87,6 +87,9 @@ void AEnemy_Base::Execute(bool bIsForward)
 			
 		},Time,false);
 	}
+
+	SetLockUIRed_Implementation(false);
+
 }
 
 void AEnemy_Base::TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) const
@@ -177,6 +180,17 @@ UNiagaraComponent* AEnemy_Base::GetRedAttackNiagaraComponent_Implementation() co
 void AEnemy_Base::SetHealthBarVisible_Implementation(bool bVisible) const
 {
 	HealthBar->SetVisibility(bVisible);
+}
+
+void AEnemy_Base::SetLockTarget_Implementation(bool bInLock)
+{
+	bLock = bInLock;
+	OnLock.Broadcast(bLock);
+}
+
+void AEnemy_Base::SetLockUIRed_Implementation(bool bInRedLock)
+{
+	bRedLock = bInRedLock;
 }
 
 void AEnemy_Base::StaminaReduceCallBack()
