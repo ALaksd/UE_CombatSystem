@@ -68,7 +68,8 @@ void UAS_Base::PostGameplayEffectExecute(const struct FGameplayEffectModCallback
 			if (AEnemy_Base* Enemy = Cast<AEnemy_Base>(GetOwningActor()))
 				if (Enemy->bIsGuardBroken)
 					LocalIncomingDamage = LocalIncomingDamage*1.2;
-			
+
+			LocalIncomingDamage -= GetDefensePower();
 			const float NewHealth = GetHealth() - LocalIncomingDamage;
 			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 
