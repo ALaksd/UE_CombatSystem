@@ -72,6 +72,11 @@ public:
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UAS_Base, MaxHealth);
 
+	//防御力
+	UPROPERTY(EditDefaultsOnly,Category="Attribute")
+	FGameplayAttributeData DefensePower;
+	ATTRIBUTE_ACCESSORS(UAS_Base,DefensePower);
+
 	//一次性伤害
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData IncomingDamage;

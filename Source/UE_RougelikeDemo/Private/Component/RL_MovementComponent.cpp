@@ -4,6 +4,7 @@
 #include "Character/Enemy_Base.h"
 #include "Character/RL_BaseCharacter.h"
 #include "Component/RL_InputBufferComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Engine/OverlapResult.h"
 #include "GameFramework/Character.h"
@@ -298,7 +299,25 @@ void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	UpdateLockOnRotation(DeltaTime);
+	
+	UpdateItemToPickup();
 
+	// 当前敌人是否可处决
+	UpdateEnemyExecute();
+}
+
+void URL_MovementComponent::AddItemCanPickup(AItem_Pickup* ItemToPickup_T)
+{
+	ItemsCanPickup.Add(ItemToPickup_T);
+}
+
+void URL_MovementComponent::RemoveItemCanPickup(AItem_Pickup* ItemToPickup_T)
+{
+	ItemsCanPickup.Remove(ItemToPickup_T);
+}
+
+void URL_MovementComponent::UpdateItemToPickup()
+{
 	if (ItemsCanPickup.Num()>0)
 	{
 		// 计算角色正前方40度范围内距离角色最近的一个可拾取物品
@@ -336,16 +355,6 @@ void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	{
 		ItemToPickup=nullptr;
 	}
-}
-
-void URL_MovementComponent::AddItemCanPickup(AItem_Pickup* ItemToPickup_T)
-{
-	ItemsCanPickup.Add(ItemToPickup_T);
-}
-
-void URL_MovementComponent::RemoveItemCanPickup(AItem_Pickup* ItemToPickup_T)
-{
-	ItemsCanPickup.Remove(ItemToPickup_T);
 }
 
 float URL_MovementComponent::CalculateAngleBetweenVectors(const FVector& VectorA, const FVector& VectorB)
@@ -438,6 +447,8 @@ void URL_MovementComponent::ToggleLockOn()
 
 void URL_MovementComponent::CancelLockOn()
 {
+	if (!CurrentTarget) return;
+	
 	//取消锁定
 	ownerCharacter->Tags.Remove(PlayerLockingTag);
 	if (CurrentTarget&&CurrentTarget->Implements<URL_EnemyInterface>())
@@ -597,6 +608,72 @@ void URL_MovementComponent::SwitchTargetRight()
 
 	CurrentTargetIndex = (CurrentTargetIndex + 1) % LockableTargets.Num();
 	CurrentTarget = LockableTargets[CurrentTargetIndex];
+}
+
+void URL_MovementComponent::UpdateEnemyExecute()
+{
+	if(CalculateCurrentTargetCanBeExecute())
+	{
+		if (CurrentTarget)
+		{
+			if (AEnemy_Base* Enemy = Cast<AEnemy_Base>(CurrentTarget))
+			{
+				Enemy->ChangeLockPointColor(true);
+			}
+		}
+	}
+	else
+	{
+		if (CurrentTarget)
+		{
+			if (AEnemy_Base* Enemy = Cast<AEnemy_Base>(CurrentTarget))
+			{
+				Enemy->ChangeLockPointColor(false);
+			}
+		}
+	}
+}
+
+bool URL_MovementComponent::CalculateCurrentTargetCanBeExecute()
+{
+	if (!CurrentTarget) return false;
+	
+	AEnemy_Base* Enemy = Cast<AEnemy_Base>(CurrentTarget);
+	if (!Enemy || !ownerCharacter) return false;
+
+	FVector Direction = ownerCharacter->GetActorLocation() - Enemy->GetActorLocation();
+	FVector EnemyDir = Enemy->GetActorForwardVector();
+	float Distance = Direction.Length();
+	
+	// 正面判定区域
+	float Angle = CalculateAngleBetweenVectors(Direction,EnemyDir);
+	// 背面判定区域
+	float BackAngle = CalculateAngleBetweenVectors(Direction,-EnemyDir);
+
+	// 处决条件
+	/*
+	 * 正面处决
+	 *
+	 * 玩家处在敌人正面
+	 * 敌人处于破防状态
+	 * 距离合适
+	 */
+	if (ExecuteAngle >= Angle && Distance <= ExecuteDistance && Enemy->bIsGuardBroken)
+		return true;
+
+	/*
+	 * 背面处决
+	 *
+	 * 双方不在战斗状态
+	 * 敌人在玩家一定距离内
+	 * 角度合适
+	 */
+
+	if (ExecuteAngle >= BackAngle && Distance <= ExecuteDistance && !Enemy->bIsFindPlayer)
+		return true;
+	
+	
+	return false;
 }
 
 void URL_MovementComponent::UseItem(const FInputActionValue& Value)

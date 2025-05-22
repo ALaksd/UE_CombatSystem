@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Component/RL_MovementComponent.h"
 
 UGA_HealthBottle::UGA_HealthBottle()
 {
@@ -19,6 +20,7 @@ void UGA_HealthBottle::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	if (CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
 		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+		ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->UpdateMovementState(EMovementState::Walking);
 		if (UseItemMontage)
 		{
 			UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
@@ -44,6 +46,7 @@ void UGA_HealthBottle::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 void UGA_HealthBottle::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->UpdateMovementState(EMovementState::Jogging);
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
