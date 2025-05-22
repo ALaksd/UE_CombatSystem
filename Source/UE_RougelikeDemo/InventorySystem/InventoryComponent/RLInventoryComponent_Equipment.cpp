@@ -16,18 +16,12 @@ void URLInventoryComponent_Equipment::InitializeComponent()
 	Super::InitializeComponent();
 
 	// 动态创建所有预设槽位
-	for (const FEquipmentSlotGroup& Group : SlotGroups)
+	for (auto Tag : SlotsTag)
 	{
-		for (int32 i = 0; i < Group.SlotCount; ++i)
-		{
-			// 创建带编号的Tag（示例：Item.Weapon.Slot.1）
-			FGameplayTag NumberedTag = FGameplayTag::RequestGameplayTag(FName(Group.SlotTypeTag.GetTagName().ToString().Append(FString::Printf(TEXT(".%d"), i + 1))));
-
-			//创建插槽
-			CreateInventorySlotByTag(NumberedTag);
-			// 创建槽位Handle
-			FRLInventoryItemSlotHandle NewHandle(NumberedTag,this);
-		}
+		//创建插槽
+		CreateInventorySlotByTag(Tag);
+		// 创建槽位Handle
+		FRLInventoryItemSlotHandle NewHandle(Tag, this);
 	}
 }
 
@@ -160,7 +154,7 @@ bool URLInventoryComponent_Equipment::MakeItemEquipped_Internal(const FRLInvento
 
 	ItemInstance->SetbEquiped(true);
 	bOnEquip.ExecuteIfBound(true);
-	OnArmorUpdate.Broadcast(ItemInstance);
+	OnArmorUpdate.Broadcast(ItemInstance, SlotHandle);
 	return true;
 }
 
@@ -199,7 +193,7 @@ bool URLInventoryComponent_Equipment::MakeItemUnequipped_Internal(const FRLInven
 	// 更新物品实例的装备状态
 	ItemInstance->SetbEquiped(false);
 	bOnEquip.ExecuteIfBound(false);
-	OnArmorUpdate.Broadcast(NULL);
+	OnArmorUpdate.Broadcast(NULL, SlotHandle);
 	return true;
 }
 

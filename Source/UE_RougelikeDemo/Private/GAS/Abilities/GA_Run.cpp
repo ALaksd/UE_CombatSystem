@@ -30,6 +30,8 @@ void UGA_Run::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 void UGA_Run::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
+	ASC->RemoveActiveGameplayEffect(ActiveRunConstHandle);
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -38,7 +40,5 @@ void UGA_Run::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGame
 {
 	Super::InputReleased(Handle, ActorInfo, ActivationInfo);
 	ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->UpdateMovementState(EMovementState::Jogging);
-	UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
-	ASC->RemoveActiveGameplayEffect(ActiveRunConstHandle);
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }

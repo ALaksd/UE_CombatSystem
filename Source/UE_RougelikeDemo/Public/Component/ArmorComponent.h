@@ -7,6 +7,8 @@
 #include "ArmorComponent.generated.h"
 
 
+struct FRLInventoryItemSlotHandle;
+class AArmorBase;
 class URLInventoryItemInstance;
 class URLInventoryComponent_Equipment;
 
@@ -18,7 +20,9 @@ class UE_ROUGELIKEDEMO_API UArmorComponent : public UActorComponent
 public:	
 	UArmorComponent();
 
-	TObjectPtr<AActor> CurrentArmor;
+	TObjectPtr<URLInventoryItemInstance> CurrentArmor;
+
+	TObjectPtr<URLInventoryItemInstance> CurrentHelmet;
 
 protected:
 	virtual void BeginPlay() override;
@@ -26,11 +30,17 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UPROPERTY(EditDefaultsOnly,Category = "Item")
+	TMap<FName, TSubclassOf<AActor>> InitialArmor;
+
 private:
 	TObjectPtr<ACharacter> Owner;
 
 	TObjectPtr<URLInventoryComponent_Equipment> EquipmentInventoryComponent;
 
 	UFUNCTION()
-	void SwitchArmor(URLInventoryItemInstance* NewWeapon);
+	void SwitchArmor(URLInventoryItemInstance* NewWeapon, const FRLInventoryItemSlotHandle& SlotHandle);
+
+	UFUNCTION()
+	void InitArmor();
 };

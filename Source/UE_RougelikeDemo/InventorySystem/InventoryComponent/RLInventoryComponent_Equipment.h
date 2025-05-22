@@ -36,19 +36,6 @@ public:
 	}
 };
 
-/** 装备槽位 */
-USTRUCT(BlueprintType)
-struct FEquipmentSlotGroup
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
-	FGameplayTag SlotTypeTag; // 主类型Tag 如 Equipment.Type.Weapon
-
-	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
-	int32 SlotCount = 1; // 该类型下的槽位数量
-};
-
 USTRUCT()
 struct FEquipWeapon
 {
@@ -77,7 +64,7 @@ struct FEquipWeapon
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipUpdate,URLInventoryItemInstance*, NewItem,URLInventoryItemInstance*, OldItem);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipUpdate,URLInventoryItemInstance*, NewItem);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnArmorUpdate,URLInventoryItemInstance*, NewItem);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnArmorUpdate,URLInventoryItemInstance*, NewItem, const FRLInventoryItemSlotHandle&, SlotHandle);
 /** 是否装备 */
 DECLARE_DELEGATE_OneParam(FbOnEquip, bool);
 
@@ -89,6 +76,9 @@ class UE_ROUGELIKEDEMO_API URLInventoryComponent_Equipment : public URLInventory
 public:
 	URLInventoryComponent_Equipment(const FObjectInitializer& ObjectInitializer);
 	virtual void InitializeComponent() override;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FGameplayTag> SlotsTag;
 
 	/*委托*/
 	UPROPERTY(BlueprintAssignable)
@@ -137,8 +127,6 @@ protected:
 	UAbilitySystemComponent* GetOwnerAbilitySystemComponent();
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
-	TArray<FEquipmentSlotGroup> SlotGroups;
 
 	UPROPERTY(VisibleAnywhere, Category = "Equipment")
 	TArray<FRLInventoryItemInfoEntry> EquipmentInfos;
