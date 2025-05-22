@@ -12,6 +12,7 @@
 #include "UE_RougelikeDemo/InventorySystem/Fragments/RLItemFragment_WeaponLevelData.h"
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryItemInstance.h"
 #include "UE_RougelikeDemo/UE_RougelikeDemo.h"
+#include <GAS/RL_AbilitySystemLibrary.h>
 
 // Sets default values
 ARL_BaseWeapon::ARL_BaseWeapon()
@@ -90,8 +91,8 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 			TArray<FHitResult> OutHits;
 			TArray<AActor*> ActorsToIgnore;
 			ActorsToIgnore.Add(WeaponOwner);
-			//bool bHit = UKismetSystemLibrary::LineTraceMultiForObjects(GetWorld(),Start,End,ObjectTypes,false,ActorsToIgnore,DrawDebugType,OutHits,true,TraceColor,TraceHitColor,DrawTime);
-			bool bHit = GetWorld()->LineTraceMultiByChannel(OutHits, Start, End, ECC_Enemy);
+			bool bHit = UKismetSystemLibrary::LineTraceMultiForObjects(GetWorld(),Start,End,ObjectTypes,false,ActorsToIgnore,DrawDebugType,OutHits,true,TraceColor,TraceHitColor,DrawTime);
+			//bool bHit = GetWorld()->LineTraceMultiByChannel(OutHits, Start, End, ECC_Enemy);
 
 			if (bHit)
 			{
@@ -106,6 +107,14 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 						//执行伤害逻辑
 						if (IRL_DamageInterface* DamageInterface = Cast<IRL_DamageInterface>(HitActor))
 						{
+							//传入击退参数
+							FGameplayEffectContextHandle Context = WeaponASC->MakeEffectContext();
+							FVector KonckBackVector = WeaponOwner->GetActorForwardVector();
+							float DamageMultiplier = WeaponAttribute->GetDamageMultiplier();
+							FVector KonckImpulse = KonckBackVector * DamageMultiplier * KnockDistance;
+							URL_AbilitySystemLibrary::SetKonckBackImpulse(Context, KonckImpulse);
+							DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet, WeaponLevel, Context);
+
 							DamageInterface->TakeDamage(DamageSpecHandle);
 						}
 					}

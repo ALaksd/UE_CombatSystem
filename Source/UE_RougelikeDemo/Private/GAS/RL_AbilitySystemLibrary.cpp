@@ -12,6 +12,7 @@
 #include "Interface/RL_CombatInterface.h"
 #include "Engine/OverlapResult.h"
 #include <Component/RL_EnemyMovementComponent.h>
+#include "GAS\RL_CustomGameplayEffectContext.h"
 
 URL_OverlayWidgetController* URL_AbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
 {
@@ -208,4 +209,21 @@ URL_EnemyConfig* URL_AbilitySystemLibrary::GetEnemyConfig(AActor* Enemy)
 		return EnemyMove->GetEnemyConfig();
 	}
 	return nullptr;
+}
+
+FVector URL_AbilitySystemLibrary::GetKonckBackImpulse(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FRLGameplayEffectContext* RPGEffectContext = static_cast<const FRLGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return RPGEffectContext->GetKnockBackImpulse();
+	}
+	return FVector();
+}
+
+void URL_AbilitySystemLibrary::SetKonckBackImpulse(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FVector InKonckBackImpulse)
+{
+	if (FRLGameplayEffectContext* RPGEffectContext = static_cast<FRLGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		RPGEffectContext->SetKnockBackImpulse(InKonckBackImpulse);
+	}
 }

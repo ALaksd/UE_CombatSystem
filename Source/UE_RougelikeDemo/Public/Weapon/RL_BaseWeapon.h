@@ -29,8 +29,12 @@ public:
 	void SetWeaponLevel(int32 NewLevel);
 
 	//武器种类
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	WeaponType Type;
+
+	//武器击退距离
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	float KnockDistance = 100.f;
 
 	/**
 	 * ItemInstanceHolder Interface

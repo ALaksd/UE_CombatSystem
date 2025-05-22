@@ -47,9 +47,16 @@ public:
 
 	/** CombatInterface */
 	virtual UAnimMontage* GetHitReactMotange_Implementation() override;
+	inline  UAnimMontage* GetLightHitReactFrontMontage_Implementation() const override { return HitReactFrontMontage; }
+	inline  UAnimMontage* GetLightHitReactBackMontage_Implementation() const override { return HitReactBackMontage; }
+	inline  UAnimMontage* GetLightHitReactLeftMontage_Implementation() const override { return HitReactFLeftMontage; }
+	inline  UAnimMontage* GetLightHitReactRightMontage_Implementation() const override { return HitReactRightMontage; }
+	inline  UAnimMontage* GetHeavyHitReactMontage_Implementation() const override { return HitReactHeavyFrontMontage; }
+
 	virtual bool isDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual void Die_Implementation() override;
+	virtual void KnockBack_Implementation(const FVector& KonckBackImpulse) override;
 	/** End CombatInterface */
 
 public:
@@ -90,6 +97,21 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
+	TObjectPtr<UAnimMontage> HitReactFrontMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
+	TObjectPtr<UAnimMontage> HitReactBackMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
+	TObjectPtr<UAnimMontage> HitReactRightMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
+	TObjectPtr<UAnimMontage> HitReactFLeftMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
+	TObjectPtr<UAnimMontage> HitReactHeavyFrontMontage;
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsDead;

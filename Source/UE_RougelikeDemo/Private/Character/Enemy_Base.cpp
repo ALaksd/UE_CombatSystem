@@ -28,7 +28,7 @@ AEnemy_Base::AEnemy_Base()
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
 	HealthBar->SetVisibility(false);
-
+	
 	EnemyMovementComponent = CreateDefaultSubobject<URL_EnemyMovementComponent>("EnemyMovementComponent");
 
 	WeaponStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("WeaponStaticMeshComponent");
@@ -123,6 +123,31 @@ UAnimMontage* AEnemy_Base::GetHitReactMotange_Implementation()
 	return EnemyMovementComponent->GetEnemyConfig()->HitReactMontage;
 }
 
+UAnimMontage* AEnemy_Base::GetLightHitReactFrontMontage_Implementation() const
+{
+	return EnemyMovementComponent->GetEnemyConfig()->HitReactFrontMontage;
+}
+
+UAnimMontage* AEnemy_Base::GetLightHitReactBackMontage_Implementation() const
+{
+	return EnemyMovementComponent->GetEnemyConfig()->HitReactBackMontage;
+}
+
+UAnimMontage* AEnemy_Base::GetLightHitReactLeftMontage_Implementation() const
+{
+	return EnemyMovementComponent->GetEnemyConfig()->HitReactRightMontage;
+}
+
+UAnimMontage* AEnemy_Base::GetLightHitReactRightMontage_Implementation() const
+{
+	return EnemyMovementComponent->GetEnemyConfig()->HitReactFLeftMontage;
+}
+
+UAnimMontage* AEnemy_Base::GetHeavyHitReactMontage_Implementation() const
+{
+	return EnemyMovementComponent->GetEnemyConfig()->HitReactHeavyFrontMontage;
+}
+
 void AEnemy_Base::Die_Implementation()
 {
 	WeaponStaticMeshComponent->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
@@ -160,6 +185,16 @@ void AEnemy_Base::Die_Implementation()
 	HealthBar->DestroyComponent();
 	
 	SetLifeSpan(5.f);
+}
+
+void AEnemy_Base::KnockBack_Implementation(const FVector& KonckBackImpulse)
+{
+	if (bIsGuardBroken || bIsStaggered)
+	{
+		FHitResult Hit;
+		GetCharacterMovement()->SafeMoveUpdatedComponent(KonckBackImpulse, GetActorRotation(), true, Hit);
+	}
+	
 }
 
 AActor* AEnemy_Base::GetCombatTarget_Implementation() const

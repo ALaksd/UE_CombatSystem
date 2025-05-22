@@ -34,6 +34,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Damage")
 	float ReduceSantiyFactor = 0.5f;
 
+	//击退距离，击退的力 = 敌人当时的朝向 * 击退距离
+	UPROPERTY(EditAnywhere, Category = "Damage")
+	float KnockDistance = 150.f;
+
 	// 攻击检测范围
 	UPROPERTY(EditAnywhere, Category = "Detection")
 	FVector RectangleParam = FVector(20, 20, 60); // 前向50，横向50，垂直50

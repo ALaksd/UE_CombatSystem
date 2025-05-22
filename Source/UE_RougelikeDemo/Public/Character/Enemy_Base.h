@@ -44,6 +44,8 @@ private:
 	FGameplayTagContainer StateTags;
 
 public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void ChangeLockPointColor(bool bIsRed);
 	// 正面处决动画
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
 	TObjectPtr<UAnimMontage> Aim_Execute_F;
@@ -64,9 +66,15 @@ public:
 
 	/** CombatInterface */
 	virtual UAnimMontage* GetHitReactMotange_Implementation() override;
+	virtual  UAnimMontage* GetLightHitReactFrontMontage_Implementation() const override;
+	virtual  UAnimMontage* GetLightHitReactBackMontage_Implementation() const override;
+	virtual  UAnimMontage* GetLightHitReactLeftMontage_Implementation() const override;
+	virtual  UAnimMontage* GetLightHitReactRightMontage_Implementation() const override;
+	virtual  UAnimMontage* GetHeavyHitReactMontage_Implementation() const override;
+
 	virtual void Die_Implementation() override;
 	FORCEINLINE virtual bool isDead_Implementation() const override {return bDead;}
-
+	virtual void KnockBack_Implementation(const FVector& KonckBackImpulse) override;
 	/** End ComvatInterface */
 
 	/** EnemyInterface */
@@ -168,7 +176,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<URL_EnemyMovementComponent> EnemyMovementComponent;
-
+	
 	/** UI */
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> HealthBar;
