@@ -54,4 +54,12 @@ public:
 
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	static URL_EnemyConfig* GetEnemyConfig(AActor* Enemy);
+
+
+	UFUNCTION(BlueprintPure, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
+
+	static FVector GetKonckBackImpulse(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
+	static void SetKonckBackImpulse(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FVector InKonckBackImpulse);
 };

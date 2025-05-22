@@ -8,6 +8,7 @@
 
 #include "Character/Enemy_Base.h"
 #include "GameFramework/Character.h"
+#include <GAS/RL_AbilitySystemLibrary.h>
 
 UAS_Base::UAS_Base()
 {
@@ -77,14 +78,33 @@ void UAS_Base::PostGameplayEffectExecute(const struct FGameplayEffectModCallback
 
 			if (!bFatal)
 			{
-				FGameplayTagContainer TagContainer;
-				TagContainer.AddTag(FGameplayTag::RequestGameplayTag(FName("Effect.HitReact")));
-				// 获取来源角色
-				FGameplayEffectContextHandle EffectContextHandle = Data.EffectSpec.GetContext();
-				UAbilitySystemComponent* SourceASC = EffectContextHandle.GetInstigatorAbilitySystemComponent();
-				if (!SourceASC) return;
-				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+				//击退
+				const FVector& KnockBackImpusle = URL_AbilitySystemLibrary::GetKonckBackImpulse(Props.EffectContextHandle);
+				// 计算击退力的大小
+				float KnockbackMagnitude = KnockBackImpusle.Size();  // 这个值越大，表示击退越强
+
+				FGameplayEventData EventData;
+				EventData.Instigator = Props.SourceAvatarActor;
+				EventData.Target = Props.TargetAvatarActor;
+				EventData.EventMagnitude = KnockbackMagnitude; // 传入击退力的大小
+				EventData.ContextHandle = Props.EffectContextHandle;
+
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+					Props.TargetAvatarActor,
+					FGameplayTag::RequestGameplayTag(FName("Event.HitReact")),
+					EventData
+				);
+
+			
+				if (!KnockBackImpusle.IsNearlyZero(10.f))
+				{
+					if (Props.TargetAvatarActor->Implements<URL_CombatInterface>())
+					{
+						IRL_CombatInterface::Execute_KnockBack(Props.TargetAvatarActor, KnockBackImpusle);
+					}
+				}
 			}
+
 			else
 			{
 				if (Props.TargetAvatarActor->Implements<URL_CombatInterface>())

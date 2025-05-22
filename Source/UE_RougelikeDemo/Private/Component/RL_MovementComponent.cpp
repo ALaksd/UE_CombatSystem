@@ -440,7 +440,7 @@ void URL_MovementComponent::CancelLockOn()
 {
 	//取消锁定
 	ownerCharacter->Tags.Remove(PlayerLockingTag);
-	if (CurrentTarget->Implements<URL_EnemyInterface>())
+	if (CurrentTarget&&CurrentTarget->Implements<URL_EnemyInterface>())
 	{
 		IRL_EnemyInterface::Execute_SetLockTarget(CurrentTarget, false);
 	}

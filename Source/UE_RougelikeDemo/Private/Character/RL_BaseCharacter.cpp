@@ -213,6 +213,13 @@ void ARL_BaseCharacter::Die_Implementation()
 	GetWorld()->GetTimerManager().SetTimer(ReStartTimerHandle,this,&ARL_BaseCharacter::ReStart,5.f,false);
 }
 
+void ARL_BaseCharacter::KnockBack_Implementation(const FVector& KonckBackImpulse)
+{
+	// 移动（带碰撞）
+	FHitResult Hit;
+	GetCharacterMovement()->SafeMoveUpdatedComponent(KonckBackImpulse, GetActorRotation(), true, Hit);
+}
+
 void ARL_BaseCharacter::ReStart()
 {
 	if (URL_SavePointSubsystem* SavePointSubSystem = GetWorld()->GetGameInstance()->GetSubsystem<URL_SavePointSubsystem>())

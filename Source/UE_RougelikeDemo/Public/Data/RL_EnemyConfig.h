@@ -96,6 +96,21 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
+	TObjectPtr<UAnimMontage> HitReactFrontMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
+	TObjectPtr<UAnimMontage> HitReactBackMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
+	TObjectPtr<UAnimMontage> HitReactRightMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
+	TObjectPtr<UAnimMontage> HitReactFLeftMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
+	TObjectPtr<UAnimMontage> HitReactHeavyFrontMontage;
+
 
 	//特殊受击动画(被弹反)
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")

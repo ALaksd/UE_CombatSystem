@@ -64,9 +64,15 @@ public:
 
 	/** CombatInterface */
 	virtual UAnimMontage* GetHitReactMotange_Implementation() override;
+	virtual  UAnimMontage* GetLightHitReactFrontMontage_Implementation() const override;
+	virtual  UAnimMontage* GetLightHitReactBackMontage_Implementation() const override;
+	virtual  UAnimMontage* GetLightHitReactLeftMontage_Implementation() const override;
+	virtual  UAnimMontage* GetLightHitReactRightMontage_Implementation() const override;
+	virtual  UAnimMontage* GetHeavyHitReactMontage_Implementation() const override;
+
 	virtual void Die_Implementation() override;
 	FORCEINLINE virtual bool isDead_Implementation() const override {return bDead;}
-
+	virtual void KnockBack_Implementation(const FVector& KonckBackImpulse) override;
 	/** End ComvatInterface */
 
 	/** EnemyInterface */
