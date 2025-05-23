@@ -10,6 +10,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include <GAS/RL_AbilitySystemLibrary.h>
+#include "AbilitySystemComponent.h"
 
 UGA_HitReact::UGA_HitReact()
 {
@@ -26,6 +27,9 @@ UGA_HitReact::UGA_HitReact()
 void UGA_HitReact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	ActorInfo->AbilitySystemComponent->RemoveLooseGameplayTag(FGameplayTag::RequestGameplayTag("State.BounceBack"));
+	ActorInfo->AbilitySystemComponent->SetTagMapCount(FGameplayTag::RequestGameplayTag("State.BounceBack"), 0);
 
 	// 获取击退大小和方向
 	float KnockbackMagnitude = TriggerEventData ? TriggerEventData->EventMagnitude : 0.f;
