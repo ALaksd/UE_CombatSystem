@@ -233,6 +233,11 @@ void AEnemy_Base::SetHitShake_Implementation(FName BoneName, FVector ShakeDirect
 	PlayBoneShake(BoneName, ShakeDirection, Magnitude);
 }
 
+UAS_Enemy* AEnemy_Base::GetEnemyAttributeSet_Implementation() const
+{
+	return Cast<UAS_Enemy>(AttributeSet);
+}
+
 void AEnemy_Base::StaminaReduceCallBack()
 {
 	GetWorldTimerManager().ClearTimer(StaminaReduceTimer);
@@ -345,9 +350,17 @@ void AEnemy_Base::BeginPlay()
 			}
 		);
 
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetMaxStaminaAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxStaminaChanged.Broadcast(Data.NewValue);
+			}
+		);
+
 		OnHealthChanged.Broadcast(EnemyAttributeSet->GetHealth());
 		OnMaxHealthChanged.Broadcast(EnemyAttributeSet->GetMaxHealth());
 		OnStaminaChanged.Broadcast(EnemyAttributeSet->GetStamina());
+		OnMaxStaminaChanged.Broadcast(EnemyAttributeSet->GetMaxStamina());
 
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetStaminaAttribute()).AddUObject<AEnemy_Base>(this,&AEnemy_Base::StaminaAttributeChangeCallback);
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetResilienceAttribute()).AddUObject<AEnemy_Base>(this,&AEnemy_Base::ResilienceAttributeChangeCallback);

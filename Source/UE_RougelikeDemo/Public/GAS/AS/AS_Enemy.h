@@ -25,7 +25,6 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category = "Attribute")
 	FGameplayAttributeData Resilience;
 	ATTRIBUTE_ACCESSORS(UAS_Enemy, Resilience);
-private:
 	
 	//韧性最大值
 	UPROPERTY(EditDefaultsOnly,Category = "Attribute")

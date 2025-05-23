@@ -48,9 +48,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Detection")
 	FName AttackSocketName = "AttackSocket";
 
-	UPROPERTY(EditDefaultsOnly, Category = "Parry")
-	TSubclassOf<UGameplayEffect> ParryAttributeEffect;
-
 protected:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
 	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference) override;
@@ -62,7 +59,7 @@ private:
 	UPROPERTY()
 	AActor* OwnerActor; // 攻击者
 
-	void CauseDamage(AActor* TargetActor);
+	void CauseDamage(AActor* TargetActor,FVector HitLoction,FVector HitNormal);
 	void DetectAndApplyDamage(USkeletalMeshComponent* MeshComp, FVector& Center, FRotator& Rotation);
 
 	// 攻击检测范围

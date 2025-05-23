@@ -11,6 +11,9 @@
 #include <AIController.h>
 #include <BehaviorTree/BehaviorTreeComponent.h>
 #include "GAS/RL_AbilitySystemLibrary.h"
+#include <AbilitySystemInterface.h>
+#include <Interface/RL_EnemyInterface.h>
+#include "GAS/AS/AS_Enemy.h"
 
 void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
@@ -59,34 +62,34 @@ void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* Mesh
 {
 	if (!OwnerActor) return;
 
-	TArray<AActor*> HitActors;
+	TArray<FHitResult> Hits;
 	TArray<AActor*> ActorsToIgnore;
 	ActorsToIgnore.Add(OwnerActor);
 
 	URL_AbilitySystemLibrary::GetLivePlayersInEllipse(
 		OwnerActor,
-		HitActors,
+		Hits,
 		ActorsToIgnore,
 		Center,
 		RectangleParam, // 前向500，横向300，垂直200
 		Rotation,
 		true,    // 开启调试绘制
-		2.0f,    // 显示2秒
+		1.0f,    // 显示2秒
 		FColor::Emerald
 	);
 
 	// 3. 处理命中结果
-	for (AActor* HitActor : HitActors)
+	for (const FHitResult& Hit : Hits)
 	{
-		if (HitActor && !AlreadyHitActors.Contains(HitActor))
+		if (Hit.GetActor() && !AlreadyHitActors.Contains(Hit.GetActor()))
 		{
-			CauseDamage(HitActor);
-			AlreadyHitActors.Add(HitActor); // 避免重复伤害
+			CauseDamage(Hit.GetActor(),Hit.ImpactPoint,Hit.ImpactNormal);
+			AlreadyHitActors.Add(Hit.GetActor()); // 避免重复伤害
 		}
 	}
 }
 
-void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor)
+void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor, FVector HitLoction, FVector HitNormal)
 {
 	if (!DamageEffectClass || !OwnerActor) return;
 
@@ -116,39 +119,36 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor)
 		AAIController* AIController = Cast<AAIController>(OwnerActor->GetInstigatorController());
 		UBehaviorTreeComponent* BTComponent = AIController ? AIController->FindComponentByClass<UBehaviorTreeComponent>() : nullptr;
 
+		// 1. 播放弹反Cue
+		FGameplayCueParameters ParryCueParams;
+		ParryCueParams.Instigator = OwnerActor; //击中者，敌人
+		ParryCueParams.Location = HitLoction; //击中位置
+		ParryCueParams.Normal = HitNormal;  //击中法向
+		TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Parry"), ParryCueParams);
 
-		// 1. 停止行为树
-		if (BTComponent)
-		{
-			// 中止当前运行的任务
-			BTComponent->RestartTree();
-		}
+		// 2. 减少属性
+		// 动态创建GE实例（使用SourceASC作为Outer防止GC回收）
+		UGameplayEffect* DynamicParryGE = NewObject<UGameplayEffect>(SourceASC, FName(TEXT("DynamicParryGE")));
+		DynamicParryGE->DurationPolicy = EGameplayEffectDurationType::Instant; // 即时生效
 
-		// 2. 播放特殊受击动画
-		if (USkeletalMeshComponent* Mesh = OwnerActor->FindComponentByClass<USkeletalMeshComponent>())
+		// 添加属性修饰符（这里减少体力）
+		FGameplayModifierInfo& Modifier = DynamicParryGE->Modifiers.AddDefaulted_GetRef();
+		UAS_Enemy* AS;
+		if (OwnerActor->Implements<URL_EnemyInterface>())
 		{
-			if (UAnimInstance* AnimInstance = Mesh->GetAnimInstance())
+			AS = IRL_EnemyInterface::Execute_GetEnemyAttributeSet(OwnerActor);
+			if (AS)
 			{
-				// 立即停止所有动画
-				AnimInstance->StopAllMontages(0.1f);
+				Modifier.Attribute = FGameplayAttribute(AS->GetStaminaAttribute()); 
+				Modifier.ModifierOp = EGameplayModOp::Additive; // 修改类型：叠加
+				FScalableFloat Magnitude;
+				Magnitude.Value = -Damage * 2.0f; // 暂时造成敌人伤害两倍的属性削减
+				Modifier.ModifierMagnitude = Magnitude;
 
-				UAnimMontage* ParryHitMontage = URL_AbilitySystemLibrary::GetEnemyConfig(OwnerActor)->ParryHitMontage;
-				// 播放受击动画
-				if (ParryHitMontage)
-				{
-					AnimInstance->Montage_Play(ParryHitMontage, 1.0f, EMontagePlayReturnType::MontageLength, 0.0f, true);
-				}
+				// 创建效果规格并应用
+				FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
+				SourceASC->ApplyGameplayEffectToSelf(DynamicParryGE,1.f, Context);
 			}
-		}
-
-		// 3. 减少属性
-		// 创建临时GE
-		FGameplayEffectContextHandle EffectContext = SourceASC->MakeEffectContext();
-		FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(ParryAttributeEffect, 1, EffectContext);
-
-		if (SpecHandle.IsValid())
-		{
-			SourceASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 
 		// 弹反成功直接返回，不执行后续伤害逻辑
@@ -178,7 +178,21 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor)
 	FVector KonckBackVector = (OwnerActor->GetActorLocation() - TargetActor->GetActorLocation()).GetSafeNormal();
 	URL_AbilitySystemLibrary::SetKonckBackImpulse(Context, KonckBackVector * KnockDistance);
 
+	const float IntensityMultiplier = FMath::GetMappedRangeValueClamped(
+		FVector2D(100.f, 300.f),
+		FVector2D(1.0f, 2.0f),
+		KnockDistance
+	);
+
 	FGameplayEffectSpecHandle DamageSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, 1.0f, Context);
+
+	//执行GameplayCue
+	FGameplayCueParameters CueParams;
+	CueParams.Instigator = TargetActor; //击中者，就是玩家
+	CueParams.Location = HitLoction; //击中位置
+	CueParams.Normal = HitNormal;  //击中法向
+	CueParams.NormalizedMagnitude = IntensityMultiplier;
+	TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Enemy.MeeleHit"), CueParams);
 
 	// 设置伤害值
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(

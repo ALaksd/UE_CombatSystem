@@ -19,6 +19,7 @@ class UWidgetComponent;
 class URL_EnemyMovementComponent;
 class USplineComponent;
 class UNiagaraComponent;
+class UAS_Enemy;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLock, bool, bLock);
 
@@ -87,6 +88,7 @@ public:
 	virtual void SetLockTarget_Implementation(bool bInLock) override;
 	virtual void SetLockUIRed_Implementation(bool bInRedLock) override;
 	virtual void SetHitShake_Implementation(FName BoneName, FVector ShakeDirection, float Magnitude);
+	virtual UAS_Enemy* GetEnemyAttributeSet_Implementation() const;
 	/** End EnemyInterface */
 
 	/*-------------------------破防状态相关-------------------------*/
@@ -188,6 +190,9 @@ protected:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnMaxHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxStaminaChanged;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnStaminaChanged;

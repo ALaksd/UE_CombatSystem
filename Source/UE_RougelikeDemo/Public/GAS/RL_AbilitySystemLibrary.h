@@ -42,7 +42,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ability|Library", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "ActorsToIgnore"))
 	static void GetLivePlayersInEllipse(
 		const UObject* WorldContextObject,
-		TArray<AActor*>& OutOverlappingActors,
+		TArray<FHitResult>& OutHitResults,
 		const TArray<AActor*>& ActorsToIgnore,
 		const FVector& CenterLocation,
 		const FVector EllipseRadii,  // X=前向半径，Y=横向半径，Z=垂直半径（可选）

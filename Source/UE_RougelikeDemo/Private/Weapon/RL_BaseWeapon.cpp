@@ -120,16 +120,20 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 							URL_AbilitySystemLibrary::SetHitBoneName(Context, OutHits[j].BoneName);
 
 
-							////执行GameplayCue
-							//FGameplayCueParameters CueParams;
-							//CueParams.EffectContext = Context;
-							//CueParams.RawMagnitude = DamageMultiplier * KnockDistance; // 力量
-							//IAbilitySystemInterface* AbilityStystemInterface = Cast<IAbilitySystemInterface>(HitActor);
-							//if (AbilityStystemInterface)
-							//{
-							//	UAbilitySystemComponent* TargetASC = AbilityStystemInterface->GetAbilitySystemComponent();
-							//	TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.HitReact"), CueParams);
-							//}
+							//执行GameplayCue
+							FGameplayCueParameters CueParams;
+							CueParams.Instigator = WeaponOwner; //造成伤害者
+							CueParams.Location = OutHits[j].ImpactPoint; //击中位置
+							CueParams.Normal = OutHits[j].ImpactNormal;  //击中法向
+							CueParams.PhysicalMaterial = OutHits[j].PhysMaterial;  //击中物理材质
+							CueParams.NormalizedMagnitude = DamageMultiplier;  //击中强度,根据武器的倍率来计算
+
+							IAbilitySystemInterface* AbilityStystemInterface = Cast<IAbilitySystemInterface>(HitActor);
+							if (AbilityStystemInterface)
+							{
+								UAbilitySystemComponent* TargetASC = AbilityStystemInterface->GetAbilitySystemComponent();
+								TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.MeeleHit"), CueParams);
+							}
 						
 							DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet, WeaponLevel, Context);
 
