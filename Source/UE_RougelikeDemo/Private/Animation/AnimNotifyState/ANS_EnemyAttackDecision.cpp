@@ -101,7 +101,7 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor, FVector HitLocti
 	// 弹反判断条件 ---------------------------------------------------
 	bool bCanParry = false;
 
-	const FGameplayTag ParryTag = FGameplayTag::RequestGameplayTag("Ability.BounceBack");
+	const FGameplayTag ParryTag = FGameplayTag::RequestGameplayTag("State.BounceBack");
 	const FGameplayTag RedDamageTag = FGameplayTag::RequestGameplayTag("damage.Red");
 
 	// 检查玩家是否有弹反Tag
