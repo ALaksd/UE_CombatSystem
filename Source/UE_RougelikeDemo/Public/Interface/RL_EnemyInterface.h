@@ -41,4 +41,9 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetHealthBarVisible(bool bVisible) const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetHitShake(FName BoneName, FVector ShakeDirection, float Magnitude);
+
+	
 };

@@ -43,9 +43,11 @@ struct FRLGameplayEffectContext :public FGameplayEffectContext
 	GENERATED_BODY()
 
 public:
-	FVector GetKnockBackImpulse() const { return KnockBackImpulse; }
+	FORCEINLINE FVector GetKnockBackImpulse() const { return KnockBackImpulse; }
+	FORCEINLINE FName GetHitBoneName() const { return HitBoneName; }
 
-	void SetKnockBackImpulse(FVector& InKnockBackImpulse) { KnockBackImpulse = InKnockBackImpulse; }
+	FORCEINLINE void SetKnockBackImpulse(FVector& InKnockBackImpulse) { KnockBackImpulse = InKnockBackImpulse; }
+	FORCEINLINE void SetHitBoneName(FName& InHitBoneName) { HitBoneName = InHitBoneName; }
 
 	/** Returns the actual struct used for serialization, subclasses must override this! */
 	virtual UScriptStruct* GetScriptStruct() const
@@ -71,6 +73,9 @@ protected:
 
 	UPROPERTY()
 	FVector KnockBackImpulse = FVector::ZeroVector;
+
+	UPROPERTY()
+	FName HitBoneName = FName();
 };
 
 template<>

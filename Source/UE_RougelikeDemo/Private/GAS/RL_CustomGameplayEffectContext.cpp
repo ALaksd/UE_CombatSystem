@@ -38,9 +38,13 @@ bool FRLGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bool
 		{
 			RepBits |= 1 << 7;
 		}
+		if (!HitBoneName.IsNone())
+		{
+			RepBits |= 1 << 8;
+		}
 	}
 
-	Ar.SerializeBits(&RepBits, 19);
+	Ar.SerializeBits(&RepBits, 20);
 
 	if (RepBits & (1 << 0))
 	{
@@ -87,6 +91,14 @@ bool FRLGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bool
 	{
 		KnockBackImpulse.NetSerialize(Ar, Map, bOutSuccess);
 	}
+
+	if (RepBits & (1 << 8))
+	{
+		FString BoneString = HitBoneName.ToString();
+		Ar << BoneString;
+		HitBoneName = FName(*BoneString);
+	}
+
 
 	if (Ar.IsLoading())
 	{

@@ -175,7 +175,7 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor)
 	Context.AddSourceObject(OwnerActor);
 
 	//传入击退参数
-	FVector KonckBackVector = OwnerActor->GetActorForwardVector();
+	FVector KonckBackVector = (OwnerActor->GetActorLocation() - TargetActor->GetActorLocation()).GetSafeNormal();
 	URL_AbilitySystemLibrary::SetKonckBackImpulse(Context, KonckBackVector * KnockDistance);
 
 	FGameplayEffectSpecHandle DamageSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, 1.0f, Context);

@@ -57,7 +57,9 @@ public:
 	// 处理处决
 	void Execute(bool bIsForward);
 
-
+	//骨骼抖动,因为涉及到时间轴，所以在蓝图实现
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayBoneShake(FName BoneName, FVector ShakeDirection, float Magnitude);
 	
 	// 接收伤害
 	virtual void TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) const override;
@@ -84,7 +86,7 @@ public:
 	virtual void SetHealthBarVisible_Implementation(bool bVisible) const override;
 	virtual void SetLockTarget_Implementation(bool bInLock) override;
 	virtual void SetLockUIRed_Implementation(bool bInRedLock) override;
-
+	virtual void SetHitShake_Implementation(FName BoneName, FVector ShakeDirection, float Magnitude);
 	/** End EnemyInterface */
 
 	/*-------------------------破防状态相关-------------------------*/

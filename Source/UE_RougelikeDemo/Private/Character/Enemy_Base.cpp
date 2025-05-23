@@ -228,6 +228,11 @@ void AEnemy_Base::SetLockUIRed_Implementation(bool bInRedLock)
 	bRedLock = bInRedLock;
 }
 
+void AEnemy_Base::SetHitShake_Implementation(FName BoneName, FVector ShakeDirection, float Magnitude)
+{
+	PlayBoneShake(BoneName, ShakeDirection, Magnitude);
+}
+
 void AEnemy_Base::StaminaReduceCallBack()
 {
 	GetWorldTimerManager().ClearTimer(StaminaReduceTimer);
@@ -358,8 +363,12 @@ void AEnemy_Base::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	RLAIController = Cast<ARL_AIController>(NewController);
-	RLAIController->GetBlackboardComponent()->InitializeBlackboard(*BeahabviorTree->BlackboardAsset);
-	RLAIController->RunBehaviorTree(BeahabviorTree);
+	if (BeahabviorTree)
+	{
+		RLAIController->GetBlackboardComponent()->InitializeBlackboard(*BeahabviorTree->BlackboardAsset);
+		RLAIController->RunBehaviorTree(BeahabviorTree);
+	}
+	
 }
 
 void AEnemy_Base::InitAbilityActorInfo()

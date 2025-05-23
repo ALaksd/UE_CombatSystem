@@ -220,10 +220,27 @@ FVector URL_AbilitySystemLibrary::GetKonckBackImpulse(const FGameplayEffectConte
 	return FVector();
 }
 
+FName URL_AbilitySystemLibrary::GetHitBoneName(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FRLGameplayEffectContext* RPGEffectContext = static_cast<const FRLGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return RPGEffectContext->GetHitBoneName();
+	}
+	return FName();
+}
+
 void URL_AbilitySystemLibrary::SetKonckBackImpulse(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FVector InKonckBackImpulse)
 {
 	if (FRLGameplayEffectContext* RPGEffectContext = static_cast<FRLGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
 		RPGEffectContext->SetKnockBackImpulse(InKonckBackImpulse);
+	}
+}
+
+void URL_AbilitySystemLibrary::SetHitBoneName(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FName InHitBoneName)
+{
+	if (FRLGameplayEffectContext* RPGEffectContext = static_cast<FRLGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		RPGEffectContext->SetHitBoneName(InHitBoneName);
 	}
 }

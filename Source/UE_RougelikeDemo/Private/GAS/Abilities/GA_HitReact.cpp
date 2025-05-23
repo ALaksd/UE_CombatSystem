@@ -9,6 +9,7 @@
 #include <Interface/RL_PlayerInterface.h>
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include <GAS/RL_AbilitySystemLibrary.h>
 
 UGA_HitReact::UGA_HitReact()
 {
@@ -28,7 +29,12 @@ void UGA_HitReact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 
 	// 获取击退大小和方向
 	float KnockbackMagnitude = TriggerEventData ? TriggerEventData->EventMagnitude : 0.f;
-  	FVector KnockbackDirection = (TriggerEventData->Instigator->GetActorLocation() - ActorInfo->AvatarActor->GetActorLocation()).GetSafeNormal();  // 方向示例
+  	//FVector KnockbackDirection = (TriggerEventData->Instigator->GetActorLocation() - ActorInfo->AvatarActor->GetActorLocation()).GetSafeNormal();  // 方向示例
+
+	const FVector KnockbackDirection = URL_AbilitySystemLibrary::GetKonckBackImpulse(TriggerEventData->ContextHandle).GetSafeNormal();
+
+	//获取击中骨骼名
+	const FName HitBoneName = URL_AbilitySystemLibrary::GetHitBoneName(TriggerEventData->ContextHandle);
 
 	// 根据大小和方向选择适当的受击动画
 	UAnimMontage* HitMontage = nullptr;

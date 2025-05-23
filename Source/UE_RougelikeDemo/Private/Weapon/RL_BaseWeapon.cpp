@@ -13,6 +13,7 @@
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryItemInstance.h"
 #include "UE_RougelikeDemo/UE_RougelikeDemo.h"
 #include <GAS/RL_AbilitySystemLibrary.h>
+#include <Interface/RL_EnemyInterface.h>
 
 // Sets default values
 ARL_BaseWeapon::ARL_BaseWeapon()
@@ -91,7 +92,7 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 			TArray<FHitResult> OutHits;
 			TArray<AActor*> ActorsToIgnore;
 			ActorsToIgnore.Add(WeaponOwner);
-			bool bHit = UKismetSystemLibrary::LineTraceMultiForObjects(GetWorld(),Start,End,ObjectTypes,false,ActorsToIgnore,DrawDebugType,OutHits,true,TraceColor,TraceHitColor,DrawTime);
+			bool bHit = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),Start,End,15.f,ObjectTypes,false,ActorsToIgnore,DrawDebugType,OutHits,true,TraceColor,TraceHitColor,DrawTime);
 			//bool bHit = GetWorld()->LineTraceMultiByChannel(OutHits, Start, End, ECC_Enemy);
 
 			if (bHit)
@@ -99,7 +100,6 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 				for (int j = 0; j < OutHits.Num(); j++)
 				{
 					AActor* HitActor = OutHits[j].GetActor();
-					//GEngine->AddOnScreenDebugMessage(-1,0.1,FColor::Red,FString::Printf(TEXT("%s"),*HitActor->GetName()));
 
 					if (!HitActors.Contains(HitActor))//此Actor没被检测过
 					{
@@ -107,15 +107,35 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 						//执行伤害逻辑
 						if (IRL_DamageInterface* DamageInterface = Cast<IRL_DamageInterface>(HitActor))
 						{
-							//传入击退参数
+							//传入自定义的参数
 							FGameplayEffectContextHandle Context = WeaponASC->MakeEffectContext();
-							FVector KonckBackVector = WeaponOwner->GetActorForwardVector();
+							//FVector KonckBackVector = (WeaponOwner->GetActorLocation() - HitActor->GetActorLocation()).GetSafeNormal();
+							FVector KonckBackVector = OutHits[j].ImpactNormal;
 							float DamageMultiplier = WeaponAttribute->GetDamageMultiplier();
 							FVector KonckImpulse = KonckBackVector * DamageMultiplier * KnockDistance;
+
+							//传入击退参数
 							URL_AbilitySystemLibrary::SetKonckBackImpulse(Context, KonckImpulse);
+							//传入击中骨骼名字参数
+							URL_AbilitySystemLibrary::SetHitBoneName(Context, OutHits[j].BoneName);
+
+
+							////执行GameplayCue
+							//FGameplayCueParameters CueParams;
+							//CueParams.EffectContext = Context;
+							//CueParams.RawMagnitude = DamageMultiplier * KnockDistance; // 力量
+							//IAbilitySystemInterface* AbilityStystemInterface = Cast<IAbilitySystemInterface>(HitActor);
+							//if (AbilityStystemInterface)
+							//{
+							//	UAbilitySystemComponent* TargetASC = AbilityStystemInterface->GetAbilitySystemComponent();
+							//	TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.HitReact"), CueParams);
+							//}
+						
 							DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet, WeaponLevel, Context);
 
 							DamageInterface->TakeDamage(DamageSpecHandle);
+
+							IRL_EnemyInterface::Execute_SetHitShake(HitActor, OutHits[j].BoneName, KonckBackVector, DamageMultiplier * KnockDistance);
 						}
 					}
 				}
