@@ -34,6 +34,18 @@ class UE_ROUGELIKEDEMO_API UGA_Dodge : public UGA_Base
 	UPROPERTY(EditDefaultsOnly,Category = "Defense")
 	TObjectPtr<UAnimMontage> DodgeMontageR;
 
+	UPROPERTY(EditDefaultsOnly,Category = "Defense")
+	TObjectPtr<UAnimMontage> DodgeMontageLF;
+
+	UPROPERTY(EditDefaultsOnly,Category = "Defense")
+	TObjectPtr<UAnimMontage> DodgeMontageLB;
+
+	UPROPERTY(EditDefaultsOnly,Category = "Defense")
+	TObjectPtr<UAnimMontage> DodgeMontageRF;
+
+	UPROPERTY(EditDefaultsOnly,Category = "Defense")
+	TObjectPtr<UAnimMontage> DodgeMontageRB;
+
 	UFUNCTION()
 	void OnMontageCompleted();
 };

@@ -79,7 +79,7 @@ void UArmorComponent::InitArmor()
 	{
 		AttachedActor = Owner->GetWorld()->SpawnActor<AActor>(Pair.Value, Owner->GetActorLocation(), FRotator::ZeroRotator);
 		// 尝试获取目标插槽，附加到物体上
-		if (SkeletalMeshComp && !Pair.Key.IsNone())
+		if (SkeletalMeshComp && !Pair.Key.IsNone() && AttachedActor)
 		{
 			// 使用 AttachToComponent 将附加的 Actor 绑定到插槽上
 			EAttachmentRule LocationRule = EAttachmentRule::SnapToTarget;
