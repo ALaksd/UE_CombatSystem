@@ -70,5 +70,8 @@ void UGA_DefenseBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const 
 
 void UGA_DefenseBase::OnMontageCompleted()
 {
+	GetActorInfo().AbilitySystemComponent->RemoveLooseGameplayTag(FGameplayTag::RequestGameplayTag("State.BounceBack"));
+	GetActorInfo().AbilitySystemComponent->SetTagMapCount(FGameplayTag::RequestGameplayTag("State.BounceBack"), 0);
+
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }

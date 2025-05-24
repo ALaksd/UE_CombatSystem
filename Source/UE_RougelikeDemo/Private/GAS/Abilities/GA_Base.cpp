@@ -8,10 +8,6 @@ void UGA_Base::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FG
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-
-	ActorInfo->AbilitySystemComponent->RemoveLooseGameplayTag(FGameplayTag::RequestGameplayTag("State.BounceBack"));
-	ActorInfo->AbilitySystemComponent->SetTagMapCount(FGameplayTag::RequestGameplayTag("State.BounceBack"), 0);
 }
 
 void UGA_Base::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, 

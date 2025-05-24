@@ -46,6 +46,8 @@ void UAS_Enemy::PostAttributeChange(const FGameplayAttribute& Attribute, float O
 
 void UAS_Enemy::HandleSpecialDamage(float& Damage)
 {
+	Super::HandleSpecialDamage(Damage);
+
 	if (AEnemy_Base* Enemy = Cast<AEnemy_Base>(GetOwningActor()))
 	{
 		if (Enemy->bIsGuardBroken)

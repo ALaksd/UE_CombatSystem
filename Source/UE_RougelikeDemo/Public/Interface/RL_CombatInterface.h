@@ -55,4 +55,8 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void KnockBack(const FVector& KonckBackImpulse);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+
+	void ShowDamageText(float Damage);
 };
