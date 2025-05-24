@@ -42,6 +42,7 @@ public:
 	virtual int32 GetSpellPoints_Implementation() const override;
 	virtual void AddSpellPoints_Implementation(int32 InSpellPoints) override;
 	virtual int32 GetLevelRequirement_Implementation(int32 InLevel) const override;
+	virtual UAS_Player* GetPlayerAS_Implementation() const override;
 	
 	/** End PlayerInterfece  */
 

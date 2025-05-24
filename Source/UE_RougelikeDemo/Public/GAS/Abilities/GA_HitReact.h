@@ -25,6 +25,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> HitReactEffectClass;
 
+	virtual bool CanbeHit();
+
 private:
 	UPROPERTY()
 	FActiveGameplayEffectHandle ActiveHitReact;

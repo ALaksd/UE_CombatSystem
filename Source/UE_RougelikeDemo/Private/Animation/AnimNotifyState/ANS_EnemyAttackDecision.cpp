@@ -14,6 +14,7 @@
 #include <AbilitySystemInterface.h>
 #include <Interface/RL_EnemyInterface.h>
 #include "GAS/AS/AS_Enemy.h"
+#include "Engine/OverlapResult.h"
 
 void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
@@ -71,12 +72,13 @@ void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* Mesh
 		Hits,
 		ActorsToIgnore,
 		Center,
-		RectangleParam, // 前向500，横向300，垂直200
+		RectangleParam,
 		Rotation,
-		true,    // 开启调试绘制
-		1.0f,    // 显示2秒
+		true,   
+		0.f,
 		FColor::Emerald
 	);
+
 
 	// 3. 处理命中结果
 	for (const FHitResult& Hit : Hits)

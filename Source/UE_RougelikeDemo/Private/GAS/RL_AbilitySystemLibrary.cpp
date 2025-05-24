@@ -176,7 +176,7 @@ void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldConte
 			DebugColor,
 			false,
 			DebugDuration,
-			0,
+			0.f,
 			2.0f
 		);
 	}

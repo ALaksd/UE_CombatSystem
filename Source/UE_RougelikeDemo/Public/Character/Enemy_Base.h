@@ -47,16 +47,13 @@ private:
 public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ChangeLockPointColor(bool bIsRed);
-	// 正面处决动画
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
-	TObjectPtr<UAnimMontage> Aim_Execute_F;
-	// 背面处决动画
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
-	TObjectPtr<UAnimMontage> Aim_Execute_B;
+
 	// 敌人是否发现玩家的标识
 	bool bIsFindPlayer;
 	// 处理处决
 	void Execute(bool bIsForward);
+
+	bool GetbIsExectute() { return bIsExecuting; }
 
 	//骨骼抖动,因为涉及到时间轴，所以在蓝图实现
 	UFUNCTION(BlueprintImplementableEvent)
@@ -129,7 +126,7 @@ protected:
 	
 	// 蹒跚时间
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
-	float StaggeredTime;
+	float StaggeredTime = 1.f;
 	// 破防时间
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
 	float GuardBrokenTime;

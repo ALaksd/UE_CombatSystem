@@ -40,7 +40,7 @@ public:
 	UPROPERTY()
 	TObjectPtr<AEnemy_Base> EnemyRef;
 	
-private:
+protected:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
 
 	//属性修改前调用
@@ -49,4 +49,6 @@ private:
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)override;
 
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+
+	virtual void HandleSpecialDamage(float& Damage) override;
 };

@@ -14,6 +14,9 @@
 #include "UE_RougelikeDemo/UE_RougelikeDemo.h"
 #include <GAS/RL_AbilitySystemLibrary.h>
 #include <Interface/RL_EnemyInterface.h>
+#include <Interface/RL_PlayerInterface.h>
+#include "GAS/AS/AS_Player.h"
+#include <System/RL_SanitySubsystem.h>
 
 // Sets default values
 ARL_BaseWeapon::ARL_BaseWeapon()
@@ -128,13 +131,17 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 							CueParams.PhysicalMaterial = OutHits[j].PhysMaterial;  //击中物理材质
 							CueParams.NormalizedMagnitude = DamageMultiplier;  //击中强度,根据武器的倍率来计算
 
-							IAbilitySystemInterface* AbilityStystemInterface = Cast<IAbilitySystemInterface>(HitActor);
-							if (AbilityStystemInterface)
+							IAbilitySystemInterface* TargetAbilityStystemInterface = Cast<IAbilitySystemInterface>(HitActor);
+							if (TargetAbilityStystemInterface)
 							{
-								UAbilitySystemComponent* TargetASC = AbilityStystemInterface->GetAbilitySystemComponent();
+								UAbilitySystemComponent* TargetASC = TargetAbilityStystemInterface->GetAbilitySystemComponent();
 								TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.MeeleHit"), CueParams);
 							}
 						
+							RestoreAttachResourceAndSanity(DamageMultiplier);
+					
+
+
 							DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet, WeaponLevel, Context);
 
 							DamageInterface->TakeDamage(DamageSpecHandle);
@@ -148,6 +155,44 @@ void ARL_BaseWeapon::Tick(float DeltaTime)
 		SetLastPointsLocation();
 		
 	}
+}
+
+void ARL_BaseWeapon::RestoreAttachResourceAndSanity(float DamageMultiplier)
+{
+	// 创建动态GE增加玩家的气势值
+	IAbilitySystemInterface* SourceAbilityStystemInterface = Cast<IAbilitySystemInterface>(WeaponOwner);
+	if (SourceAbilityStystemInterface)
+	{
+		UAbilitySystemComponent* SourceASC = SourceAbilityStystemInterface->GetAbilitySystemComponent();
+		UGameplayEffect* DynamicParryGE = NewObject<UGameplayEffect>(SourceASC, FName(TEXT("DynamicParryGE")));
+		DynamicParryGE->DurationPolicy = EGameplayEffectDurationType::Instant; // 即时生效
+
+		FGameplayModifierInfo& Modifier = DynamicParryGE->Modifiers.AddDefaulted_GetRef();
+		if (WeaponOwner->Implements<URL_PlayerInterface>())
+		{
+			UAS_Player* AS = IRL_PlayerInterface::Execute_GetPlayerAS(WeaponOwner);
+			if (AS)
+			{
+				Modifier.Attribute = FGameplayAttribute(AS->GetAttachResourceAttribute());
+				Modifier.ModifierOp = EGameplayModOp::Additive; // 修改类型：叠加
+				FScalableFloat Magnitude;
+				Magnitude.Value = 1.f * DamageMultiplier; // 暂时10 * 武器倍率
+				Modifier.ModifierMagnitude = Magnitude;
+
+				// 创建效果规格并应用
+				FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
+				SourceASC->ApplyGameplayEffectToSelf(DynamicParryGE, 1.f, Context);
+			}
+		}
+	}
+
+	//恢复理智
+	URL_SanitySubsystem* SanitySubsystem = GetGameInstance()->GetSubsystem<URL_SanitySubsystem>();
+	if (SanitySubsystem)
+	{
+		SanitySubsystem->RestoreSanity(5.f * DamageMultiplier);
+	}
+
 }
 
 void ARL_BaseWeapon::StartCombat()

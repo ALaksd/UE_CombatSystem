@@ -102,5 +102,8 @@ protected:
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)override;
 	//设置Effect的属性
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
+
+	//特殊伤害处理
+	virtual void HandleSpecialDamage(float& Damage);
 	
 };

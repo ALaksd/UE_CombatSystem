@@ -66,9 +66,7 @@ void UAS_Base::PostGameplayEffectExecute(const struct FGameplayEffectModCallback
 
 		if (LocalIncomingDamage >= 0.f)
 		{
-			if (AEnemy_Base* Enemy = Cast<AEnemy_Base>(GetOwningActor()))
-				if (Enemy->bIsGuardBroken)
-					LocalIncomingDamage = LocalIncomingDamage*1.2;
+			HandleSpecialDamage(LocalIncomingDamage);
 
 			LocalIncomingDamage -= GetDefensePower();
 			const float NewHealth = GetHealth() - LocalIncomingDamage;
@@ -152,4 +150,9 @@ void UAS_Base::SetEffectProperties(const FGameplayEffectModCallbackData& Data, F
 		Props.TargetCharacter = Cast<ACharacter>(Props.TargetAvatarActor);
 		Props.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
 	}
+}
+
+void UAS_Base::HandleSpecialDamage(float& Damage)
+{
+	
 }
