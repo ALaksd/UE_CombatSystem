@@ -13,6 +13,7 @@ class URL_EnemyInterface : public UInterface
 	GENERATED_BODY()
 };
 
+class UAS_Enemy;
 /**
  * 
  */
@@ -45,5 +46,6 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetHitShake(FName BoneName, FVector ShakeDirection, float Magnitude);
 
-	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAS_Enemy* GetEnemyAttributeSet() const;
 };

@@ -138,11 +138,10 @@ void URL_AbilitySystemLibrary::GetLivePlayerWithRadius(const UObject* WorldConte
 	}
 }
 
-void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, const FVector& CenterLocation, const FVector EllipseRadii, FRotator Orientation, bool bDrawDebug, float DebugDuration, FColor DebugColor)
+void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldContextObject, TArray<FHitResult>& OutHitResults, const TArray<AActor*>& ActorsToIgnore, const FVector& CenterLocation, const FVector EllipseRadii, FRotator Orientation, bool bDrawDebug, float DebugDuration, FColor DebugColor)
 {
-	OutOverlappingActors.Reset();
+	OutHitResults.Reset();
 
-	// 参数有效性检查
 	if (EllipseRadii.X <= 0 || EllipseRadii.Y <= 0 || EllipseRadii.Z <= 0) return;
 
 	FCollisionQueryParams QueryParams;
@@ -152,21 +151,21 @@ void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldConte
 	const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 	if (!World) return;
 
-	// 创建椭圆碰撞形状（使用Box近似）
+	// Sweep 检测：中心不动，但因为是 Box，会返回每个接触点的 FHitResult
 	FCollisionShape CollisionShape = FCollisionShape::MakeBox(EllipseRadii);
 	const FQuat Rotation = Orientation.Quaternion();
 
-	TArray<FOverlapResult> OverlapResults;
-	bool bHasOverlaps = World->OverlapMultiByObjectType(
-		OverlapResults,
+	TArray<FHitResult> HitResults;
+	bool bHasHit = World->SweepMultiByObjectType(
+		HitResults,
 		CenterLocation,
+		CenterLocation, // start == end，等于 overlap
 		Rotation,
 		FCollisionObjectQueryParams(FCollisionObjectQueryParams::AllDynamicObjects),
 		CollisionShape,
 		QueryParams
 	);
 
-	// 调试绘制
 	if (bDrawDebug)
 	{
 		DrawDebugBox(
@@ -176,25 +175,22 @@ void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldConte
 			Rotation,
 			DebugColor,
 			false,
-			0.1f, // 每帧刷新
-			0,
-			2.0f  // 线条粗细
+			DebugDuration,
+			0.f,
+			2.0f
 		);
 	}
 
-	// 处理检测结果
-	for (const FOverlapResult& Result : OverlapResults)
+	// 过滤有效命中
+	for (const FHitResult& Hit : HitResults)
 	{
-		AActor* HitActor = Result.GetActor();
+		AActor* HitActor = Hit.GetActor();
 		if (!HitActor) continue;
 
 		if (HitActor->Implements<URL_CombatInterface>() &&
 			!IRL_CombatInterface::Execute_isDead(HitActor))
 		{
-			if (AActor* Avatar = IRL_CombatInterface::Execute_GetAvatar(HitActor))
-			{
-				OutOverlappingActors.AddUnique(Avatar);
-			}
+			OutHitResults.Add(Hit); // 保留完整的 FHitResult
 		}
 	}
 }

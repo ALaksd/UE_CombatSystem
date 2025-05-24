@@ -93,23 +93,30 @@ public:
 
 
 	// 受击动画
-	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage|Hurt")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage|Hurt")
 	TObjectPtr<UAnimMontage> HitReactFrontMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage|Hurt")
 	TObjectPtr<UAnimMontage> HitReactBackMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage|Hurt")
 	TObjectPtr<UAnimMontage> HitReactRightMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage|Hurt")
 	TObjectPtr<UAnimMontage> HitReactFLeftMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage|Hurt")
 	TObjectPtr<UAnimMontage> HitReactHeavyFrontMontage;
+
+	// 正面处决动画
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy|AnimMontage|Execute")
+	TObjectPtr<UAnimMontage> Aim_Execute_F;
+	// 背面处决动画
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy|AnimMontage|Execute")
+	TObjectPtr<UAnimMontage> Aim_Execute_B;
 
 
 	//特殊受击动画(被弹反)

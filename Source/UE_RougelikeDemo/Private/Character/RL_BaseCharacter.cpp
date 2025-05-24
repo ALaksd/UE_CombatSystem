@@ -183,6 +183,11 @@ int32 ARL_BaseCharacter::GetLevelRequirement_Implementation(int32 InLevel) const
 	return PlayerState->GetLevelRequirement(InLevel);
 }
 
+UAS_Player* ARL_BaseCharacter::GetPlayerAS_Implementation() const
+{
+	return Cast<UAS_Player>(PlayerState->GetAttributeSet());
+}
+
 UAnimMontage* ARL_BaseCharacter::GetHitReactMotange_Implementation()
 {
 	return HitReactMontage;

@@ -45,8 +45,20 @@ public:
 	virtual void SetItemInstance_Implementation(URLInventoryItemInstance* NewInstance) override { ItemInstance = NewInstance; }
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly , Category = Mesh)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Mesh")
 	class USkeletalMeshComponent* Mesh;
+
+	//要执行的碰撞检测对象，填Enemy
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Attack Collision")
+	TArray<TEnumAsByte<EObjectTypeQuery> > ObjectTypes;
+
+	//单次攻击恢复的信仰值，会乘以武器当前的攻击倍率
+	UPROPERTY(EditDefaultsOnly)
+	float RestoreAttach = 0.2f;
+
+	//单次攻击恢复的信理智值，会乘以武器当前的攻击倍率
+	UPROPERTY(EditDefaultsOnly)
+	float RestoreSanity = 5.f;
 	
 private:
 	UPROPERTY()
@@ -78,9 +90,6 @@ private:
 	//射线检测碰到的Actor，用于避免二次受伤
 	UPROPERTY()
 	TArray<AActor*> HitActors;
-	//要执行的碰撞检测对象，填Enemy
-	UPROPERTY(EditDefaultsOnly,Category="Attack Collision")
-	TArray<TEnumAsByte<EObjectTypeQuery> > ObjectTypes;
 
 	FGameplayEffectSpecHandle DamageSpecHandle;
 
@@ -96,6 +105,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
+
+	void RestoreAttachResourceAndSanity(float DamageMultiplier);
 
 private:
 	void GetCurrentPointsLocation();

@@ -585,13 +585,6 @@ void URL_MovementComponent::UpdateLockOnRotation(float DeltaTime)
 	{
 		Controller->SetControlRotation(TargetRotation + RotatorOffest);
 	}
-
-	// 调试绘制
-#if ENABLE_DRAW_DEBUG
-	const FVector TargetLocation = CurrentTarget->GetActorLocation() + FVector(0, 0, 80.f); // 目标高
-	DrawDebugSphere(GetWorld(), TargetLocation, 30, 12, FColor::Red);
-	DrawDebugLine(GetWorld(), ownerCharacter->GetActorLocation(), TargetLocation, FColor::Green);
-#endif
 }
 
 void URL_MovementComponent::SwitchTargetLeft()

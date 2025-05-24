@@ -45,52 +45,39 @@ AEnemy_Base::AEnemy_Base()
 
 void AEnemy_Base::Execute(bool bIsForward)
 {
-	if (bIsExecuting) return ;
-	
+	if (bIsExecuting) return;
 	bIsExecuting = true;
-	AddTag(FName("EnemyState.GuardBroken"));
+	AddTag(FName("EnemyState.Execute"));
+
+	GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
+
+	float Time;
 	if (bIsForward)
 	{
-		float Time = PlayAnimMontage(Aim_Execute_F);
-		FTimerHandle TimerHandle;
-		GetWorldTimerManager().SetTimer(TimerHandle,[this]()
-		{
-			// 处决完成,退出破防状态,体力值回满
-			bIsGuardBroken=false;
-			RemoveTag(FName("EnemyState.GuardBroken"));
-
-			// 回复体力
-			FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
-			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
-
-			UE_LOG(LogTemp,Warning,TEXT("Execute!!!"));
-			GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
-			bIsExecuting=false;
-		},Time,false);
+		Time = PlayAnimMontage(EnemyMovementComponent->GetEnemyConfig()->Aim_Execute_F);
 	}
 	else
 	{
-		float Time = PlayAnimMontage(Aim_Execute_B);
-		FTimerHandle TimerHandle;
-		GetWorldTimerManager().SetTimer(TimerHandle,[this]()
-		{
-			// 处决完成,退出破防状态,体力值回满
-			bIsGuardBroken=false;
-			RemoveTag(FName("EnemyState.GuardBroken"));
-
-			// 回复体力
-			FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
-			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
-			
-			GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
-			bIsExecuting=false;
-			
-		},Time,false);
+		Time = PlayAnimMontage(EnemyMovementComponent->GetEnemyConfig()->Aim_Execute_B);
 	}
 
-	SetLockUIRed_Implementation(false);
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, [this]()
+		{
+			bIsGuardBroken = false;
+			RemoveTag(FName("EnemyState.GuardBroken"));
+			RemoveTag(FName("EnemyState.Execute"));
 
+			// 回复体力
+			FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina, 1, AbilitySystemComponent->MakeEffectContext());
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+
+			bIsExecuting = false;
+		}, Time, false);
+
+	SetLockUIRed_Implementation(false);
 }
+
 
 void AEnemy_Base::TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) const
 {
@@ -197,6 +184,11 @@ void AEnemy_Base::KnockBack_Implementation(const FVector& KonckBackImpulse)
 	
 }
 
+void AEnemy_Base::ShowDamageText_Implementation(float Damage)
+{
+	OnDamageChanged.Broadcast(Damage);
+}
+
 AActor* AEnemy_Base::GetCombatTarget_Implementation() const
 {
 	return TargetActor;
@@ -233,6 +225,11 @@ void AEnemy_Base::SetHitShake_Implementation(FName BoneName, FVector ShakeDirect
 	PlayBoneShake(BoneName, ShakeDirection, Magnitude);
 }
 
+UAS_Enemy* AEnemy_Base::GetEnemyAttributeSet_Implementation() const
+{
+	return Cast<UAS_Enemy>(AttributeSet);
+}
+
 void AEnemy_Base::StaminaReduceCallBack()
 {
 	GetWorldTimerManager().ClearTimer(StaminaReduceTimer);
@@ -267,6 +264,7 @@ void AEnemy_Base::GuardBroken()
 	//该状态下敌人无法攻击
 	//受到的伤害增加（受到的伤害*1.2)		1
 	//并能被处决							1
+	GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
 
 	GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
 	GetWorldTimerManager().SetTimer(GuardBrokenTimer,[this]()
@@ -287,6 +285,7 @@ void AEnemy_Base::Staggered()
 	AddTag(FName("EnemyState.Staggered"));
 	bIsStaggered=true;
 
+	GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
 
 	GetWorldTimerManager().ClearTimer(StaggeredTimer);
 	GetWorldTimerManager().SetTimer(StaggeredTimer,[this]()
@@ -345,9 +344,17 @@ void AEnemy_Base::BeginPlay()
 			}
 		);
 
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetMaxStaminaAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxStaminaChanged.Broadcast(Data.NewValue);
+			}
+		);
+
 		OnHealthChanged.Broadcast(EnemyAttributeSet->GetHealth());
 		OnMaxHealthChanged.Broadcast(EnemyAttributeSet->GetMaxHealth());
 		OnStaminaChanged.Broadcast(EnemyAttributeSet->GetStamina());
+		OnMaxStaminaChanged.Broadcast(EnemyAttributeSet->GetMaxStamina());
 
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetStaminaAttribute()).AddUObject<AEnemy_Base>(this,&AEnemy_Base::StaminaAttributeChangeCallback);
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetResilienceAttribute()).AddUObject<AEnemy_Base>(this,&AEnemy_Base::ResilienceAttributeChangeCallback);

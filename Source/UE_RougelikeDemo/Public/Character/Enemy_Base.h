@@ -19,8 +19,10 @@ class UWidgetComponent;
 class URL_EnemyMovementComponent;
 class USplineComponent;
 class UNiagaraComponent;
+class UAS_Enemy;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLock, bool, bLock);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDamageChaned, float, Damage);
 
 UCLASS()
 class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface,
@@ -46,16 +48,13 @@ private:
 public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ChangeLockPointColor(bool bIsRed);
-	// 正面处决动画
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
-	TObjectPtr<UAnimMontage> Aim_Execute_F;
-	// 背面处决动画
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
-	TObjectPtr<UAnimMontage> Aim_Execute_B;
+
 	// 敌人是否发现玩家的标识
 	bool bIsFindPlayer;
 	// 处理处决
 	void Execute(bool bIsForward);
+
+	bool GetbIsExectute() { return bIsExecuting; }
 
 	//骨骼抖动,因为涉及到时间轴，所以在蓝图实现
 	UFUNCTION(BlueprintImplementableEvent)
@@ -77,6 +76,7 @@ public:
 	virtual void Die_Implementation() override;
 	FORCEINLINE virtual bool isDead_Implementation() const override {return bDead;}
 	virtual void KnockBack_Implementation(const FVector& KonckBackImpulse) override;
+	virtual void ShowDamageText_Implementation(float Damage) override;
 	/** End ComvatInterface */
 
 	/** EnemyInterface */
@@ -87,6 +87,7 @@ public:
 	virtual void SetLockTarget_Implementation(bool bInLock) override;
 	virtual void SetLockUIRed_Implementation(bool bInRedLock) override;
 	virtual void SetHitShake_Implementation(FName BoneName, FVector ShakeDirection, float Magnitude);
+	virtual UAS_Enemy* GetEnemyAttributeSet_Implementation() const;
 	/** End EnemyInterface */
 
 	/*-------------------------破防状态相关-------------------------*/
@@ -118,6 +119,9 @@ public:
 	/** 锁定 */
 	UPROPERTY(BlueprintAssignable)
 	FOnLock OnLock;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnDamageChaned OnDamageChanged;
 	
 protected:
 	// 处决用
@@ -127,7 +131,7 @@ protected:
 	
 	// 蹒跚时间
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
-	float StaggeredTime;
+	float StaggeredTime = 1.f;
 	// 破防时间
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
 	float GuardBrokenTime;
@@ -188,6 +192,9 @@ protected:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnMaxHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxStaminaChanged;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnStaminaChanged;
