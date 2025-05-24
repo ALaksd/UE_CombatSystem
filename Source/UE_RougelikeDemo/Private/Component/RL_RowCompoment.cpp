@@ -21,30 +21,30 @@ void URL_RowCompoment::BeginPlay()
 	}
 }
 
-//¿ªÊ¼Ãé×¼²¢Éú³É¹­¼ı
+//å¼€å§‹ç„å‡†å¹¶ç”Ÿæˆå¼“ç®­
 void URL_RowCompoment::AimBegin()
 {
 	IsAiming = true;
 	if (AttachCharacter)
 	{
-		//ÉèÖÃÊ¹ÓÃ¿ØÖÆÆ÷ËùĞèµÄĞı×ª
+		//è®¾ç½®ä½¿ç”¨æ§åˆ¶å™¨æ‰€éœ€çš„æ—‹è½¬
 		AttachCharacter->GetCharacterMovement()->bUseControllerDesiredRotation = true;
-		//ÉèÖÃ½«×ªÏò³¯ÖÁÔË¶¯
+		//è®¾ç½®å°†è½¬å‘æœè‡³è¿åŠ¨
 		AttachCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
-		//ÉèÖÃ½ÇÉ«Ğı×ªËÙÂÊ
+		//è®¾ç½®è§’è‰²æ—‹è½¬é€Ÿç‡
 		AttachCharacter->GetCharacterMovement()->RotationRate = AimRotaion;
 	}
 
-	//ÉèÖÃ¹­µÄ×´Ì¬
+	//è®¾ç½®å¼“çš„çŠ¶æ€
 	Bow->BowState = EBowState::Aim;
-	//Éú³É¹­¼ı
+	//ç”Ÿæˆå¼“ç®­
 	SpawnArrow();
 
-	// ¹ã²¥Ãé×¼¿ªÊ¼µÄÊÂ¼ş
+	// å¹¿æ’­ç„å‡†å¼€å§‹çš„äº‹ä»¶
 	OnAimBegin.Broadcast();
 }
 
-//½áÊøÃé×¼²¢Ïú»Ù¹­¼ı
+//ç»“æŸç„å‡†å¹¶é”€æ¯å¼“ç®­
 void URL_RowCompoment::AimEnd()
 {
 	IsAiming = false;
@@ -58,10 +58,10 @@ void URL_RowCompoment::AimEnd()
 
 	Bow->BowState = EBowState::Idle;
 
-	//Ïú»Ù¹­¼ı
+	//é”€æ¯å¼“ç®­
 	DestroyArrow();
 
-	// ¹ã²¥Ãé×¼½áÊøµÄÊÂ¼ş
+	// å¹¿æ’­ç„å‡†ç»“æŸçš„äº‹ä»¶
 	OnAimEnd.Broadcast();
 }
 
@@ -89,7 +89,7 @@ void URL_RowCompoment::DestroyArrow()
 
 void URL_RowCompoment::PullBowBegin()
 {
-	//Ã»ÓĞÀ­¹­²¢ÇÒÕıÔÚÃé×¼Ê±
+	//æ²¡æœ‰æ‹‰å¼“å¹¶ä¸”æ­£åœ¨ç„å‡†æ—¶
 	if (!IsPulling && IsAiming)
 	{
 		if (!IsWaitingToPulling)
@@ -97,7 +97,7 @@ void URL_RowCompoment::PullBowBegin()
 			IsPulling = true;
 			PullBowDuration = 0.0f;
 
-			//ÉèÖÃ½ÇÉ«ËÙ¶È
+			//è®¾ç½®è§’è‰²é€Ÿåº¦
 			AttachCharacter->GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 			GetWorld()->GetTimerManager().SetTimer(PullBowTimeHandle, this, &URL_RowCompoment::UpdatePullBowDuration, PullIncreasTime, true);
 
@@ -120,7 +120,7 @@ void URL_RowCompoment::PullBowEnd()
 
 	AttachCharacter->GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 
-	// Í£Ö¹¶¨Ê±Æ÷
+	// åœæ­¢å®šæ—¶å™¨
 	GetWorld()->GetTimerManager().ClearTimer(PullBowTimeHandle);
 	
 	Bow->PullBowEnd();
@@ -132,7 +132,7 @@ void URL_RowCompoment::UpdatePullBowDuration()
 {
 	PullBowDuration += PullIncreasTime;
 	OnPullBegin.Broadcast(PullBowDuration, Bow->MaxPullTime);
-	// ´¦ÀíÀ­¹­Ê±³¤£¬ÀıÈç·¢Éä¼ı»òµ÷Õû¼ıµÄËÙ¶ÈµÈ
+	// å¤„ç†æ‹‰å¼“æ—¶é•¿ï¼Œä¾‹å¦‚å‘å°„ç®­æˆ–è°ƒæ•´ç®­çš„é€Ÿåº¦ç­‰
 	//UE_LOG(LogTemp, Warning, TEXT("Bow pulled for %f seconds"), PullBowDuration);
 }
 
@@ -142,13 +142,13 @@ void URL_RowCompoment::FireArrowBegin()
 	{
 		IsFiring = true;
 
-		//¼ÆËãÀ­¹­Á¦¶È
+		//è®¡ç®—æ‹‰å¼“åŠ›åº¦
 		float Strength = UKismetMathLibrary::NormalizeToRange(PullBowDuration, 0.0f, 1.0f);
 		Strength = FMath::Clamp(Strength, 0.0f, 1.0f);
 		FireArrow(Strength);
 		SpawnedArrow = nullptr;
 		PullBowEnd();
-		 // ²¥·ÅÃÉÌ«Ææ
+		 // æ’­æ”¾è’™å¤ªå¥‡
 		UAnimInstance* AnimInstance = AttachCharacter->GetMesh()->GetAnimInstance();
 		if (AnimInstance && FireMontage)
 		{
@@ -156,7 +156,7 @@ void URL_RowCompoment::FireArrowBegin()
 			FOnMontageEnded EndDelegate;
 			EndDelegate.BindUObject(this, &URL_RowCompoment::OnMontageEnded);
 
-			// ÉèÖÃÃÉÌ«Ææ½áÊøÊ±µÄÎ¯ÍĞ
+			// è®¾ç½®è’™å¤ªå¥‡ç»“æŸæ—¶çš„å§”æ‰˜
 			AnimInstance->Montage_SetEndDelegate(EndDelegate);
 
 			
@@ -167,7 +167,7 @@ void URL_RowCompoment::FireArrowBegin()
 
 void URL_RowCompoment::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	// µ±ÃÉÌ«Ææ²¥·Å½áÊø»ò±»´ò¶ÏÊ±µ÷ÓÃ FireArrowEnd
+	// å½“è’™å¤ªå¥‡æ’­æ”¾ç»“æŸæˆ–è¢«æ‰“æ–­æ—¶è°ƒç”¨ FireArrowEnd
 	FireArrowEnd();
 }
 
@@ -188,11 +188,11 @@ void URL_RowCompoment::FireArrow(float Strength)
 {
 	if (SpawnedArrow)
 	{
-		//Óëowner·ÖÀë
+		//ä¸owneråˆ†ç¦»
 		SpawnedArrow->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		if (AttachCharacter)
 		{
-			//ÉèÖÃ·¢ÉäËÙ¶È
+			//è®¾ç½®å‘å°„é€Ÿåº¦
 			SpawnedArrow->Fire(CalculateArrowDirection(), Strength);
 		}
 	}
@@ -200,7 +200,7 @@ void URL_RowCompoment::FireArrow(float Strength)
 
 FVector URL_RowCompoment::CalculateArrowDirection()
 {
-	//»ñÈ¡½ÇÉ«Ïà»ú×é¼ş
+	//è·å–è§’è‰²ç›¸æœºç»„ä»¶
 	UCameraComponent* CameraComponent = Cast<UCameraComponent>(AttachCharacter->GetComponentByClass(UCameraComponent::StaticClass()));
 	if (!CameraComponent)
 	{
@@ -211,12 +211,12 @@ FVector URL_RowCompoment::CalculateArrowDirection()
 	FVector Direction = CameraComponent->GetForwardVector();
 	FVector End = Start + Direction * 10000.0f;
 
-	// ÉäÏß¼ì²âÃüÖĞ½á¹û
+	// å°„çº¿æ£€æµ‹å‘½ä¸­ç»“æœ
 	FHitResult  HitResult;
 
-	//½øĞĞÉäÏß¼ì²â
+	//è¿›è¡Œå°„çº¿æ£€æµ‹
 	FCollisionQueryParams QueryParams;
-	//ºöÂÔ½ÇÉ«×Ô¼º
+	//å¿½ç•¥è§’è‰²è‡ªå·±
 	QueryParams.AddIgnoredActor(AttachCharacter);
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(
@@ -230,14 +230,14 @@ FVector URL_RowCompoment::CalculateArrowDirection()
 	FVector FinalDirection;
 	if (bHit)
 	{
-		FinalDirection = HitResult.Location - AttachCharacter->GetMesh()->GetSocketLocation(ArrowSocket);  // ´ÓÏà»úÎ»ÖÃµ½ÃüÖĞµãµÄ·½Ïò
+		FinalDirection = HitResult.Location - AttachCharacter->GetMesh()->GetSocketLocation(ArrowSocket);  // ä»ç›¸æœºä½ç½®åˆ°å‘½ä¸­ç‚¹çš„æ–¹å‘
 	}
 	else
 	{
-		FinalDirection = End - AttachCharacter->GetMesh()->GetSocketLocation(ArrowSocket);  // Èç¹ûÃ»ÓĞÃüÖĞÈÎºÎÎïÌå£¬³¯Ç°·½ 10000 µ¥Î»µÄ·½Ïò
+		FinalDirection = End - AttachCharacter->GetMesh()->GetSocketLocation(ArrowSocket);  // å¦‚æœæ²¡æœ‰å‘½ä¸­ä»»ä½•ç‰©ä½“ï¼Œæœå‰æ–¹ 10000 å•ä½çš„æ–¹å‘
 	}
 		
-	// ¹éÒ»»¯·½ÏòÏòÁ¿ÒÔÈ·±£ËüÊÇµ¥Î»ÏòÁ¿
+	// å½’ä¸€åŒ–æ–¹å‘å‘é‡ä»¥ç¡®ä¿å®ƒæ˜¯å•ä½å‘é‡
 	return FinalDirection.GetSafeNormal();
 }
 
