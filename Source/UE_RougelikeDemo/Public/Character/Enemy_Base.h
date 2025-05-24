@@ -22,6 +22,7 @@ class UNiagaraComponent;
 class UAS_Enemy;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLock, bool, bLock);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDamageChaned, float, Damage);
 
 UCLASS()
 class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface,
@@ -75,6 +76,7 @@ public:
 	virtual void Die_Implementation() override;
 	FORCEINLINE virtual bool isDead_Implementation() const override {return bDead;}
 	virtual void KnockBack_Implementation(const FVector& KonckBackImpulse) override;
+	virtual void ShowDamageText_Implementation(float Damage) override;
 	/** End ComvatInterface */
 
 	/** EnemyInterface */
@@ -117,6 +119,9 @@ public:
 	/** 锁定 */
 	UPROPERTY(BlueprintAssignable)
 	FOnLock OnLock;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnDamageChaned OnDamageChanged;
 	
 protected:
 	// 处决用

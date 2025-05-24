@@ -184,6 +184,11 @@ void AEnemy_Base::KnockBack_Implementation(const FVector& KonckBackImpulse)
 	
 }
 
+void AEnemy_Base::ShowDamageText_Implementation(float Damage)
+{
+	OnDamageChanged.Broadcast(Damage);
+}
+
 AActor* AEnemy_Base::GetCombatTarget_Implementation() const
 {
 	return TargetActor;

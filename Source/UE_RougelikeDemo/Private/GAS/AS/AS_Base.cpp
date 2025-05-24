@@ -68,9 +68,14 @@ void UAS_Base::PostGameplayEffectExecute(const struct FGameplayEffectModCallback
 		{
 			HandleSpecialDamage(LocalIncomingDamage);
 
-			LocalIncomingDamage -= GetDefensePower();
 			const float NewHealth = GetHealth() - LocalIncomingDamage;
 			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+
+			//显示伤害数字
+			if (Props.TargetAvatarActor->Implements<URL_CombatInterface>())
+			{
+				IRL_CombatInterface::Execute_ShowDamageText(Props.TargetAvatarActor, LocalIncomingDamage);
+			}
 
 			//是否致命伤害
 			const bool bFatal = NewHealth <= 0.f;
@@ -154,5 +159,5 @@ void UAS_Base::SetEffectProperties(const FGameplayEffectModCallbackData& Data, F
 
 void UAS_Base::HandleSpecialDamage(float& Damage)
 {
-	
+	Damage -= GetDefensePower();
 }
