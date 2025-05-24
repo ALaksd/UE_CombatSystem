@@ -3,10 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Weapon/RL_BaseWeapon.h"
-#include "Sound/SoundCue.h"
+#include "GameFramework/Actor.h"
 #include "RL_Bow.generated.h"
 
+
+enum class E_WeaponType : uint8;
+class UCapsuleComponent;
+class ARL_ProjectileBase;
 
 UENUM(BlueprintType)
 enum class EBowState : uint8
@@ -16,15 +19,19 @@ enum class EBowState : uint8
 	Draw, 
 };
 
+class UAudioComponent;
+
 UCLASS()
-class UE_ROUGELIKEDEMO_API ARL_Bow : public ARL_BaseWeapon
+class UE_ROUGELIKEDEMO_API ARL_Bow : public AActor
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Audio")
-	USoundCue* BowDrawSound;
+	ARL_Bow();
 
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<ACharacter> OwnerCharacter;
+	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
 	EBowState BowState;
 
@@ -33,8 +40,41 @@ public:
 	//停止播放拉弓声音
 	void PullBowEnd();
 
+	
 	//最大拉弓时间
 	float MaxPullTime = 1.0f;
 
-	class UAudioComponent* SoundToPlay;
+	UFUNCTION(BlueprintCallable)
+	USkeletalMeshComponent* GetMesh(){return SkeletalMeshComponent;}
+protected:
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Components")
+	TObjectPtr<UCapsuleComponent> CapsuleComponent;
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Components")
+	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
+
+	// 箭矢
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Arrow")
+	TSubclassOf<ARL_ProjectileBase> ArrowClass;
+
+	// 箭矢生成位置插槽
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Arrow | Attribute")
+	FName SpawnSocke;
+	
+	// 发射箭矢
+	/// 
+	/// @param AimLocation 目标位置
+	void FireProjectile(FVector AimLocation);
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Audio")
+	USoundCue* BowDrawSound;
+
+
+	E_WeaponType WeaponType;
+
+
+
+
+	UPROPERTY()
+	UAudioComponent* SoundToPlay;
 };
