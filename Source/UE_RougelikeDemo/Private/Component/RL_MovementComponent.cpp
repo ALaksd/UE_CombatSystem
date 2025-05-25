@@ -103,7 +103,7 @@ void URL_MovementComponent::BeginPlay()
 
 void URL_MovementComponent::Move(const FInputActionValue& Value)
 {
-	if (!ownerCharacter || !playerController) return;
+	if (!ownerCharacter || !playerController || !bAccecptInput) return;
 	
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	

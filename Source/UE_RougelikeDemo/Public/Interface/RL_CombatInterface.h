@@ -42,7 +42,7 @@ public:
 
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetFacingTarget(FVector TargetLoction);
+	void SetFacingTarget(FVector TargetLoction,float Offest = 0.f);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool isDead() const;

@@ -243,16 +243,19 @@ void URL_AbilitySystemLibrary::SetHitBoneName(UPARAM(ref)FGameplayEffectContextH
 
 void URL_AbilitySystemLibrary::ApplyTemporaryTag(UAbilitySystemComponent* ASC, const FGameplayTag& Tag, float Duration)
 {
-	if (!ASC) return;
+	if (!ASC || !Tag.IsValid()) return;
 
-	UGameplayEffect* GE = NewObject<UGameplayEffect>(ASC);
-	GE->DurationPolicy = EGameplayEffectDurationType::HasDuration;
-	GE->DurationMagnitude = FScalableFloat(Duration);
-	GE->InheritableOwnedTagsContainer.AddTag(Tag);
+	// 添加临时Tag
+	ASC->AddLooseGameplayTag(Tag);
 
-	FGameplayEffectContextHandle Context = ASC->MakeEffectContext();
-	ASC->ApplyGameplayEffectToSelf(GE, 1.0f, Context);
+	// 创建定时器来移除
+	FTimerHandle TimerHandle;
+	ASC->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [ASC, Tag]()
+		{
+			ASC->RemoveLooseGameplayTag(Tag);
+		}, Duration, false);
 }
+
 
 void URL_AbilitySystemLibrary::ApplyChangeAttributeEffect(UAbilitySystemComponent* SourceASC, FGameplayAttribute bChangedAttribute, float InMagnitude)
 {

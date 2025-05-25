@@ -197,6 +197,9 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 			}
 		}
 
+		URL_AbilitySystemLibrary::ApplyTemporaryTag(TargetASC, FGameplayTag::RequestGameplayTag("State.BounceBack.Continuous"), 1.f);
+
+
 		//后退(测试)
 		if (TargetActor->Implements<URL_CombatInterface>())
 		{
