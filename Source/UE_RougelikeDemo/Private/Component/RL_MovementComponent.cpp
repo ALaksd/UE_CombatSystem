@@ -103,7 +103,7 @@ void URL_MovementComponent::BeginPlay()
 
 void URL_MovementComponent::Move(const FInputActionValue& Value)
 {
-	if (!ownerCharacter || !playerController) return;
+	if (!ownerCharacter || !playerController || !bAccecptInput) return;
 	
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	
@@ -419,7 +419,10 @@ void URL_MovementComponent::LMBInputPressedTest(FGameplayTag InputTag)
 void URL_MovementComponent::LMBInputHeldTest(FGameplayTag InputTag)
 {
 	//GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf(TEXT("Held")));
-	CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityInputTagHeld(InputTag);
+	if (bAccecptInput)
+	{
+		CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityInputTagHeld(InputTag);
+	}
 
 	if (ownerCharacter->FindComponentByClass<URL_InputBufferComponent>()->GetbAcceptingBufferedInput())
 	{

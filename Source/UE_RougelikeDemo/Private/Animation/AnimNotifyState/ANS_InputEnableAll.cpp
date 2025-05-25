@@ -3,6 +3,7 @@
 
 #include "Animation/AnimNotifyState/ANS_InputEnableAll.h"
 #include <EnhancedInputSubsystems.h>
+#include <Component/RL_MovementComponent.h>
 
 void UANS_InputEnableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration ,const FAnimNotifyEventReference& EventReference)
 {
@@ -11,17 +12,21 @@ void UANS_InputEnableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
 
 	if (!Owner) return;
 
-	// ����ƶ�����
-	if (APlayerController* PC = Cast<APlayerController>(Owner->GetInstigatorController()))
+	//// ����ƶ�����
+	//if (APlayerController* PC = Cast<APlayerController>(Owner->GetInstigatorController()))
+	//{
+	//	if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+	//	{
+	//		if (InputSubsystem->HasMappingContext(DisableIMC))
+	//		{
+	//			InputSubsystem->RemoveMappingContext(DisableIMC);
+	//			InputSubsystem->AddMappingContext(DefaultIMC, 0);
+	//			InputSubsystem->AddMappingContext(MoveIMC, 1);
+	//		}
+	//	}
+	//}
+	if (URL_MovementComponent* MovementComp = Owner->FindComponentByClass<URL_MovementComponent>())
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
-		{
-			if (InputSubsystem->HasMappingContext(DisableIMC))
-			{
-				InputSubsystem->RemoveMappingContext(DisableIMC);
-				InputSubsystem->AddMappingContext(DefaultIMC, 0);
-				InputSubsystem->AddMappingContext(MoveIMC, 1);
-			}
-		}
+		MovementComp->SetbAcceptInput(true);
 	}
 }
