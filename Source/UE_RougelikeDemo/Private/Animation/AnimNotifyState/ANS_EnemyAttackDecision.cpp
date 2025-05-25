@@ -15,6 +15,7 @@
 #include <Interface/RL_EnemyInterface.h>
 #include "GAS/AS/AS_Enemy.h"
 #include "Engine/OverlapResult.h"
+#include <Interface/RL_CombatInterface.h>
 
 void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
@@ -101,61 +102,8 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor, FVector HitLocti
 	if (!SourceASC || !TargetASC) return;
 
 	// 弹反判断条件 ---------------------------------------------------
-	bool bCanParry = false;
-
-	const FGameplayTag ParryTag = FGameplayTag::RequestGameplayTag("State.BounceBack");
-	const FGameplayTag RedDamageTag = FGameplayTag::RequestGameplayTag("damage.Red");
-
-	// 检查玩家是否有弹反Tag
-	bool bPlayerHasParry = TargetASC->HasMatchingGameplayTag(ParryTag);
-
-	// 检查敌人是否有红光攻击Tag
-	bool bEnemyRedAttack = SourceASC->HasMatchingGameplayTag(RedDamageTag);
-
-	bCanParry = bPlayerHasParry && bEnemyRedAttack;
-
-	if (bCanParry)
-	{
-		// 弹反成功处理 -----------------------------------------------
-		// 获取敌人AI相关组件
-		AAIController* AIController = Cast<AAIController>(OwnerActor->GetInstigatorController());
-		UBehaviorTreeComponent* BTComponent = AIController ? AIController->FindComponentByClass<UBehaviorTreeComponent>() : nullptr;
-
-		// 1. 播放弹反Cue
-		FGameplayCueParameters ParryCueParams;
-		ParryCueParams.Instigator = OwnerActor; //击中者，敌人
-		ParryCueParams.Location = HitLoction; //击中位置
-		ParryCueParams.Normal = HitNormal;  //击中法向
-		TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Parry"), ParryCueParams);
-
-		// 2. 减少属性
-		// 动态创建GE实例（使用SourceASC作为Outer防止GC回收）
-		UGameplayEffect* DynamicParryGE = NewObject<UGameplayEffect>(SourceASC, FName(TEXT("DynamicParryGE")));
-		DynamicParryGE->DurationPolicy = EGameplayEffectDurationType::Instant; // 即时生效
-
-		// 添加属性修饰符（这里减少体力）
-		FGameplayModifierInfo& Modifier = DynamicParryGE->Modifiers.AddDefaulted_GetRef();
-		UAS_Enemy* AS;
-		if (OwnerActor->Implements<URL_EnemyInterface>())
-		{
-			AS = IRL_EnemyInterface::Execute_GetEnemyAttributeSet(OwnerActor);
-			if (AS)
-			{
-				Modifier.Attribute = FGameplayAttribute(AS->GetStaminaAttribute()); 
-				Modifier.ModifierOp = EGameplayModOp::Additive; // 修改类型：叠加
-				FScalableFloat Magnitude;
-				Magnitude.Value = -Damage * 2.0f; // 暂时造成敌人伤害两倍的属性削减
-				Modifier.ModifierMagnitude = Magnitude;
-
-				// 创建效果规格并应用
-				FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
-				SourceASC->ApplyGameplayEffectToSelf(DynamicParryGE,1.f, Context);
-			}
-		}
-
-		// 弹反成功直接返回，不执行后续伤害逻辑
+	if (ParryDecision(TargetASC, SourceASC, HitLoction, HitNormal, TargetActor))
 		return;
-	}
 
 	// 无敌条件判断 ---------------------------------------------------
 	const FGameplayTag InvincibleTag = FGameplayTag::RequestGameplayTag("State.Invincible");
@@ -163,14 +111,6 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor, FVector HitLocti
 	{
 		return;
 	}
-
-
-	/**
-	 * TODO:
-	 * 受击反馈
-	 * 音效
-	 * 特效
-	 */
 
 	// 正常伤害处理 ---------------------------------------------------
 	FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
@@ -188,7 +128,8 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor, FVector HitLocti
 
 	FGameplayEffectSpecHandle DamageSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, 1.0f, Context);
 
-	//执行GameplayCue
+	//执行GameplayCue, 受击反馈
+	
 	FGameplayCueParameters CueParams;
 	CueParams.Instigator = TargetActor; //击中者，就是玩家
 	CueParams.Location = HitLoction; //击中位置
@@ -211,4 +152,59 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor, FVector HitLocti
 	{
 		SanitySubsystem->ReduceSanity(Damage * ReduceSantiyFactor);
 	}
+}
+
+bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC, UAbilitySystemComponent* SourceASC, FVector& HitLoction, FVector& HitNormal, AActor* TargetActor)
+{
+	bool bCanParry = false;
+
+	const FGameplayTag ParryTag = FGameplayTag::RequestGameplayTag("State.BounceBack");
+	const FGameplayTag ParryContinuousTag = FGameplayTag::RequestGameplayTag("State.BounceBack.Continuous");
+	const FGameplayTag RedDamageTag = FGameplayTag::RequestGameplayTag("damage.Red");
+
+	// 检查玩家是否有弹反Tag
+	bool bPlayerHasParry = TargetASC->HasMatchingGameplayTag(ParryTag);
+	bool bPlayerHasContinuous = TargetASC->HasMatchingGameplayTag(ParryContinuousTag);
+
+	// 检查敌人是否有红光攻击Tag
+	bool bEnemyRedAttack = SourceASC->HasMatchingGameplayTag(RedDamageTag);
+
+
+	bCanParry = (bPlayerHasParry || bPlayerHasContinuous) && bEnemyRedAttack;
+
+	if (bCanParry)
+	{
+		// 弹反成功处理 -----------------------------------------------
+		// 获取敌人AI相关组件
+		AAIController* AIController = Cast<AAIController>(OwnerActor->GetInstigatorController());
+		UBehaviorTreeComponent* BTComponent = AIController ? AIController->FindComponentByClass<UBehaviorTreeComponent>() : nullptr;
+
+		// 1. 播放弹反Cue
+		FGameplayCueParameters ParryCueParams;
+		ParryCueParams.Instigator = OwnerActor; //击中者，敌人
+		ParryCueParams.Location = HitLoction; //击中位置
+		ParryCueParams.Normal = HitNormal;  //击中法向
+		TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Parry"), ParryCueParams);
+
+		// 2. 减少属性
+		UAS_Enemy* AS;
+		if (OwnerActor->Implements<URL_EnemyInterface>())
+		{
+			AS = IRL_EnemyInterface::Execute_GetEnemyAttributeSet(OwnerActor);
+			if (AS)
+			{
+				URL_AbilitySystemLibrary::ApplyChangeAttributeEffect(SourceASC, AS->GetStaminaAttribute(), -Damage * 2.f);
+			}
+		}
+
+		//后退(测试)
+		if (TargetActor->Implements<URL_CombatInterface>())
+		{
+			IRL_CombatInterface::Execute_KnockBack(TargetActor, (OwnerActor->GetActorForwardVector()).GetSafeNormal() * KnockDistance);
+		}
+
+		// 弹反成功直接返回，不执行后续伤害逻辑
+		return true;
+	}
+	return false;
 }

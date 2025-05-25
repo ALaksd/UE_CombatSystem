@@ -9,6 +9,7 @@
 
 
 class UGameplayEffect;
+class UAbilitySystemComponent;
 class URL_EnemyMovementComponent;
 /**
  * 
@@ -60,6 +61,7 @@ private:
 	AActor* OwnerActor; // 攻击者
 
 	void CauseDamage(AActor* TargetActor,FVector HitLoction,FVector HitNormal);
+	bool ParryDecision(UAbilitySystemComponent* TargetASC, UAbilitySystemComponent* SourceASC, FVector& HitLoction, FVector& HitNormal, AActor* TargetActor);
 	void DetectAndApplyDamage(USkeletalMeshComponent* MeshComp, FVector& Center, FRotator& Rotation);
 
 	// 攻击检测范围

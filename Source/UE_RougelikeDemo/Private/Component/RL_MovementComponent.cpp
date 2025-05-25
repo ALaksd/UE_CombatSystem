@@ -419,7 +419,10 @@ void URL_MovementComponent::LMBInputPressedTest(FGameplayTag InputTag)
 void URL_MovementComponent::LMBInputHeldTest(FGameplayTag InputTag)
 {
 	//GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf(TEXT("Held")));
-	CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityInputTagHeld(InputTag);
+	if (bAccecptInput)
+	{
+		CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityInputTagHeld(InputTag);
+	}
 
 	if (ownerCharacter->FindComponentByClass<URL_InputBufferComponent>()->GetbAcceptingBufferedInput())
 	{

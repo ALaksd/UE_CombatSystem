@@ -24,6 +24,9 @@ EBTNodeResult::Type UBTTask_ExecuteSkill::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	const FGameplayTag SkillTag = FGameplayTag::RequestGameplayTag(SkillTagName);
 
+	//攻击时清除锁定
+	//OwnerComp.GetAIOwner()->ClearFocus(EAIFocusPriority::Gameplay);
+
 	if (UAbilitySystemComponent* ASC = GetAbilitySystem(OwnerComp.GetAIOwner()->GetPawn()))
 	{
 		// 修正问题3：替换FindAbilitySpecFromTag的实现

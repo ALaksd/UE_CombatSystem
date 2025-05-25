@@ -104,6 +104,10 @@ void UGA_HitReact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 			}
 		}
 	}
+	else
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
+	}
 	
 }
 

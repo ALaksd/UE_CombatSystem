@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 #include "GAS/Abilities/GA_DefenseBase.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
@@ -7,61 +7,64 @@
 
 UGA_DefenseBase::UGA_DefenseBase()
 {
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerExecution;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
+
+	bRetriggerInstancedAbility = true;
 }
 
 void UGA_DefenseBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
-	if (CommitAbility(Handle, ActorInfo, ActivationInfo))
+	if (IsActive())
 	{
-		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-		if (SwordMontage && ActorInfo->AvatarActor->GetComponentByClass<UCloseCombatComponent>()->GetCurrentWeapon()->WeaponType == E_WeaponType::Sword)
-		{
-			UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-				this,
-				NAME_None,
-				SwordMontage,
-				1.0f,
-				NAME_None,
-				false
-			);
+		CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
+	}
 
-			if (PlayMontageTask)
-			{
-				PlayMontageTask->OnCompleted.AddDynamic(this, &UGA_DefenseBase::OnMontageCompleted);
-				PlayMontageTask->OnCancelled.AddDynamic(this, &UGA_DefenseBase::OnMontageCompleted);
-				PlayMontageTask->OnInterrupted.AddDynamic(this, &UGA_DefenseBase::OnMontageCompleted);
-				PlayMontageTask->ReadyForActivation();
-			}
-		}
-		else if (GreatSwordMontage && ActorInfo->AvatarActor->GetComponentByClass<UCloseCombatComponent>()->GetCurrentWeapon()->WeaponType == E_WeaponType::GreatSword)
-		{
-			UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-				this,
-				NAME_None,
-				GreatSwordMontage,
-				1.0f,
-				NAME_None,
-				false
-			);
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
+	}
 
-			if (PlayMontageTask)
-			{
-				PlayMontageTask->OnCompleted.AddDynamic(this, &UGA_DefenseBase::OnMontageCompleted);
-				PlayMontageTask->OnCancelled.AddDynamic(this, &UGA_DefenseBase::OnMontageCompleted);
-				PlayMontageTask->OnInterrupted.AddDynamic(this, &UGA_DefenseBase::OnMontageCompleted);
-				PlayMontageTask->ReadyForActivation();
-			}
-		}
-		else
-		{
-			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
-		}
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	UCloseCombatComponent* CombatComp = ActorInfo->AvatarActor->FindComponentByClass<UCloseCombatComponent>();
+	if (!CombatComp) { EndAbility(Handle, ActorInfo, ActivationInfo, true, true); return; }
+
+	E_WeaponType WeaponType = CombatComp->GetCurrentWeapon()->WeaponType;
+
+	UAnimMontage* MontageToPlay = nullptr;
+	if (WeaponType == E_WeaponType::Sword)
+		MontageToPlay = SwordMontage;
+	else if (WeaponType == E_WeaponType::GreatSword)
+		MontageToPlay = GreatSwordMontage;
+
+	if (!MontageToPlay)
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
+	}
+
+	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+		this,
+		NAME_None,
+		MontageToPlay,
+		1.0f,
+		NAME_None,
+		false
+	);
+
+	if (PlayMontageTask)
+	{
+		PlayMontageTask->OnCompleted.AddDynamic(this, &UGA_DefenseBase::OnMontageCompleted);
+		PlayMontageTask->OnCancelled.AddDynamic(this, &UGA_DefenseBase::OnMontageCompleted);
+		PlayMontageTask->OnInterrupted.AddDynamic(this, &UGA_DefenseBase::OnMontageCompleted);
+		PlayMontageTask->ReadyForActivation();
 	}
 }
+
 
 void UGA_DefenseBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
