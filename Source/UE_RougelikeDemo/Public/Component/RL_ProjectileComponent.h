@@ -22,7 +22,7 @@ protected:
 
 	// 拉弓
 	void PullBow();
-
+	
 	virtual void EquipWeapon() override;
 
 	// 要生成的弓的class

@@ -468,6 +468,8 @@ void AEnemy_Base::AddCharacterAbilities()
 	AllSkills.Append(EnemyConfig->EnemySkills);
 	// 调用 ASC 注册技能
 	ASC->AddEnemyAbilities(AllSkills);
+
+	//通用技能
 	ASC->AddCharacterAbilities(Abilites);
 }
 

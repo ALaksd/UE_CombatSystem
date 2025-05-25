@@ -56,10 +56,9 @@ void UGA_DefenseBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				PlayMontageTask->ReadyForActivation();
 			}
 		}
-		else
-		{
-			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
-		}
+		FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+		FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(EffectClass, 1, ContextHandle);
+		GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	}
 }
 
@@ -71,8 +70,5 @@ void UGA_DefenseBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const 
 
 void UGA_DefenseBase::OnMontageCompleted()
 {
-	GetActorInfo().AbilitySystemComponent->RemoveLooseGameplayTag(FGameplayTag::RequestGameplayTag("State.BounceBack"));
-	GetActorInfo().AbilitySystemComponent->SetTagMapCount(FGameplayTag::RequestGameplayTag("State.BounceBack"), 0);
-
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }

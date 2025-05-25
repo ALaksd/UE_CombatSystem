@@ -240,3 +240,39 @@ void URL_AbilitySystemLibrary::SetHitBoneName(UPARAM(ref)FGameplayEffectContextH
 		RPGEffectContext->SetHitBoneName(InHitBoneName);
 	}
 }
+
+void URL_AbilitySystemLibrary::ApplyTemporaryTag(UAbilitySystemComponent* ASC, const FGameplayTag& Tag, float Duration)
+{
+	if (!ASC || !Tag.IsValid()) return;
+
+	// 添加临时Tag
+	ASC->AddLooseGameplayTag(Tag);
+
+	// 创建定时器来移除
+	FTimerHandle TimerHandle;
+	ASC->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [ASC, Tag]()
+		{
+			ASC->RemoveLooseGameplayTag(Tag);
+		}, Duration, false);
+}
+
+
+void URL_AbilitySystemLibrary::ApplyChangeAttributeEffect(UAbilitySystemComponent* SourceASC, FGameplayAttribute bChangedAttribute, float InMagnitude)
+{
+	// 动态创建GE实例（使用SourceASC作为Outer防止GC回收）
+	UGameplayEffect* DynamicParryGE = NewObject<UGameplayEffect>(SourceASC, FName(TEXT("DynamicParryGE")));
+	DynamicParryGE->DurationPolicy = EGameplayEffectDurationType::Instant; // 即时生效
+
+	// 添加属性修饰符（这里减少体力）
+	FGameplayModifierInfo& Modifier = DynamicParryGE->Modifiers.AddDefaulted_GetRef();
+
+	Modifier.Attribute = bChangedAttribute;
+	Modifier.ModifierOp = EGameplayModOp::Additive; // 修改类型：叠加
+	FScalableFloat Magnitude;
+	Magnitude.Value = InMagnitude; // 暂时造成敌人伤害两倍的属性削减
+	Modifier.ModifierMagnitude = Magnitude;
+
+	// 创建效果规格并应用
+	FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
+	SourceASC->ApplyGameplayEffectToSelf(DynamicParryGE, 1.f, Context);
+}

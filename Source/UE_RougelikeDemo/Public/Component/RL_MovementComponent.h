@@ -135,7 +135,8 @@ public:
 	void LMBInputReleasedTest(FGameplayTag InputTag);
 	
 	/***--------------------测试---------------------***/
-	
+	void SetbAcceptInput(bool newBool) { bAccecptInput = newBool; }
+
 protected:
 	virtual void BeginPlay() override;
 	
@@ -160,6 +161,9 @@ protected:
 
 	// 鼠标左键回调
 	void LMBActionCallBack(const FInputActionValue& Value);
+
+	//是否启用输入
+	bool bAccecptInput = true;
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

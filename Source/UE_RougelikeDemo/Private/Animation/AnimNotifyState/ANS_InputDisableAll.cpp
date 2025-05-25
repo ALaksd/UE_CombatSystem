@@ -3,6 +3,7 @@
 
 #include "Animation/AnimNotifyState/ANS_InputDisableAll.h"
 #include <EnhancedInputSubsystems.h>
+#include <Component/RL_MovementComponent.h>
 
 
 void UANS_InputDisableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
@@ -13,7 +14,7 @@ void UANS_InputDisableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSe
 	if (!Owner) return;
 
 	// 移除输入
- 	if (APlayerController* PC = Cast<APlayerController>(Owner->GetInstigatorController()))
+ /*	if (APlayerController* PC = Cast<APlayerController>(Owner->GetInstigatorController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 		{
@@ -24,5 +25,9 @@ void UANS_InputDisableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSe
 				InputSubsystem->AddMappingContext(DisableIMC, 0);
 			}
 		}
+	}*/
+	if (URL_MovementComponent* MovementComp = Owner->FindComponentByClass<URL_MovementComponent>())
+	{
+		MovementComp->SetbAcceptInput(false);
 	}
 }
