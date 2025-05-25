@@ -21,6 +21,8 @@ class UE_ROUGELIKEDEMO_API ARL_AIController : public AAIController
 	
 public:
 	ARL_AIController();
+
+	bool bFocus = true;
 protected:
 
 	UPROPERTY(VisibleAnywhere)

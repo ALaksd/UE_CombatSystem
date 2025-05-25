@@ -38,6 +38,10 @@ void UBTService_AttackRangeDecision::TickNode(UBehaviorTreeComponent& OwnerComp,
 		const bool bCanAttack = (CurrentDistance >= SelectedSkill.SkillRangeMin) &&
 			(CurrentDistance <= SelectedSkill.SkillRangeMax);
 
+		UE_LOG(LogTemp, Warning, TEXT("SelectedSkill:%s"), *SkillName.ToString());
+		UE_LOG(LogTemp, Warning, TEXT("Distance:%f,bAttack:%s"), CurrentDistance, bCanAttack ? TEXT("true") : TEXT("false"));
+
+
 		// 设置黑板键
 		Blackboard->SetValueAsBool(IsInAttackRangeKey.SelectedKeyName, bCanAttack);
 

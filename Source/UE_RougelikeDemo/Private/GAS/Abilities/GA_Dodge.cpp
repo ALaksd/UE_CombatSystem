@@ -43,7 +43,7 @@ void UGA_Dodge::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGa
 				MontageToPlay = RollMontage;
 			}
 			//默认后闪（不按下方向键）
-			else if (ActorInfo->AvatarActor->GetComponentByClass<UCharacterMovementComponent>()->GetCurrentAcceleration().IsNearlyZero())
+			else if (ActorInfo->AvatarActor->GetComponentByClass<UCharacterMovementComponent>()->Velocity.IsNearlyZero())
 			{
 				MontageToPlay = DodgeMontageB;
 			}
