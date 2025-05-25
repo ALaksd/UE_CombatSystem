@@ -582,9 +582,22 @@ void URL_MovementComponent::UpdateLockOnRotation(float DeltaTime)
 	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(ownerCharacter->GetActorLocation(), CurrentTarget->GetActorLocation());
 	FRotator TargetRotation(0.f, LookAtRotation.Yaw, 0.f);
 
+	if (CurrentMovementState != EMovementState::Running)
+	{
+		UpdateCharacterOnRotation(DeltaTime, TargetRotation);
+	}
+
+	UpdateControllerOnRotation(TargetRotation);
+}
+
+void URL_MovementComponent::UpdateCharacterOnRotation(float DeltaTime, FRotator TargetRotation)
+{
 	FRotator NewRotation = FMath::RInterpTo(ownerCharacter->GetActorRotation(), TargetRotation, DeltaTime, 10.f);
 	ownerCharacter->SetActorRotation(NewRotation);
+}
 
+void URL_MovementComponent::UpdateControllerOnRotation(FRotator TargetRotation)
+{
 	AController* Controller = ownerCharacter->GetController();
 	if (Controller)
 	{

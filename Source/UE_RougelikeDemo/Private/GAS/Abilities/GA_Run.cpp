@@ -18,6 +18,8 @@ void UGA_Run::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 	{
 		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 		ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->UpdateMovementState(EMovementState::Running);
+		ActorInfo->AvatarActor->FindComponentByClass<UCharacterMovementComponent>()->bOrientRotationToMovement = true; // 是否朝向移动方向
+		ActorInfo->AvatarActor->FindComponentByClass<UCharacterMovementComponent>()->bUseControllerDesiredRotation = false;
 
 		UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
 		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
@@ -32,6 +34,12 @@ void UGA_Run::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGamepla
 {
 	UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
 	ASC->RemoveActiveGameplayEffect(ActiveRunConstHandle);
+	ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->UpdateMovementState(EMovementState::Jogging);
+	if (ActorInfo->AvatarActor->Tags.Contains(FName("IsLocking")))
+	{
+		ActorInfo->AvatarActor->FindComponentByClass<UCharacterMovementComponent>()->bOrientRotationToMovement = false; // 是否朝向移动方向
+		ActorInfo->AvatarActor->FindComponentByClass<UCharacterMovementComponent>()->bUseControllerDesiredRotation = true;
+	}
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -39,6 +47,5 @@ void UGA_Run::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGame
 	const FGameplayAbilityActivationInfo ActivationInfo)
 {
 	Super::InputReleased(Handle, ActorInfo, ActivationInfo);
-	ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->UpdateMovementState(EMovementState::Jogging);
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }

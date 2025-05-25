@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Component/CloseCombatComponent.h"
 #include "GameFramework/Character.h"
+#include "Weapon/RL_Sword.h"
 
 void UANS_AttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {

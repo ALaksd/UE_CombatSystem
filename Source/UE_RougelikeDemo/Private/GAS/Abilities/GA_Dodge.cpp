@@ -32,47 +32,20 @@ void UGA_Dodge::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGa
 	{
 		Super::InputReleased(Handle, ActorInfo, ActivationInfo);
 
-		EDirectionType type = Cast<URL_AnimInstanceBase>(ActorInfo->SkeletalMeshComponent->GetAnimInstance())->DicType; 
+		EDirectionType type = Cast<URL_AnimInstanceBase>(ActorInfo->SkeletalMeshComponent->GetAnimInstance())->DicType;
+		UAnimMontage* MontageToPlay = nullptr;
 
 		if (ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->CurrentMovementState != EMovementState::Running)
 		{
+			//翻滚
 			if (RollMontage && !ActorInfo->AvatarActor->Tags.Contains(FName("IsLocking")))
 			{
-				UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-					this,
-					NAME_None,
-					RollMontage,
-					1.0f,
-					NAME_None,
-					false
-				);
-
-				if (PlayMontageTask)
-				{
-					PlayMontageTask->OnCompleted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-					PlayMontageTask->OnCancelled.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-					PlayMontageTask->OnInterrupted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-					PlayMontageTask->ReadyForActivation();
-				}
+				MontageToPlay = RollMontage;
 			}
-			else if (ActorInfo->AvatarActor->GetComponentByClass<UCharacterMovementComponent>()->Velocity.IsNearlyZero())
+			//默认后闪（不按下方向键）
+			else if (ActorInfo->AvatarActor->GetComponentByClass<UCharacterMovementComponent>()->GetCurrentAcceleration().IsNearlyZero())
 			{
-				UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-							this,
-							NAME_None,
-							DodgeMontageB,
-						1.0f,
-					NAME_None,
-					false
-							);
-
-				if (PlayMontageTask)
-				{
-					PlayMontageTask->OnCompleted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-					PlayMontageTask->OnCancelled.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-					PlayMontageTask->OnInterrupted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-					PlayMontageTask->ReadyForActivation();
-				}
+				MontageToPlay = DodgeMontageB;
 			}
 			else if (ActorInfo->AvatarActor->Tags.Contains(FName("IsLocking")))
 			{
@@ -80,87 +53,62 @@ void UGA_Dodge::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGa
 				{
 					case EDirectionType::ForwardDic:
 						{
-							UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-							this,
-							NAME_None,
-							DodgeMontageF,
-						1.0f,
-					NAME_None,
-					false
-							);
-
-							if (PlayMontageTask)
-							{
-								PlayMontageTask->OnCompleted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-								PlayMontageTask->OnCancelled.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-								PlayMontageTask->OnInterrupted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-								PlayMontageTask->ReadyForActivation();
-							}
+							MontageToPlay = DodgeMontageF;
 						}
 					break;
 					case EDirectionType::BackwardDic:
 						{
-							UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-							this,
-							NAME_None,
-							DodgeMontageB,
-						1.0f,
-					NAME_None,
-					false
-							);
-
-							if (PlayMontageTask)
-							{
-								PlayMontageTask->OnCompleted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-								PlayMontageTask->OnCancelled.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-								PlayMontageTask->OnInterrupted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-								PlayMontageTask->ReadyForActivation();
-							}
+							MontageToPlay = DodgeMontageB;
 						}
 					break;
 					case EDirectionType::LeftDic:
 						{
-							UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-							this,
-							NAME_None,
-							DodgeMontageL,
-						1.0f,
-					NAME_None,
-					false
-							);
-
-							if (PlayMontageTask)
-							{
-								PlayMontageTask->OnCompleted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-								PlayMontageTask->OnCancelled.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-								PlayMontageTask->OnInterrupted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-								PlayMontageTask->ReadyForActivation();
-							}
+							MontageToPlay = DodgeMontageL;
 						}
 					break;
 					case EDirectionType::RightDic:
 						{
-							UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+							MontageToPlay = DodgeMontageR;
+						}
+					break;
+					case EDirectionType::LForwardDic:
+						{
+							MontageToPlay = DodgeMontageLF;
+						}
+					break;
+					case EDirectionType::LBackwardDic:
+						{
+							MontageToPlay = DodgeMontageLB;
+						}
+					break;
+					case EDirectionType::RForwardDic:
+						{
+							MontageToPlay = DodgeMontageRF;
+						}
+					break;
+					case EDirectionType::RBackwardDic:
+						{
+							MontageToPlay = DodgeMontageRB;
+						}
+					break;
+				}
+			}
+		}
+		UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 							this,
 							NAME_None,
-							DodgeMontageR,
+							MontageToPlay,
 						1.0f,
 					NAME_None,
 					false
 							);
 
-							if (PlayMontageTask)
-							{
-								PlayMontageTask->OnCompleted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-								PlayMontageTask->OnCancelled.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-								PlayMontageTask->OnInterrupted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
-								PlayMontageTask->ReadyForActivation();
-							}
-						}
-					break;
-				}
-				
-			}
+		if (PlayMontageTask)
+		{
+			PlayMontageTask->OnCompleted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
+			PlayMontageTask->OnCancelled.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
+			PlayMontageTask->OnInterrupted.AddDynamic(this, &UGA_Dodge::OnMontageCompleted);
+			PlayMontageTask->ReadyForActivation();
 		}
 	}
 }

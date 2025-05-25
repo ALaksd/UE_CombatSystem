@@ -3,6 +3,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Component/CloseCombatComponent.h"
+#include "Weapon/RL_Sword.h"
 
 UGA_DefenseBase::UGA_DefenseBase()
 {
@@ -17,7 +18,7 @@ void UGA_DefenseBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	if (CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
 		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-		if (SwordMontage && ActorInfo->AvatarActor->GetComponentByClass<UCloseCombatComponent>()->GetCurrentWeapon()->Type == WeaponType::Sword)
+		if (SwordMontage && ActorInfo->AvatarActor->GetComponentByClass<UCloseCombatComponent>()->GetCurrentWeapon()->WeaponType == E_WeaponType::Sword)
 		{
 			UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 				this,
@@ -36,7 +37,7 @@ void UGA_DefenseBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				PlayMontageTask->ReadyForActivation();
 			}
 		}
-		else if (GreatSwordMontage && ActorInfo->AvatarActor->GetComponentByClass<UCloseCombatComponent>()->GetCurrentWeapon()->Type == WeaponType::GreatSword)
+		else if (GreatSwordMontage && ActorInfo->AvatarActor->GetComponentByClass<UCloseCombatComponent>()->GetCurrentWeapon()->WeaponType == E_WeaponType::GreatSword)
 		{
 			UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 				this,
