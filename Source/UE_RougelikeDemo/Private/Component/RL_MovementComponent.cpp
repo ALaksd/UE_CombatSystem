@@ -436,7 +436,6 @@ void URL_MovementComponent::LMBInputReleasedTest(FGameplayTag InputTag)
 {
 	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, FString::Printf(TEXT("Released")));
 	CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityInputTagReleased(InputTag);
-
 }
 
 void URL_MovementComponent::ToggleLockOn()

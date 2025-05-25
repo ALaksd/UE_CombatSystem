@@ -22,4 +22,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector SelectedSkillKey;
+
+	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector TargetDistanceKey;
 };
