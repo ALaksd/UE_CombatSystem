@@ -20,44 +20,53 @@ EBTNodeResult::Type UBTTask_AttackDecision::ExecuteTask(UBehaviorTreeComponent& 
 	APawn* ControlledPawn = AIController->GetPawn();
 	if (!ControlledPawn) return EBTNodeResult::Failed;
 
-	// 获取 EnemyMovementComponent
 	URL_EnemyMovementComponent* EnemyMove = ControlledPawn->FindComponentByClass<URL_EnemyMovementComponent>();
 	if (!EnemyMove) return EBTNodeResult::Failed;
 
-	// 获取配置的 EnemyDataAsset
 	const URL_EnemyConfig* EnemyConfig = EnemyMove->GetEnemyConfig();
 	if (!EnemyConfig) return EBTNodeResult::Failed;
 
-	// 获取技能列表
+	// 获取当前与玩家的距离
+	float TargetDistance = OwnerComp.GetBlackboardComponent()->GetValueAsFloat(TargetDistanceKey.SelectedKeyName);
 	const TArray<FEnemySkills>& WakingSkills = EnemyConfig->EnemySkills;
 
-	TArray<FEnemySkills> NormalSkills;
+	TArray<FEnemySkills> ValidNormalSkills;
 
-
-	// 分类收集可用技能
+	// 分类收集可用技能（添加范围判断）
 	for (const FEnemySkills& Skill : WakingSkills)
 	{
-		if (!Skill.bIsPowerfulAttack)
-			NormalSkills.Add(Skill);
+		// 同时满足三个条件：
+		// 1. 是普通技能
+		// 2. 当前距离 >= 技能最小范围
+		// 3. 当前距离 <= 技能最大范围
+		if (!Skill.bIsPowerfulAttack &&
+			TargetDistance >= Skill.SkillRangeMin &&
+			TargetDistance <= Skill.SkillRangeMax)
+		{
+			ValidNormalSkills.Add(Skill);
+		}
 	}
 
-	// 处理普通技能
-	if (NormalSkills.Num() > 0)
+	// 处理有效普通技能
+	if (ValidNormalSkills.Num() > 0)
 	{
-		NormalSkills.Sort([](const FEnemySkills& A, const FEnemySkills& B) {
+		// 按优先级降序排序
+		ValidNormalSkills.Sort([](const FEnemySkills& A, const FEnemySkills& B) {
 			return A.PriorityLevel > B.PriorityLevel;
 			});
 
-		// 如果有可用技能，选择第一个（优先级最高的）
-		const FEnemySkills& SelectedSkill = NormalSkills[0];
-		FString String = *SelectedSkill.AbilityTag.ToString();
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, String);
-		OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedSkillKey.SelectedKeyName, SelectedSkill.AbilityTag.GetTagName());
+		// 选择优先级最高的技能
+		const FEnemySkills& SelectedSkill = ValidNormalSkills[0];
+		OwnerComp.GetBlackboardComponent()->SetValueAsName(
+			SelectedSkillKey.SelectedKeyName,
+			SelectedSkill.AbilityTag.GetTagName());
 	}
 	else
 	{
-		// 如果没有可用技能，设置为 None
-		OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedSkillKey.SelectedKeyName, "None");
+		// 没有有效技能时设置为None
+		OwnerComp.GetBlackboardComponent()->SetValueAsName(
+			SelectedSkillKey.SelectedKeyName,
+			"None");
 	}
 
 	return EBTNodeResult::Succeeded;

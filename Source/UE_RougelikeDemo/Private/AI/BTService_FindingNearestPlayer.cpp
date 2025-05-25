@@ -2,11 +2,10 @@
 
 
 #include "AI/BTService_FindingNearestPlayer.h"
-#include "AIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BTFunctionLibrary.h"
 #include <Interface/RL_CombatInterface.h>
-
+#include "AI/RL_AIController.h"
 #include "Character/Enemy_Base.h"
 #include "Interface/RL_EnemyInterface.h"
 #include <System/RL_SanitySubsystem.h>
@@ -53,7 +52,11 @@ void UBTService_FindingNearestPlayer::TickNode(UBehaviorTreeComponent& OwnerComp
 	if (ClosestActor && ClosestDistance <= MaxTrackingDistance)
 	{
 		// 设置焦点到目标
-		AIController->SetFocus(ClosestActor);
+		if (Cast<ARL_AIController>(AIController)->bFocus)
+		{
+			AIController->SetFocus(ClosestActor);
+
+		}
 		bIsTargetValid = true;
 
 		//进入战斗状态持续减少理智
