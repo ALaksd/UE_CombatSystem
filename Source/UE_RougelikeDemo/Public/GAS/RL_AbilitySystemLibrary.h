@@ -42,7 +42,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ability|Library", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "ActorsToIgnore"))
 	static void GetLivePlayersInEllipse(
 		const UObject* WorldContextObject,
-		TArray<AActor*>& OutOverlappingActors,
+		TArray<FHitResult>& OutHitResults,
 		const TArray<AActor*>& ActorsToIgnore,
 		const FVector& CenterLocation,
 		const FVector EllipseRadii,  // X=前向半径，Y=横向半径，Z=垂直半径（可选）
@@ -54,4 +54,27 @@ public:
 
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	static URL_EnemyConfig* GetEnemyConfig(AActor* Enemy);
+
+
+	UFUNCTION(BlueprintPure, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
+
+	static FVector GetKonckBackImpulse(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
+
+	static FName GetHitBoneName(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
+	static void SetKonckBackImpulse(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FVector InKonckBackImpulse);
+
+	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
+	static void SetHitBoneName(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FName InHitBoneName);
+
+	//动态添加持续GE,增加Tag
+	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
+	static void ApplyTemporaryTag(UAbilitySystemComponent* ASC, const FGameplayTag& Tag, float Duration);
+
+	//添加修改属性的GE
+	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
+	static void ApplyChangeAttributeEffect(UAbilitySystemComponent* SourceASC, FGameplayAttribute bChangedAttribute, float InMagnitude);
 };

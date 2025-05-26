@@ -10,6 +10,7 @@
 #include "GameFramework/PlayerState.h"
 #include <UE_RougelikeDemo/InventorySystem/RLItemFragment_EquipDynamicData.h>
 
+#include "Weapon/RL_Sword.h"
 
 
 UCloseCombatComponent::UCloseCombatComponent()
@@ -71,7 +72,7 @@ void UCloseCombatComponent::SwitchWeapon(URLInventoryItemInstance* NewWeapon)
 
 	if (Fragment && EquipDynamicData)
 	{
-		if (ARL_BaseWeapon* NewWeapon_T = Cast<ARL_BaseWeapon>(Fragment->AttachToActor(GetOwner(),NewWeapon)))
+		if (ARL_Sword* NewWeapon_T = Cast<ARL_Sword>(Fragment->AttachToActor(GetOwner(),NewWeapon)))
 		{
 			
 			NewWeapon_T->SetActorHiddenInGame(false);

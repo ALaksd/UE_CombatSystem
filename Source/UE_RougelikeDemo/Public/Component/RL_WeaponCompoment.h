@@ -29,9 +29,8 @@ protected:
 
 protected:
 	UFUNCTION()
-	void EquipWeapon();
+	virtual void EquipWeapon();
 
-protected:
 	//生成的武器类
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon)
 	TSubclassOf<ARL_BaseWeapon> WeaponClass;

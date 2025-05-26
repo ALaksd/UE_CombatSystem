@@ -11,7 +11,11 @@ UENUM(BlueprintType)
 enum class EDirectionType : uint8
 {
 	ForwardDic,
+	LForwardDic,
+	RForwardDic,
 	BackwardDic,
+	LBackwardDic,
+	RBackwardDic,
 	LeftDic,
 	RightDic,
 };

@@ -25,8 +25,24 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UAnimMontage* GetHitReactMotange();
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage* GetLightHitReactFrontMontage() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage* GetLightHitReactBackMontage() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage* GetLightHitReactLeftMontage() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage* GetLightHitReactRightMontage() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage* GetHeavyHitReactMontage() const;
+
+
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetFacingTarget(FVector TargetLoction);
+	void SetFacingTarget(FVector TargetLoction,FRotator TargetRotation,float Offest = 0.f);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool isDead() const;
@@ -36,4 +52,11 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	AActor* GetAvatar();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void KnockBack(const FVector& KonckBackImpulse);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+
+	void ShowDamageText(float Damage);
 };

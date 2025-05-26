@@ -13,6 +13,7 @@ class URL_PlayerInterface : public UInterface
 	GENERATED_BODY()
 };
 
+class UAS_Player;
 /**
  * 
  */
@@ -50,4 +51,7 @@ public:
 	// 获取下一级所需的灵魂
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
 	int32 GetLevelRequirement(int32 InLevel) const;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
+	UAS_Player* GetPlayerAS() const;
 };

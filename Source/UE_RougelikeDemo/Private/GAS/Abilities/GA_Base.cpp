@@ -2,6 +2,7 @@
 
 
 #include "GAS/Abilities/GA_Base.h"
+#include "AbilitySystemComponent.h"
 
 void UGA_Base::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

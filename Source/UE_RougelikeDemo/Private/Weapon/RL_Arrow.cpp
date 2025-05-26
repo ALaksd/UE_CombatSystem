@@ -19,13 +19,13 @@ ARL_Arrow::ARL_Arrow()
 	NiagaraAttachComponent->SetupAttachment(ArrowStaitcMesh);
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
-	ProjectileMovement->bAutoActivate = false;  // Ä¬ÈÏÇé¿öÏÂ²»×Ô¶¯¼¤»î
+	ProjectileMovement->bAutoActivate = false;  // é»˜è®¤æƒ…å†µä¸‹ä¸è‡ªåŠ¨æ¿€æ´»
 
-	// ÉèÖÃ³õÊ¼²ÎÊı£¨¿É¸ù¾İĞèÒªµ÷Õû£©
-	ProjectileMovement->InitialSpeed = 3000.f;  // ¼ıµÄ³õÊ¼ËÙ¶È
-	ProjectileMovement->MaxSpeed = 3000.f;      // ¼ıµÄ×î´óËÙ¶È
-	ProjectileMovement->bRotationFollowsVelocity = true;  // Ê¹¼ıµÄ·½ÏòËæ×ÅËÙ¶È±ä»¯
-	ProjectileMovement->ProjectileGravityScale = 0.5f;     // ÖØÁ¦Ëõ·Å£¬1ÎªÕı³£ÖØÁ¦
+	// è®¾ç½®åˆå§‹å‚æ•°ï¼ˆå¯æ ¹æ®éœ€è¦è°ƒæ•´ï¼‰
+	ProjectileMovement->InitialSpeed = 3000.f;  // ç®­çš„åˆå§‹é€Ÿåº¦
+	ProjectileMovement->MaxSpeed = 3000.f;      // ç®­çš„æœ€å¤§é€Ÿåº¦
+	ProjectileMovement->bRotationFollowsVelocity = true;  // ä½¿ç®­çš„æ–¹å‘éšç€é€Ÿåº¦å˜åŒ–
+	ProjectileMovement->ProjectileGravityScale = 0.5f;     // é‡åŠ›ç¼©æ”¾ï¼Œ1ä¸ºæ­£å¸¸é‡åŠ›
 }
 
 // Called when the game starts or when spawned
@@ -46,27 +46,27 @@ void ARL_Arrow::OnOverlapBegin(UPrimitiveComponent* OverlapedComp, AActor* Other
 			ProjectileMovement->DestroyComponent();
 		}
 		UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin"));
-		//¼ÇµÃÎïÌåÓ¦ÓÃÖØµşÊÂ¼ş
+		//è®°å¾—ç‰©ä½“åº”ç”¨é‡å äº‹ä»¶
 		BoxCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		AttachToComponent(HitResult.GetComponent(), FAttachmentTransformRules::KeepWorldTransform);
 		
-		//²¥·ÅÉùÒô
+		//æ’­æ”¾å£°éŸ³
 		if (ArrowHitSound && GetWorld())
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, ArrowHitSound, HitResult.Location);
 		}
-		//Ìí¼ÓÌØĞ§
-		// ¼ì²éÊÇ·ñ´æÔÚParticleEffect
+		//æ·»åŠ ç‰¹æ•ˆ
+		// æ£€æŸ¥æ˜¯å¦å­˜åœ¨ParticleEffect
 		if (ParticleEffect)
 		{
-			// ÔÚActorµÄÎ»ÖÃÉú³ÉÁ£×ÓÌØĞ§
+			// åœ¨Actorçš„ä½ç½®ç”Ÿæˆç²’å­ç‰¹æ•ˆ
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleEffect, HitResult.Location);
 		}
-		//Ìí¼Ó³åÁ¿
+		//æ·»åŠ å†²é‡
 		if (OtherComponent->IsSimulatingPhysics())
 		{
 			OtherComponent->AddImpulse(ArrowVelocity, NAME_None,true);
-			// Ïú»Ù¼ıÍ·
+			// é”€æ¯ç®­å¤´
 			Destroy();
 		}
 	}
@@ -79,48 +79,48 @@ void ARL_Arrow::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 void ARL_Arrow::Fire(FVector Direction,float Strength)
 {
-	// ¼ÆËã·¢Éä·½ÏòµÄĞı×ª
+	// è®¡ç®—å‘å°„æ–¹å‘çš„æ—‹è½¬
 	FRotator ArrowRotation = Direction.Rotation();
 
-	// ÉèÖÃ¼ıµÄĞı×ª£¬Ê¹ÆäÃæ³¯·¢Éä·½Ïò
+	// è®¾ç½®ç®­çš„æ—‹è½¬ï¼Œä½¿å…¶é¢æœå‘å°„æ–¹å‘
 	BoxCollision->SetRelativeRotation(ArrowRotation);
 
-	// ¼¤»îÅ×ÌåÔË¶¯×é¼ş
+	// æ¿€æ´»æŠ›ä½“è¿åŠ¨ç»„ä»¶
 	ProjectileMovement->Activate();
 
-	// ÉèÖÃ·¢Éä·½Ïò,ËÙ¶ÈºÍÖØÁ¦Ëõ·Å
+	// è®¾ç½®å‘å°„æ–¹å‘,é€Ÿåº¦å’Œé‡åŠ›ç¼©æ”¾
 	ArrowVelocity = Direction * FMath::Lerp(MinSpeed, MaxSpeed, Strength);
 	ProjectileMovement->Velocity = ArrowVelocity;
 	ProjectileMovement->ProjectileGravityScale = FMath::Lerp(MaxGravity, MinGravity, Strength);
 
-	//ÉèÖÃÅö×²
+	//è®¾ç½®ç¢°æ’
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
-	//²¥·ÅÉùÒô
+	//æ’­æ”¾å£°éŸ³
 	if (ArrowShootSound && GetWorld())
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ArrowShootSound, GetActorLocation());
 	}
 
-	//Éú³ÉÌØĞ§
-	if (NiagaraEffect && NiagaraAttachComponent) // È·±£ NiagaraEffect ºÍ NiagaraAttachComponent ÓĞĞ§
+	//ç”Ÿæˆç‰¹æ•ˆ
+	if (NiagaraEffect && NiagaraAttachComponent) // ç¡®ä¿ NiagaraEffect å’Œ NiagaraAttachComponent æœ‰æ•ˆ
 	{
-		ENCPoolMethod PoolingMethod = ENCPoolMethod::None; // ³õÊ¼»¯ ENCPoolMethod
+		ENCPoolMethod PoolingMethod = ENCPoolMethod::None; // åˆå§‹åŒ– ENCPoolMethod
 
 		UNiagaraFunctionLibrary::SpawnSystemAttached(
-			NiagaraEffect,                       // ÒıÓÃµÄ Niagara ÌØĞ§
-			NiagaraAttachComponent,              // Òª¸½¼ÓµÄ×é¼ş
-			NAME_None,                           // Ã»ÓĞÌØ¶¨²å²ÛÔòÊ¹ÓÃ NAME_None
-			FVector::ZeroVector,                 // Î»ÖÃÆ«ÒÆ
-			FRotator::ZeroRotator,               // Ğı×ª
-			FVector(1.0f),                       // Ëõ·Å
-			EAttachLocation::KeepRelativeOffset, // ¸½¼Ó¹æÔò (ÕıÈ·µÄÎ»ÖÃ)
-			false,                               // ÊÇ·ñ×Ô¶¯Ïú»Ù
-			PoolingMethod,                       // ³Ø»¯·½·¨
-			true                                 // ÊÖ¶¯¹ÜÀíÉúÃüÖÜÆÚ
+			NiagaraEffect,                       // å¼•ç”¨çš„ Niagara ç‰¹æ•ˆ
+			NiagaraAttachComponent,              // è¦é™„åŠ çš„ç»„ä»¶
+			NAME_None,                           // æ²¡æœ‰ç‰¹å®šæ’æ§½åˆ™ä½¿ç”¨ NAME_None
+			FVector::ZeroVector,                 // ä½ç½®åç§»
+			FRotator::ZeroRotator,               // æ—‹è½¬
+			FVector(1.0f),                       // ç¼©æ”¾
+			EAttachLocation::KeepRelativeOffset, // é™„åŠ è§„åˆ™ (æ­£ç¡®çš„ä½ç½®)
+			false,                               // æ˜¯å¦è‡ªåŠ¨é”€æ¯
+			PoolingMethod,                       // æ± åŒ–æ–¹æ³•
+			true                                 // æ‰‹åŠ¨ç®¡ç†ç”Ÿå‘½å‘¨æœŸ
 		);
 	}
-	//ÉèÖÃÉúÃüÖÜÆÚ
+	//è®¾ç½®ç”Ÿå‘½å‘¨æœŸ
 	SetLifeSpan(10.0f);
 }
 

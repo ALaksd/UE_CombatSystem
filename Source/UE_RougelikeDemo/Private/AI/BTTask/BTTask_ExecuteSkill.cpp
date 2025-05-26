@@ -5,7 +5,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AbilitySystemComponent.h"
 #include "Component/RL_EnemyMovementComponent.h"
-#include "AIController.h"
+#include "AI/RL_AIController.h"
 
 UBTTask_ExecuteSkill::UBTTask_ExecuteSkill()
 {
@@ -23,6 +23,7 @@ EBTNodeResult::Type UBTTask_ExecuteSkill::ExecuteTask(UBehaviorTreeComponent& Ow
 
 
 	const FGameplayTag SkillTag = FGameplayTag::RequestGameplayTag(SkillTagName);
+
 
 	if (UAbilitySystemComponent* ASC = GetAbilitySystem(OwnerComp.GetAIOwner()->GetPawn()))
 	{
@@ -49,6 +50,7 @@ void UBTTask_ExecuteSkill::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uin
 	// 清理资源
 	CachedOwnerComp = nullptr;
 	AbilityEndedDelegateHandle.Reset();
+
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 }
 
@@ -64,8 +66,6 @@ void UBTTask_ExecuteSkill::OnAbilityEnded(UGameplayAbility* EndedAbility)
 		{
 			ASC->AbilityEndedCallbacks.Remove(AbilityEndedDelegateHandle);
 		}
-		CachedOwnerComp->GetBlackboardComponent()->SetValueAsEnum(TEXT("CurrentActionState"),static_cast<uint8>(EEnemyActionState::None));
-
 		FinishLatentTask(*CachedOwnerComp, bSuccess ? EBTNodeResult::Succeeded : EBTNodeResult::Failed);
 	}
 }

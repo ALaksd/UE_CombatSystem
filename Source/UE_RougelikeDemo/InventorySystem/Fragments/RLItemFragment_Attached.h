@@ -17,10 +17,11 @@ class UE_ROUGELIKEDEMO_API URLItemFragment_Attached : public URLInventoryItemFra
 public:
 	AActor* AttachToActor(AActor* Owner_T, URLInventoryItemInstance* ItemInstance) const;
 
-	UPROPERTY(EditDefaultsOnly,Category = "Item")
-	FName AttchedSokectName;  //武器附加到插槽的名字
+	URLInventoryItemInstance* ArmorAttachToActor(AActor* Owner_T, URLInventoryItemInstance* ItemInstance) const;
+
+	void RemoveArmor(AActor* Owner_T) const;
 
 	UPROPERTY(EditDefaultsOnly,Category = "Item")
-	TSubclassOf<AActor> AttachedActorClass;
+	TMap<FName, TSubclassOf<AActor>> AttachedMap;
 
 };

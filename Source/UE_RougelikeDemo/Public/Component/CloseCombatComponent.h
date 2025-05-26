@@ -8,6 +8,7 @@
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryComponent.h"
 #include "CloseCombatComponent.generated.h"
 
+class ARL_Sword;
 class URLInventoryComponent_Equipment;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_ROUGELIKEDEMO_API UCloseCombatComponent : public UActorComponent
@@ -22,7 +23,7 @@ public:
 	FORCEINLINE ACharacter* GetUser() const { return User; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FORCEINLINE ARL_BaseWeapon* GetCurrentWeapon() const { return CurrentWeapon; }
+	FORCEINLINE ARL_Sword* GetCurrentWeapon() const { return CurrentWeapon; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE URLInventoryComponent_Equipment* GetEquipmentInventoryComponent() const { return EquipmentInventoryComponent; }
@@ -35,7 +36,7 @@ protected:
 
 	/** 主武器 */
 	UPROPERTY()
-	TObjectPtr<ARL_BaseWeapon> CurrentWeapon;
+	TObjectPtr<ARL_Sword> CurrentWeapon;
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<URLInventoryComponent_Equipment> EquipmentInventoryComponent;

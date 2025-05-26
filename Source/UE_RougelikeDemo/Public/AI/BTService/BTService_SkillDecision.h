@@ -22,21 +22,18 @@ public:
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaTime) override;
 
-
-	void ChooseNewBaseAction(UBehaviorTreeComponent& OwnerComp);
-
-
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector CurrentActionState;
 
 	UPROPERTY(EditAnywhere)
-	FBlackboardKeySelector TargetDistance;
+	FBlackboardKeySelector PositionType;
+
+	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector Target;
 
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector bBroken;
 
-	UPROPERTY(EditAnywhere)
-	float RollMaxDistance;
 
 	UPROPERTY(EditAnywhere)
 	FGameplayTagContainer BrokenTags;

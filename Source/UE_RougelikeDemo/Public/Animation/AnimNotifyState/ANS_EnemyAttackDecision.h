@@ -9,6 +9,7 @@
 
 
 class UGameplayEffect;
+class UAbilitySystemComponent;
 class URL_EnemyMovementComponent;
 /**
  * 
@@ -34,6 +35,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Damage")
 	float ReduceSantiyFactor = 0.5f;
 
+	//击退距离，击退的力 = 敌人当时的朝向 * 击退距离
+	UPROPERTY(EditAnywhere, Category = "Damage")
+	float KnockDistance = 150.f;
+
 	// 攻击检测范围
 	UPROPERTY(EditAnywhere, Category = "Detection")
 	FVector RectangleParam = FVector(20, 20, 60); // 前向50，横向50，垂直50
@@ -43,9 +48,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Detection")
 	FName AttackSocketName = "AttackSocket";
-
-	UPROPERTY(EditDefaultsOnly, Category = "Parry")
-	TSubclassOf<UGameplayEffect> ParryAttributeEffect;
 
 protected:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
@@ -58,7 +60,8 @@ private:
 	UPROPERTY()
 	AActor* OwnerActor; // 攻击者
 
-	void CauseDamage(AActor* TargetActor);
+	void CauseDamage(AActor* TargetActor,FVector HitLoction,FVector HitNormal);
+	bool ParryDecision(UAbilitySystemComponent* TargetASC, UAbilitySystemComponent* SourceASC, FVector& HitLoction, FVector& HitNormal, AActor* TargetActor);
 	void DetectAndApplyDamage(USkeletalMeshComponent* MeshComp, FVector& Center, FRotator& Rotation);
 
 	// 攻击检测范围

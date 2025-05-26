@@ -12,6 +12,7 @@
 #include "Interface/RL_CombatInterface.h"
 #include "Engine/OverlapResult.h"
 #include <Component/RL_EnemyMovementComponent.h>
+#include "GAS\RL_CustomGameplayEffectContext.h"
 
 URL_OverlayWidgetController* URL_AbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
 {
@@ -137,11 +138,10 @@ void URL_AbilitySystemLibrary::GetLivePlayerWithRadius(const UObject* WorldConte
 	}
 }
 
-void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, const FVector& CenterLocation, const FVector EllipseRadii, FRotator Orientation, bool bDrawDebug, float DebugDuration, FColor DebugColor)
+void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldContextObject, TArray<FHitResult>& OutHitResults, const TArray<AActor*>& ActorsToIgnore, const FVector& CenterLocation, const FVector EllipseRadii, FRotator Orientation, bool bDrawDebug, float DebugDuration, FColor DebugColor)
 {
-	OutOverlappingActors.Reset();
+	OutHitResults.Reset();
 
-	// 参数有效性检查
 	if (EllipseRadii.X <= 0 || EllipseRadii.Y <= 0 || EllipseRadii.Z <= 0) return;
 
 	FCollisionQueryParams QueryParams;
@@ -151,21 +151,21 @@ void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldConte
 	const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 	if (!World) return;
 
-	// 创建椭圆碰撞形状（使用Box近似）
+	// Sweep 检测：中心不动，但因为是 Box，会返回每个接触点的 FHitResult
 	FCollisionShape CollisionShape = FCollisionShape::MakeBox(EllipseRadii);
 	const FQuat Rotation = Orientation.Quaternion();
 
-	TArray<FOverlapResult> OverlapResults;
-	bool bHasOverlaps = World->OverlapMultiByObjectType(
-		OverlapResults,
+	TArray<FHitResult> HitResults;
+	bool bHasHit = World->SweepMultiByObjectType(
+		HitResults,
 		CenterLocation,
+		CenterLocation, // start == end，等于 overlap
 		Rotation,
 		FCollisionObjectQueryParams(FCollisionObjectQueryParams::AllDynamicObjects),
 		CollisionShape,
 		QueryParams
 	);
 
-	// 调试绘制
 	if (bDrawDebug)
 	{
 		DrawDebugBox(
@@ -175,25 +175,22 @@ void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldConte
 			Rotation,
 			DebugColor,
 			false,
-			0.1f, // 每帧刷新
-			0,
-			2.0f  // 线条粗细
+			DebugDuration,
+			0.f,
+			2.0f
 		);
 	}
 
-	// 处理检测结果
-	for (const FOverlapResult& Result : OverlapResults)
+	// 过滤有效命中
+	for (const FHitResult& Hit : HitResults)
 	{
-		AActor* HitActor = Result.GetActor();
+		AActor* HitActor = Hit.GetActor();
 		if (!HitActor) continue;
 
 		if (HitActor->Implements<URL_CombatInterface>() &&
 			!IRL_CombatInterface::Execute_isDead(HitActor))
 		{
-			if (AActor* Avatar = IRL_CombatInterface::Execute_GetAvatar(HitActor))
-			{
-				OutOverlappingActors.AddUnique(Avatar);
-			}
+			OutHitResults.Add(Hit); // 保留完整的 FHitResult
 		}
 	}
 }
@@ -208,4 +205,74 @@ URL_EnemyConfig* URL_AbilitySystemLibrary::GetEnemyConfig(AActor* Enemy)
 		return EnemyMove->GetEnemyConfig();
 	}
 	return nullptr;
+}
+
+FVector URL_AbilitySystemLibrary::GetKonckBackImpulse(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FRLGameplayEffectContext* RPGEffectContext = static_cast<const FRLGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return RPGEffectContext->GetKnockBackImpulse();
+	}
+	return FVector();
+}
+
+FName URL_AbilitySystemLibrary::GetHitBoneName(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FRLGameplayEffectContext* RPGEffectContext = static_cast<const FRLGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return RPGEffectContext->GetHitBoneName();
+	}
+	return FName();
+}
+
+void URL_AbilitySystemLibrary::SetKonckBackImpulse(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FVector InKonckBackImpulse)
+{
+	if (FRLGameplayEffectContext* RPGEffectContext = static_cast<FRLGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		RPGEffectContext->SetKnockBackImpulse(InKonckBackImpulse);
+	}
+}
+
+void URL_AbilitySystemLibrary::SetHitBoneName(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FName InHitBoneName)
+{
+	if (FRLGameplayEffectContext* RPGEffectContext = static_cast<FRLGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		RPGEffectContext->SetHitBoneName(InHitBoneName);
+	}
+}
+
+void URL_AbilitySystemLibrary::ApplyTemporaryTag(UAbilitySystemComponent* ASC, const FGameplayTag& Tag, float Duration)
+{
+	if (!ASC || !Tag.IsValid()) return;
+
+	// 添加临时Tag
+	ASC->AddLooseGameplayTag(Tag);
+
+	// 创建定时器来移除
+	FTimerHandle TimerHandle;
+	ASC->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [ASC, Tag]()
+		{
+			ASC->RemoveLooseGameplayTag(Tag);
+		}, Duration, false);
+}
+
+
+void URL_AbilitySystemLibrary::ApplyChangeAttributeEffect(UAbilitySystemComponent* SourceASC, FGameplayAttribute bChangedAttribute, float InMagnitude)
+{
+	// 动态创建GE实例（使用SourceASC作为Outer防止GC回收）
+	UGameplayEffect* DynamicParryGE = NewObject<UGameplayEffect>(SourceASC, FName(TEXT("DynamicParryGE")));
+	DynamicParryGE->DurationPolicy = EGameplayEffectDurationType::Instant; // 即时生效
+
+	// 添加属性修饰符（这里减少体力）
+	FGameplayModifierInfo& Modifier = DynamicParryGE->Modifiers.AddDefaulted_GetRef();
+
+	Modifier.Attribute = bChangedAttribute;
+	Modifier.ModifierOp = EGameplayModOp::Additive; // 修改类型：叠加
+	FScalableFloat Magnitude;
+	Magnitude.Value = InMagnitude; // 暂时造成敌人伤害两倍的属性削减
+	Modifier.ModifierMagnitude = Magnitude;
+
+	// 创建效果规格并应用
+	FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
+	SourceASC->ApplyGameplayEffectToSelf(DynamicParryGE, 1.f, Context);
 }

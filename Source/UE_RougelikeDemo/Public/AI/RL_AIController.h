@@ -21,6 +21,8 @@ class UE_ROUGELIKEDEMO_API ARL_AIController : public AAIController
 	
 public:
 	ARL_AIController();
+
+	bool bFocus = true;
 protected:
 
 	UPROPERTY(VisibleAnywhere)
@@ -46,15 +48,15 @@ protected:
 
 	// 视觉感知配置
 	UPROPERTY(EditAnywhere,Category = "AI|Perception|Sight")
-	float SightRadius = 800.f;
+	float SightRadius = 2000.f;
 
 	UPROPERTY(EditAnywhere,Category = "AI|Perception|Sight")
-	float LoseSightRadius = 1000.f;
+	float LoseSightRadius = 3000.f;
 
 	UPROPERTY(EditAnywhere,Category = "AI|Perception|Sight")
-	float SightAngle = 45.f;
+	float SightAngle = 60.f;
 
 	// 听觉感知配置
 	UPROPERTY(EditAnywhere, Category = "AI|Perception|Hearing")
-	float HearingThreshold = 600.f;
+	float HearingThreshold = 3000.f;
 };

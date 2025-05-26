@@ -19,6 +19,10 @@ class UWidgetComponent;
 class URL_EnemyMovementComponent;
 class USplineComponent;
 class UNiagaraComponent;
+class UAS_Enemy;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLock, bool, bLock);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDamageChaned, float, Damage);
 
 UCLASS()
 class UE_ROUGELIKEDEMO_API AEnemy_Base : public ACharacter, public IAbilitySystemInterface,
@@ -42,18 +46,19 @@ private:
 	FGameplayTagContainer StateTags;
 
 public:
-	// 正面处决动画
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
-	TObjectPtr<UAnimMontage> Aim_Execute_F;
-	// 背面处决动画
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Animation | State")
-	TObjectPtr<UAnimMontage> Aim_Execute_B;
+	UFUNCTION(BlueprintImplementableEvent)
+	void ChangeLockPointColor(bool bIsRed);
+
 	// 敌人是否发现玩家的标识
 	bool bIsFindPlayer;
 	// 处理处决
 	void Execute(bool bIsForward);
 
+	bool GetbIsExectute() { return bIsExecuting; }
 
+	//骨骼抖动,因为涉及到时间轴，所以在蓝图实现
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayBoneShake(FName BoneName, FVector ShakeDirection, float Magnitude);
 	
 	// 接收伤害
 	virtual void TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) const override;
@@ -62,9 +67,16 @@ public:
 
 	/** CombatInterface */
 	virtual UAnimMontage* GetHitReactMotange_Implementation() override;
+	virtual  UAnimMontage* GetLightHitReactFrontMontage_Implementation() const override;
+	virtual  UAnimMontage* GetLightHitReactBackMontage_Implementation() const override;
+	virtual  UAnimMontage* GetLightHitReactLeftMontage_Implementation() const override;
+	virtual  UAnimMontage* GetLightHitReactRightMontage_Implementation() const override;
+	virtual  UAnimMontage* GetHeavyHitReactMontage_Implementation() const override;
+
 	virtual void Die_Implementation() override;
 	FORCEINLINE virtual bool isDead_Implementation() const override {return bDead;}
-
+	virtual void KnockBack_Implementation(const FVector& KonckBackImpulse) override;
+	virtual void ShowDamageText_Implementation(float Damage) override;
 	/** End ComvatInterface */
 
 	/** EnemyInterface */
@@ -72,7 +84,10 @@ public:
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual UNiagaraComponent* GetRedAttackNiagaraComponent_Implementation() const override;
 	virtual void SetHealthBarVisible_Implementation(bool bVisible) const override;
-
+	virtual void SetLockTarget_Implementation(bool bInLock) override;
+	virtual void SetLockUIRed_Implementation(bool bInRedLock) override;
+	virtual void SetHitShake_Implementation(FName BoneName, FVector ShakeDirection, float Magnitude);
+	virtual UAS_Enemy* GetEnemyAttributeSet_Implementation() const;
 	/** End EnemyInterface */
 
 	/*-------------------------破防状态相关-------------------------*/
@@ -100,6 +115,13 @@ public:
 
 	//设置巡逻点
 	void InitializePatrol(USplineComponent* NewPatrolSpline);
+
+	/** 锁定 */
+	UPROPERTY(BlueprintAssignable)
+	FOnLock OnLock;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnDamageChaned OnDamageChanged;
 	
 protected:
 	// 处决用
@@ -109,7 +131,7 @@ protected:
 	
 	// 蹒跚时间
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
-	float StaggeredTime;
+	float StaggeredTime = 1.f;
 	// 破防时间
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
 	float GuardBrokenTime;
@@ -160,7 +182,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<URL_EnemyMovementComponent> EnemyMovementComponent;
-
+	
 	/** UI */
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> HealthBar;
@@ -170,6 +192,9 @@ protected:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnMaxHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxStaminaChanged;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnStaminaChanged;
@@ -209,6 +234,9 @@ private:
 	void StaminaAttributeChangeCallback(const FOnAttributeChangeData& Data);
 	// 韧性变化回调
 	void ResilienceAttributeChangeCallback(const FOnAttributeChangeData& Data);
+
+	bool bLock;
+	bool bRedLock;
 };
 
 

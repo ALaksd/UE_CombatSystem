@@ -38,7 +38,7 @@ void URL_EnemyMovementComponent::InitializeComponent()
 				if (CharacterMesh)
 				{
 					const FName SocketName = GetEnemyConfig()->WeaponAttachSocket;
-					WeaponMeshComponent->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+					WeaponMeshComponent->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
 				}
 			}
 		}

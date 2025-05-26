@@ -135,7 +135,8 @@ public:
 	void LMBInputReleasedTest(FGameplayTag InputTag);
 	
 	/***--------------------测试---------------------***/
-	
+	void SetbAcceptInput(bool newBool) { bAccecptInput = newBool; }
+
 protected:
 	virtual void BeginPlay() override;
 	
@@ -161,12 +162,18 @@ protected:
 	// 鼠标左键回调
 	void LMBActionCallBack(const FInputActionValue& Value);
 
-public:	
+	//是否启用输入
+	bool bAccecptInput = true;
+
+public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	// 角色和控制器
+	UPROPERTY()
 	ACharacter* ownerCharacter;
+	UPROPERTY()
 	APlayerController* playerController;
 	// 角色移动组件
+	UPROPERTY()
 	UCharacterMovementComponent* characterMovement;
 
 	/***--------------------交互相关---------------------***/
@@ -195,11 +202,15 @@ public:
 	void FindLockOnTarget();
 	
 private:
+	UPROPERTY()
 	TArray<AItem_Pickup*> ItemsCanPickup;
+	UPROPERTY()
 	AItem_Pickup* ItemToPickup;
+	void UpdateItemToPickup();
 	// 计算两个向量间的夹角,返回角度
 	float CalculateAngleBetweenVectors(const FVector& VectorA, const FVector& VectorB);
 
+	UPROPERTY()
 	AInteractable_Base* InteractableActor;
 	/***--------------------交互相关---------------------***/
 
@@ -226,7 +237,16 @@ private:
 	
 	void UpdateLockOnRotation(float DeltaTime);
 
+	void UpdateCharacterOnRotation(float DeltaTime, FRotator TargetRotation);
+
+	void UpdateControllerOnRotation(FRotator TargetRotation);
+
 	void SwitchTargetLeft();
 
 	void SwitchTargetRight();
+
+	// 更新敌人锁定图标,当可处决时变红
+	void UpdateEnemyExecute();
+	// 计算当前锁定的敌人能否被处决
+	bool CalculateCurrentTargetCanBeExecute();
 };

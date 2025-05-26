@@ -183,6 +183,11 @@ int32 ARL_BaseCharacter::GetLevelRequirement_Implementation(int32 InLevel) const
 	return PlayerState->GetLevelRequirement(InLevel);
 }
 
+UAS_Player* ARL_BaseCharacter::GetPlayerAS_Implementation() const
+{
+	return Cast<UAS_Player>(PlayerState->GetAttributeSet());
+}
+
 UAnimMontage* ARL_BaseCharacter::GetHitReactMotange_Implementation()
 {
 	return HitReactMontage;
@@ -211,6 +216,13 @@ void ARL_BaseCharacter::Die_Implementation()
 	//这里暂时用Timer延迟5秒执行重生
 	FTimerHandle ReStartTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(ReStartTimerHandle,this,&ARL_BaseCharacter::ReStart,5.f,false);
+}
+
+void ARL_BaseCharacter::KnockBack_Implementation(const FVector& KonckBackImpulse)
+{
+	// 移动（带碰撞）
+	FHitResult Hit;
+	GetCharacterMovement()->SafeMoveUpdatedComponent(KonckBackImpulse, GetActorRotation(), true, Hit);
 }
 
 void ARL_BaseCharacter::ReStart()
