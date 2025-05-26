@@ -85,6 +85,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Skills")
 	TArray<FEnemySkills> EnemySkills;
 
+	UFUNCTION(BlueprintCallable,BlueprintPure)
 	FEnemySkills FindSkillsByTag(FGameplayTag SkillTag) const;
 
 	// 初始属性
