@@ -32,4 +32,8 @@ public:
 	//设置时间膨胀，蓝图可选实现
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetPauseEffect(AActor* Instigator);
+
+	//可以新增任意在弹反期间做的逻辑
+	UFUNCTION(BlueprintImplementableEvent)
+	void ExecuteOtherst(AActor* Enemy,AActor* Character);
 };
