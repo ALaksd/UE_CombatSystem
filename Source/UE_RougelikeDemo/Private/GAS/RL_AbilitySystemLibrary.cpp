@@ -13,6 +13,7 @@
 #include "Engine/OverlapResult.h"
 #include <Component/RL_EnemyMovementComponent.h>
 #include "GAS\RL_CustomGameplayEffectContext.h"
+#include <AbilitySystemBlueprintLibrary.h>
 
 URL_OverlayWidgetController* URL_AbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
 {
@@ -275,4 +276,20 @@ void URL_AbilitySystemLibrary::ApplyChangeAttributeEffect(UAbilitySystemComponen
 	// 创建效果规格并应用
 	FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
 	SourceASC->ApplyGameplayEffectToSelf(DynamicParryGE, 1.f, Context);
+}
+
+
+void URL_AbilitySystemLibrary::ApplyDamageByMagnitude(UAbilitySystemComponent* SourceASC, UAbilitySystemComponent* TargetASC, FGameplayEffectContextHandle& Context,TSubclassOf<UGameplayEffect> DamageEffectClass, FGameplayTag DamageTag, float Damage)
+{
+	FGameplayEffectSpecHandle DamageSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, 1.0f, Context);
+
+	// 设置伤害值
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+		DamageSpecHandle,
+		DamageTag,
+		Damage
+	);
+
+	// 应用伤害
+	SourceASC->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(), TargetASC);
 }
