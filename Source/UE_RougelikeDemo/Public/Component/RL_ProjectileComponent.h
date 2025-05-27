@@ -19,7 +19,7 @@ public:
 
 	// 拉弓
 	UFUNCTION(BlueprintCallable)
-	void PullBow();
+	void PullBow(float Damage,FGameplayTag DamageTag);
 
 	// 发射
 	UFUNCTION(BlueprintCallable)

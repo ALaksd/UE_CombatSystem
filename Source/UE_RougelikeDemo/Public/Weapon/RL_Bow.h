@@ -7,6 +7,7 @@
 #include "RL_Bow.generated.h"
 
 
+struct FGameplayTag;
 enum class E_WeaponType : uint8;
 class UCapsuleComponent;
 class ARL_ProjectileBase;
@@ -32,7 +33,7 @@ public:
 	void FireProjectile();
 	
 	// 生成箭矢,绑到弓弦上
-	void SpawnArrow();
+	void SpawnArrow(float Damage,FGameplayTag DamageTag);
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Attribute")
 	bool bIsPull;
