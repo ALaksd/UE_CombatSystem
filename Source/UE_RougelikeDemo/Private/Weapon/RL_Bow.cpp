@@ -30,20 +30,21 @@ void ARL_Bow::FireProjectile()
 {
 	if (Arrow)
 	{
+		Arrow->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		Arrow->FireProjectile();
 	}
 }
 
-void ARL_Bow::SpawnArrow()
+void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag)
 {
 	FVector SocketLocation = SkeletalMeshComponent->GetSocketLocation(SpawnSocke);
-	FTransform SpawnTransform = FTransform(SocketLocation);
+	FTransform SpawnTransform = FTransform(this->GetActorRotation(),SocketLocation);
 
 	// 生成箭矢
 	Arrow = GetWorld()->SpawnActor<ARL_ProjectileBase>(ArrowClass,SpawnTransform);
 
-	// 将箭矢绑到手上
-	FAttachmentTransformRules Rules = FAttachmentTransformRules::KeepWorldTransform;
+	// 将箭矢绑到弓弦上
+	FAttachmentTransformRules Rules = FAttachmentTransformRules::SnapToTargetIncludingScale;
 	Arrow->AttachToActor(this,Rules,SpawnSocke);
 	
 }

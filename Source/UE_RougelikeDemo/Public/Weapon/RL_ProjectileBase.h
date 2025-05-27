@@ -17,6 +17,11 @@ public:
 
 	// 发射
 	void FireProjectile();
+
+	/// 
+	/// @param Damage_T 伤害数值
+	/// @param DamageTag_T 是否红光攻击
+	void InitProjectile(float Damage_T,FGameplayTag DamageTag_T);
 	
 protected:
 	/*---------------------组件---------------------*/
@@ -26,7 +31,7 @@ protected:
 	TObjectPtr<USphereComponent> SphereCom;
 
 	// 网格体组件
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Components")
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="Components")
 	TObjectPtr<UStaticMeshComponent> Mesh;
 
 	// 抛物体组件
@@ -55,6 +60,9 @@ protected:
 	// 发射物伤害
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | Damage")
 	float Damage;
+
+	UPROPERTY(EditDefaultsOnly,Category="Attribute | Damage")
+	FGameplayTag DamageTag;
 
 	// 要攻击的chara的Tag
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | Damage")

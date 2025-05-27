@@ -89,7 +89,7 @@ void ARL_Sword::Tick(float DeltaTime)
 					
 
 
-							DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet, WeaponLevel, Context);
+							DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffect, WeaponLevel, Context);
 
 							DamageInterface->TakeDamage(DamageSpecHandle);
 
@@ -149,7 +149,7 @@ void ARL_Sword::StartCombat()
 	bCombat = true;
 	
 	//创建GameplayEffect
-	DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet,WeaponLevel,WeaponASC->MakeEffectContext());
+	DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffect,WeaponLevel,WeaponASC->MakeEffectContext());
 
 }
 
