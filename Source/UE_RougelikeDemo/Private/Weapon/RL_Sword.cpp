@@ -17,7 +17,8 @@
 
 ARL_Sword::ARL_Sword()
 {
-	
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>("SwordMesh");
+	Mesh->SetupAttachment(GetRootComponent());
 }
 
 void ARL_Sword::Tick(float DeltaTime)
