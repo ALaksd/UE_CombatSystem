@@ -29,5 +29,8 @@ public:
 
 	UFUNCTION()
 	void OnMontageCompleted();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<UGameplayEffect> EffectClass;
 private:
 };

@@ -77,4 +77,10 @@ public:
 	//添加修改属性的GE
 	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
 	static void ApplyChangeAttributeEffect(UAbilitySystemComponent* SourceASC, FGameplayAttribute bChangedAttribute, float InMagnitude);
+
+	//应用伤害（根据调用者设置）
+	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
+	static void ApplyDamageByMagnitude(UAbilitySystemComponent* SourceASC, UAbilitySystemComponent* TargetASC, FGameplayEffectContextHandle& Context,TSubclassOf<UGameplayEffect> DamageEffectClass, FGameplayTag DamageTag,float Damage);
+
+	
 };

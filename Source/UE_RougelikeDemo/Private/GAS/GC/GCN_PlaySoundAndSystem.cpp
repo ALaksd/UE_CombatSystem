@@ -66,5 +66,6 @@ void UGCN_PlaySoundAndSystem::HandleGameplayCue(AActor* TargetActor, EGameplayCu
 		}
 
 		SetPauseEffect(SourceActor);
+		ExecuteOtherst(SourceActor, TargetActor);
 	}
 }

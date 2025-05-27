@@ -16,6 +16,7 @@
 #include "GAS/AS/AS_Enemy.h"
 #include "Engine/OverlapResult.h"
 #include <Interface/RL_CombatInterface.h>
+#include "GameFramework/Character.h"
 
 void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
@@ -126,8 +127,6 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor, FVector HitLocti
 		KnockDistance
 	);
 
-	FGameplayEffectSpecHandle DamageSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, 1.0f, Context);
-
 	//执行GameplayCue, 受击反馈
 	
 	FGameplayCueParameters CueParams;
@@ -137,15 +136,7 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor, FVector HitLocti
 	CueParams.NormalizedMagnitude = IntensityMultiplier;
 	TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Enemy.MeeleHit"), CueParams);
 
-	// 设置伤害值
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-		DamageSpecHandle,
-		DamageTypeTag,
-		Damage
-	);
-
-	// 应用伤害
-	SourceASC->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(), TargetASC);
+	URL_AbilitySystemLibrary::ApplyDamageByMagnitude(SourceASC, TargetASC, Context,DamageEffectClass, DamageTypeTag, Damage);
 
 	// 减少理智值
 	if (URL_SanitySubsystem* SanitySubsystem = UGameInstance::GetSubsystem<URL_SanitySubsystem>(TargetActor->GetWorld()->GetGameInstance()))
@@ -197,10 +188,38 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 			}
 		}
 
-		URL_AbilitySystemLibrary::ApplyTemporaryTag(TargetASC, FGameplayTag::RequestGameplayTag("State.BounceBack.Continuous"), 1.f);
+		//弹反奖励
+		//URL_AbilitySystemLibrary::ApplyTemporaryTag(TargetASC, FGameplayTag::RequestGameplayTag("State.BounceBack.Continuous"), 1.f);
 
+		//3.敌人播放弹反受击动画（KonckDistance >= 200.f）,并且敌人后退
+		if (KnockDistance >= 200.f)
+		{
+			UAnimInstance* AnimInstance = Cast<ACharacter>(OwnerActor)->GetMesh()->GetAnimInstance();
+			if (AnimInstance)
+			{
+				UAnimMontage* ParryHitMontage = URL_AbilitySystemLibrary::GetEnemyConfig(OwnerActor)->ParryHitMontage;
 
-		//后退(测试)
+				if (ParryHitMontage)
+				{
+					AnimInstance->StopAllMontages(0.1f);
+					AnimInstance->Montage_Play(ParryHitMontage);
+				}
+				
+			}
+
+			FGameplayTag EnemyGuardBrokenTag = FGameplayTag::RequestGameplayTag("EnemyState.GuardBroken");
+			SourceASC->AddLooseGameplayTag(EnemyGuardBrokenTag);
+
+			FTimerHandle TimerHandle;
+			OwnerActor->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [SourceASC,EnemyGuardBrokenTag]()
+				{
+					SourceASC->RemoveLooseGameplayTag(EnemyGuardBrokenTag);
+					SourceASC->SetTagMapCount(EnemyGuardBrokenTag, 0);
+				}
+			, 1.0f, false);
+
+		}
+		//4.玩家后退(测试)
 		if (TargetActor->Implements<URL_CombatInterface>())
 		{
 			IRL_CombatInterface::Execute_KnockBack(TargetActor, (OwnerActor->GetActorForwardVector()).GetSafeNormal() * KnockDistance);
