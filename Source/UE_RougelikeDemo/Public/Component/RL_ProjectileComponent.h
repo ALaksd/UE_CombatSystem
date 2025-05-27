@@ -17,12 +17,19 @@ class UE_ROUGELIKEDEMO_API URL_ProjectileComponent : public URL_WeaponCompoment
 public:	
 	URL_ProjectileComponent();
 
+	// 拉弓
+	UFUNCTION(BlueprintCallable)
+	void PullBow();
+
+	// 发射
+	UFUNCTION(BlueprintCallable)
+	void FireProjectile();
+
+	
 protected:
 	virtual void BeginPlay() override;
 
-	// 拉弓
-	void PullBow();
-	
+	//UFUNCTION()
 	virtual void EquipWeapon() override;
 
 	// 要生成的弓的class

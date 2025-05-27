@@ -31,6 +31,8 @@ private:
 	virtual void Tick(float DeltaTime) override;
 	
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Mesh")
+	USkeletalMeshComponent* Mesh;
 	
 	//武器击退距离
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")

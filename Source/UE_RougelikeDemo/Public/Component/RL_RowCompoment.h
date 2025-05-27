@@ -7,11 +7,11 @@
 #include "Weapon/RL_Bow.h"
 #include "RL_RowCompoment.generated.h"
 
-// ÉùÃ÷Î¯ÍĞ£¬ÓÃÓÚ¿ªÊ¼ºÍ½áÊøÃé×¼Ê±Í¨Öª
+// å£°æ˜å§”æ‰˜ï¼Œç”¨äºå¼€å§‹å’Œç»“æŸç„å‡†æ—¶é€šçŸ¥
 DECLARE_MULTICAST_DELEGATE(FOnAimBeginDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAimEndDelegate);
 
-//Î¯ÍĞ£¬ÓÃÓÚÀ­¹­Ê±µÄÍ¨Öª
+//å§”æ‰˜ï¼Œç”¨äºæ‹‰å¼“æ—¶çš„é€šçŸ¥
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPullBeginDelegate, float MaxPullTime, float CurrentPullTime);
 DECLARE_MULTICAST_DELEGATE(FOnPullEndDelegate);
 
@@ -23,25 +23,25 @@ class UE_ROUGELIKEDEMO_API URL_RowCompoment : public URL_WeaponCompoment
 public:
 	void BeginPlay() override;
 
-	//Ãé×¼¿ªÊ¼
+	//ç„å‡†å¼€å§‹
 	void AimBegin();
 
-	//½áÊøÃé×¼
+	//ç»“æŸç„å‡†
 	void AimEnd();
 
-	//·¢Éä¼ıÊ±
+	//å‘å°„ç®­æ—¶
 	void FireArrowBegin();
 
-	//·¢Éä¼ı½áÊø
+	//å‘å°„ç®­ç»“æŸ
 	void FireArrowEnd();
 
-	//À­¹­¿ªÊ¼
+	//æ‹‰å¼“å¼€å§‹
 	void PullBowBegin();
 
-	//À­¹­½áÊø
+	//æ‹‰å¼“ç»“æŸ
 	void PullBowEnd();
 
-	// Ãé×¼¿ªÊ¼ºÍ½áÊøµÄÎ¯ÍĞ
+	// ç„å‡†å¼€å§‹å’Œç»“æŸçš„å§”æ‰˜
 	FOnAimBeginDelegate OnAimBegin;
 
 	FOnAimEndDelegate OnAimEnd;
@@ -52,57 +52,57 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = Arrow)
-	//ÊÇ·ñ´¦ÓÚÃé×¼×´Ì¬
+	//æ˜¯å¦å¤„äºç„å‡†çŠ¶æ€
 	bool IsAiming;
 
-	//ÊÇ·ñÕıÔÚÀ­¹­
+	//æ˜¯å¦æ­£åœ¨æ‹‰å¼“
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Arrow)
 	bool IsPulling;
 
-	//¼ıÉú³ÉµÄ²å²Û
+	//ç®­ç”Ÿæˆçš„æ’æ§½
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = Arrow)
 	FName ArrowSocket;
 
-	//Éú³ÉµÄ¼ıÀà
+	//ç”Ÿæˆçš„ç®­ç±»
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Arrow)
 	TSubclassOf<class ARL_Arrow> ArrowClass;
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = Arrow)
 	class UAnimMontage* FireMontage;
 
-	//Éú³ÉµÄ¼ıµÄÒıÓÃ
+	//ç”Ÿæˆçš„ç®­çš„å¼•ç”¨
 	class ARL_Arrow* SpawnedArrow;
 
-	//¶¨Ê±Æ÷ÓÃÓÚ´¢´æÀ­¹­µÄÊ±³¤
+	//å®šæ—¶å™¨ç”¨äºå‚¨å­˜æ‹‰å¼“çš„æ—¶é•¿
 	FTimerHandle PullBowTimeHandle;
 
-	//¸üĞÂÊ±¼äÖáµÄÃëÊı(À­¹­Ê±³¤ÔöÁ¿)
+	//æ›´æ–°æ—¶é—´è½´çš„ç§’æ•°(æ‹‰å¼“æ—¶é•¿å¢é‡)
 	float PullIncreasTime = 0.033f;
 	
-	//À­¹­Ê±³¤
+	//æ‹‰å¼“æ—¶é•¿
 	float PullBowDuration;
 
 protected:
-	//ÃÉÌ«Ææ²¥·Å½áÊø
+	//è’™å¤ªå¥‡æ’­æ”¾ç»“æŸ
 	UFUNCTION()
 	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
-	//Éú³É¼ı
+	//ç”Ÿæˆç®­
 	void SpawnArrow();
 
-	//Ïú»Ù¼ı
+	//é”€æ¯ç®­
 	void DestroyArrow();
 
-	//·¢Éä¼ı
+	//å‘å°„ç®­
 	void FireArrow(float Strength);
 
-	//¼ÆËã·¢Éä¼ıµÄ·½Ïò
+	//è®¡ç®—å‘å°„ç®­çš„æ–¹å‘
 	FVector CalculateArrowDirection();
 
-	//¶¨Ê±Æ÷¸üĞÂº¯Êı
+	//å®šæ—¶å™¨æ›´æ–°å‡½æ•°
 	void UpdatePullBowDuration();
 
-	//²¥·Å¶¯»­
+	//æ’­æ”¾åŠ¨ç”»
 	void PlayMontage(class UAnimMontage* Montage);
 
 private:
@@ -110,9 +110,9 @@ private:
 	FRotator AimRotaion;
 	FRotator InitialRotaion;
 	ARL_Bow* Bow;
-	//ÊÇ·ñÕıÔÚÉä»÷
+	//æ˜¯å¦æ­£åœ¨å°„å‡»
 	bool IsFiring;
 
-	//ÊäÈë»º³å
+	//è¾“å…¥ç¼“å†²
 	bool IsWaitingToPulling;
 };

@@ -29,6 +29,14 @@ class UE_ROUGELIKEDEMO_API ARL_Bow : public AActor
 public:
 	ARL_Bow();
 
+	void FireProjectile();
+	
+	// 生成箭矢,绑到弓弦上
+	void SpawnArrow();
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Attribute")
+	bool bIsPull;
+
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<ACharacter> OwnerCharacter;
 	
@@ -71,10 +79,12 @@ protected:
 
 
 	E_WeaponType WeaponType;
-
-
-
-
+	
 	UPROPERTY()
 	UAudioComponent* SoundToPlay;
+
+private:
+	UPROPERTY()
+	ARL_ProjectileBase* Arrow;
+
 };

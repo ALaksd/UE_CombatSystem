@@ -24,8 +24,8 @@ ARL_BaseWeapon::ARL_BaseWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 
-	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
-	Mesh->SetupAttachment(RootComponent);
+	// Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
+	// Mesh->SetupAttachment(RootComponent);
 	
 	WeaponASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 

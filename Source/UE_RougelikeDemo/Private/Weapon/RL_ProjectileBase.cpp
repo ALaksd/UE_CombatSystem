@@ -14,10 +14,20 @@ ARL_ProjectileBase::ARL_ProjectileBase()
 	USceneComponent* ParentRoot = Cast<USceneComponent>(GetDefaultSubobjectByName(TEXT("RootComponent")));
 	if (ParentRoot)
 		ParentRoot->DestroyComponent(); // 销毁父类根组件
-	
+
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(SphereCom);
+	
 	ProjectileCom = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	
+}
+
+void ARL_ProjectileBase::FireProjectile()
+{
+	ProjectileCom->InitialSpeed=MoveSpeed;
+	ProjectileCom->MaxSpeed=MoveSpeed;
+
+	this->SetLifeSpan(LifeTime);
 }
 
 void ARL_ProjectileBase::BeginPlay()
@@ -68,6 +78,8 @@ void ARL_ProjectileBase::OnComponentBeginOverlap(UPrimitiveComponent* Overlapped
 	{
 		DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet,WeaponLevel,WeaponASC->MakeEffectContext());
 		DamageInterface->TakeDamage(DamageSpecHandle);
+
+		Destroy();
 	}
 	
 }
