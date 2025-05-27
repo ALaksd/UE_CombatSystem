@@ -176,7 +176,7 @@ void AEnemy_Base::Die_Implementation()
 
 void AEnemy_Base::KnockBack_Implementation(const FVector& KonckBackImpulse)
 {
-	if (bIsGuardBroken || bIsStaggered)
+	if (AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("EnemyState.GuardBroken")))
 	{
 		FHitResult Hit;
 		GetCharacterMovement()->SafeMoveUpdatedComponent(KonckBackImpulse, GetActorRotation(), true, Hit);
