@@ -209,10 +209,6 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 
 			FGameplayTag EnemyGuardBrokenTag = FGameplayTag::RequestGameplayTag("EnemyState.GuardBroken");
 			SourceASC->AddLooseGameplayTag(EnemyGuardBrokenTag);
-			if (OwnerActor->Implements<URL_CombatInterface>())
-			{
-				IRL_CombatInterface::Execute_KnockBack(OwnerActor, (TargetActor->GetActorForwardVector()).GetSafeNormal() * KnockDistance);
-			}
 
 			FTimerHandle TimerHandle;
 			OwnerActor->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [SourceASC,EnemyGuardBrokenTag]()

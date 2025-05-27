@@ -50,6 +50,8 @@ void UBTTask_ExecuteSkill::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uin
 	// 清理资源
 	CachedOwnerComp = nullptr;
 	AbilityEndedDelegateHandle.Reset();
+	OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedSkillKey.SelectedKeyName, FName("None"));
+
 
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 }

@@ -51,10 +51,10 @@ void UBTService_PowerSkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, 
 		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, String);
 		OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedPowerSkillKey.SelectedKeyName, SelectedSkill.AbilityTag.GetTagName());
 	}
-	else
+	/*else
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedPowerSkillKey.SelectedKeyName, FName("None"));
-	}
+	}*/
 
 }
 
