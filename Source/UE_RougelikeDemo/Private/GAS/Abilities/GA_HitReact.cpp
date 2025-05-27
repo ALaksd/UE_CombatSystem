@@ -26,7 +26,7 @@ UGA_HitReact::UGA_HitReact()
 
 void UGA_HitReact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	if (CanbeHit())
+	if (CommitAbility(Handle,ActorInfo,ActivationInfo))
 	{
 		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
@@ -115,11 +115,6 @@ void UGA_HitReact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 void UGA_HitReact::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-}
-
-bool UGA_HitReact::CanbeHit()
-{
-	return true;
 }
 
 void UGA_HitReact::OnMontageCompleted()
