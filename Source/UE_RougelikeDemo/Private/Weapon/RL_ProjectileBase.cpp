@@ -3,6 +3,8 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Interface/RL_DamageInterface.h"
+#include "Components/StaticMeshComponent.h"
+#include "GAS/RL_AbilitySystemLibrary.h"
 
 ARL_ProjectileBase::ARL_ProjectileBase()
 {
@@ -15,7 +17,7 @@ ARL_ProjectileBase::ARL_ProjectileBase()
 	if (ParentRoot)
 		ParentRoot->DestroyComponent(); // 销毁父类根组件
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshCom"));
 	Mesh->SetupAttachment(SphereCom);
 	
 	ProjectileCom = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
@@ -30,14 +32,17 @@ void ARL_ProjectileBase::FireProjectile()
 	this->SetLifeSpan(LifeTime);
 }
 
+void ARL_ProjectileBase::InitProjectile(float Damage_T, FGameplayTag DamageTag_T)
+{
+	this->Damage = Damage_T;
+	this->DamageTag = DamageTag_T;
+}
+
 void ARL_ProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 
 	SphereCom->OnComponentBeginOverlap.AddDynamic(this,&ARL_ProjectileBase::OnComponentBeginOverlap);
-	ProjectileCom->InitialSpeed = InitSpeed;
-	ProjectileCom->MaxSpeed=MaxSpeed;
-
 
 	/// 初始化抛射物的伤害
 	// 创建临时GE修改属性
@@ -76,10 +81,11 @@ void ARL_ProjectileBase::OnComponentBeginOverlap(UPrimitiveComponent* Overlapped
 
 	if (IRL_DamageInterface* DamageInterface = Cast<IRL_DamageInterface>(OtherActor))
 	{
-		DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet,WeaponLevel,WeaponASC->MakeEffectContext());
+		DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffect,WeaponLevel,WeaponASC->MakeEffectContext());
 		DamageInterface->TakeDamage(DamageSpecHandle);
 
 		Destroy();
 	}
+	//URL_AbilitySystemLibrary::ApplyDamageByMagnitude(WeaponASC,OtherActor->FindComponentByClass<UAbilitySystemComponent>(),DamageSpecHandle);
 	
 }

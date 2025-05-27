@@ -55,7 +55,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UAS_Weapon> WeaponAttribute;
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> DamageEffet;
+	TSubclassOf<UGameplayEffect> DamageEffect;
 
 	//武器等级
 	UPROPERTY()

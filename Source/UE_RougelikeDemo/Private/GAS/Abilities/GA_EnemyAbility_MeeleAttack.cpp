@@ -93,7 +93,11 @@
 			// 允许的状态为空表示全部允许
 			if (Anim.AllowedStates.IsEmpty() || Anim.AllowedStates.HasTagExact(StateTag))
 			{
-				ValidAnims.Add(Anim);
+				if (Anim.Montage != LastUsedMontages)
+				{
+					ValidAnims.Add(Anim);
+				}
+				
 			}
 		}
 
@@ -120,6 +124,8 @@
 			}
 			RandomPoint -= Anim.Weight;
 		}
+
+		LastUsedMontages = ValidAnims.Last().Montage;
 
 		return ValidAnims.Last().Montage; // fallback
 	}
