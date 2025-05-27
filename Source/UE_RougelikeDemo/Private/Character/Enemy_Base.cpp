@@ -48,6 +48,7 @@ void AEnemy_Base::Execute(bool bIsForward)
 	if (bIsExecuting) return;
 	bIsExecuting = true;
 	AddTag(FName("EnemyState.Execute"));
+	RemoveTag(FName("EnemyState.GuardBroken"));
 
 	GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
 
@@ -65,7 +66,6 @@ void AEnemy_Base::Execute(bool bIsForward)
 	GetWorldTimerManager().SetTimer(TimerHandle, [this]()
 		{
 			bIsGuardBroken = false;
-			RemoveTag(FName("EnemyState.GuardBroken"));
 			RemoveTag(FName("EnemyState.Execute"));
 
 			// 回复体力

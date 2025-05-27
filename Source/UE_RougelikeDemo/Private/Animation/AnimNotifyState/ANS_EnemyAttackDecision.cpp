@@ -184,7 +184,7 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 			AS = IRL_EnemyInterface::Execute_GetEnemyAttributeSet(OwnerActor);
 			if (AS)
 			{
-				URL_AbilitySystemLibrary::ApplyChangeAttributeEffect(SourceASC, AS->GetStaminaAttribute(), -Damage * 2.f);
+				URL_AbilitySystemLibrary::ApplyChangeAttributeEffect(SourceASC, AS->GetStaminaAttribute(), -Breakingvalue);
 			}
 		}
 
@@ -214,7 +214,6 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 			OwnerActor->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [SourceASC,EnemyGuardBrokenTag]()
 				{
 					SourceASC->RemoveLooseGameplayTag(EnemyGuardBrokenTag);
-					SourceASC->SetTagMapCount(EnemyGuardBrokenTag, 0);
 				}
 			, 1.0f, false);
 

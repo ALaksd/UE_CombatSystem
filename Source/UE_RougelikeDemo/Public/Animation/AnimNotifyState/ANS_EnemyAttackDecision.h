@@ -31,6 +31,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Damage")
 	float Damage = 20.0f;
 
+	//弹反成功敌人减少的体力条
+	UPROPERTY(EditAnywhere, Category = "Damage")
+	float Breakingvalue = 40.0f;
+
 	//减少理智的量 = Damage * ReduceSantiyFactor
 	UPROPERTY(EditAnywhere, Category = "Damage")
 	float ReduceSantiyFactor = 0.5f;
