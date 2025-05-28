@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RL_BaseWeapon.h"
+#include "Weapon/RL_BaseWeapon.h"
 #include "RL_ProjectileBase.generated.h"
 
 class UProjectileMovementComponent;
@@ -64,7 +64,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | Damage")
 	FGameplayTag DamageTag;
 
-	// 要攻击的chara的Tag
+	// 要攻击的character的Tag
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | Damage")
 	FName AttackActorTag;
 	/*---------------------属性---------------------*/

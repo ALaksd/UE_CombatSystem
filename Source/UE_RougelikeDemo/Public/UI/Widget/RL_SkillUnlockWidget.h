@@ -58,7 +58,7 @@ private:
 	//存储所有的按键对应的技能,用于后续技能显示
 	TMap<TObjectPtr<UButton>,FSkillList> SkillMap;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OnSkillButtonClicked(UButton* ButtonClicked);
 
 	FSkillList* CurrentSkill;
