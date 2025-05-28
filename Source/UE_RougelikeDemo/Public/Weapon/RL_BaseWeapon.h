@@ -44,8 +44,7 @@ public:
 	virtual void SetItemInstance_Implementation(URLInventoryItemInstance* NewInstance) override { ItemInstance = NewInstance; }
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Mesh")
-	USkeletalMeshComponent* Mesh;
+	
 
 	//要执行的碰撞检测对象
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Attack Collision")
@@ -56,7 +55,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UAS_Weapon> WeaponAttribute;
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> DamageEffet;
+	TSubclassOf<UGameplayEffect> DamageEffect;
 
 	//武器等级
 	UPROPERTY()

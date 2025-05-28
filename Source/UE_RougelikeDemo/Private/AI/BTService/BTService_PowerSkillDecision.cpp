@@ -27,8 +27,6 @@ void UBTService_PowerSkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, 
 
 	/**
 	 * 收集可用技能
-	 * 1.技能冷却结束
-	 * 2.到达攻击范围
 	 */
 	TArray<FEnemySkills> PowerfulSkills;
 	for (const FEnemySkills& Skill : WakingSkills)
@@ -41,7 +39,7 @@ void UBTService_PowerSkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, 
 
 	if (PowerfulSkills.Num() > 0)
 	{
-		PowerfulSkills.Sort([](const FEnemySkills& A, const FEnemySkills& B) {
+   		PowerfulSkills.Sort([](const FEnemySkills& A, const FEnemySkills& B) {
 			return A.PriorityLevel > B.PriorityLevel;
 			});
 
@@ -50,10 +48,6 @@ void UBTService_PowerSkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, 
 		FString String = *SelectedSkill.AbilityTag.ToString();
 		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, String);
 		OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedPowerSkillKey.SelectedKeyName, SelectedSkill.AbilityTag.GetTagName());
-	}
-	else
-	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedPowerSkillKey.SelectedKeyName, FName("None"));
 	}
 
 }

@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "RL_Bow.generated.h"
 
 
+struct FGameplayTag;
 enum class E_WeaponType : uint8;
 class UCapsuleComponent;
 class ARL_ProjectileBase;
@@ -29,8 +31,19 @@ class UE_ROUGELIKEDEMO_API ARL_Bow : public AActor
 public:
 	ARL_Bow();
 
-	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<ACharacter> OwnerCharacter;
+	void FireProjectile();
+	
+	// 生成箭矢,绑到弓弦上
+	void SpawnArrow(float Damage,FGameplayTag DamageTag);
+
+	UFUNCTION(BlueprintCallable)
+	ACharacter* GetWeaponOwner(){return Cast<ACharacter>(WeaponOwner);};
+	
+	UPROPERTY()
+	AActor* WeaponOwner;
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Attribute")
+	bool bIsPull;
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
 	EBowState BowState;
@@ -71,10 +84,12 @@ protected:
 
 
 	E_WeaponType WeaponType;
-
-
-
-
+	
 	UPROPERTY()
 	UAudioComponent* SoundToPlay;
+
+private:
+	UPROPERTY()
+	ARL_ProjectileBase* Arrow;
+
 };

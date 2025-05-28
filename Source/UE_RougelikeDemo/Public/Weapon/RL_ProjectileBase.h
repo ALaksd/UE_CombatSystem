@@ -15,6 +15,13 @@ class UE_ROUGELIKEDEMO_API ARL_ProjectileBase : public ARL_BaseWeapon
 public:	
 	ARL_ProjectileBase();
 
+	// 发射
+	void FireProjectile();
+
+	/// 
+	/// @param Damage_T 伤害数值
+	/// @param DamageTag_T 是否红光攻击
+	void InitProjectile(float Damage_T,FGameplayTag DamageTag_T);
 	
 protected:
 	/*---------------------组件---------------------*/
@@ -22,6 +29,10 @@ protected:
 	// 球形碰撞组件
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Components")
 	TObjectPtr<USphereComponent> SphereCom;
+
+	// 网格体组件
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="Components")
+	TObjectPtr<UStaticMeshComponent> Mesh;
 
 	// 抛物体组件
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Components")
@@ -31,10 +42,17 @@ protected:
 
 	/*---------------------属性---------------------*/
 
+	UPROPERTY(EditDefaultsOnly,Category="Attribute | Base")
+	float LifeTime;
+
+	// 发射物移动速度
+	UPROPERTY(EditDefaultsOnly,Category="Attribute | Base")
+	float MoveSpeed;
+		
 	// 发射物初始移动速度
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | Base")
 	float InitSpeed;
-
+	
 	// 发射物最大移动速度
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | Base")
 	float MaxSpeed;
@@ -42,6 +60,9 @@ protected:
 	// 发射物伤害
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | Damage")
 	float Damage;
+
+	UPROPERTY(EditDefaultsOnly,Category="Attribute | Damage")
+	FGameplayTag DamageTag;
 
 	// 要攻击的chara的Tag
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | Damage")

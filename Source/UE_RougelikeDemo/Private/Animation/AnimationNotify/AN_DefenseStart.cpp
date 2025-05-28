@@ -3,18 +3,14 @@
 
 #include "Animation/AnimationNotify/AN_DefenseStart.h"
 #include "Character/RL_BaseCharacter.h"
+#include <AbilitySystemBlueprintLibrary.h>
 
 void UAN_DefenseStart::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	ARL_BaseCharacter* Character = Cast<ARL_BaseCharacter>(MeshComp->GetOwner());
-	if (Character)
+	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(MeshComp->GetOwner());
+	if (ASC)
 	{
-		UAbilitySystemComponent* ASC = Character->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>();
-		if (ASC)
-		{
-			ASC->AddLooseGameplayTag(Tag);
-			ASC->SetTagMapCount(Tag, 1);
-			UE_LOG(LogTemp, Log, TEXT("Invincibility Tag Added"));
-		}
+		ASC->AddLooseGameplayTag(Tag);
+		ASC->SetTagMapCount(Tag, 1);
 	}
 }

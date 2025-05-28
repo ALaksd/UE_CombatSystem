@@ -13,21 +13,19 @@ void UANS_InputDisableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSe
 
 	if (!Owner) return;
 
-	// 移除输入
- /*	if (APlayerController* PC = Cast<APlayerController>(Owner->GetInstigatorController()))
+	URL_MovementComponent* MovementComp = Owner->FindComponentByClass<URL_MovementComponent>();
+	if (MovementComp)
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		//如果TagsToBlock为空，则禁用全部输入，否则禁用指定的输入
+		if (TagsToBlock.IsEmpty())
 		{
-			if (InputSubsystem->HasMappingContext(DefaultIMC) && InputSubsystem->HasMappingContext(MoveIMC))
-			{
-				InputSubsystem->RemoveMappingContext(DefaultIMC);
-				InputSubsystem->RemoveMappingContext(MoveIMC);
-				InputSubsystem->AddMappingContext(DisableIMC, 0);
-			}
+			MovementComp->SetbAcceptInput(false);
 		}
-	}*/
-	if (URL_MovementComponent* MovementComp = Owner->FindComponentByClass<URL_MovementComponent>())
-	{
-		MovementComp->SetbAcceptInput(false);
+		else
+		{
+			MovementComp->BlockInputTag(TagsToBlock);
+		}
+		
 	}
 }
+

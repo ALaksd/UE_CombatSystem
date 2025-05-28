@@ -135,7 +135,13 @@ public:
 	void LMBInputReleasedTest(FGameplayTag InputTag);
 	
 	/***--------------------测试---------------------***/
+
+	/** 输入权限相关 */
 	void SetbAcceptInput(bool newBool) { bAccecptInput = newBool; }
+
+	void BlockInputTag(FGameplayTagContainer InputTags);
+
+	void UnblockInputTag();
 
 protected:
 	virtual void BeginPlay() override;
@@ -164,6 +170,9 @@ protected:
 
 	//是否启用输入
 	bool bAccecptInput = true;
+
+	UPROPERTY()
+	FGameplayTagContainer BlockedInputTags;
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

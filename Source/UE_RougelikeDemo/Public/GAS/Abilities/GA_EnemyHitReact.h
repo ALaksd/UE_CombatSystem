@@ -13,7 +13,5 @@ UCLASS()
 class UE_ROUGELIKEDEMO_API UGA_EnemyHitReact : public UGA_HitReact
 {
 	GENERATED_BODY()
-	
-protected:
-	virtual bool CanbeHit() override;
+
 };

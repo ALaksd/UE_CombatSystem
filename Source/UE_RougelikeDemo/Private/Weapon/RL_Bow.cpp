@@ -26,13 +26,37 @@ ARL_Bow::ARL_Bow()
 	
 }
 
+void ARL_Bow::FireProjectile()
+{
+	if (Arrow)
+	{
+		Arrow->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		Arrow->FireProjectile();
+	}
+}
+
+void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag)
+{
+	FVector SocketLocation = SkeletalMeshComponent->GetSocketLocation(SpawnSocke);
+	FRotator SocketRotation = SkeletalMeshComponent->GetSocketRotation(SpawnSocke);
+	FTransform SpawnTransform = FTransform(SocketRotation,SocketLocation);
+
+	// 生成箭矢
+	Arrow = GetWorld()->SpawnActor<ARL_ProjectileBase>(ArrowClass,SpawnTransform);
+
+	// 将箭矢绑到弓弦上
+	FAttachmentTransformRules Rules = FAttachmentTransformRules::SnapToTargetIncludingScale;
+	Arrow->AttachToComponent(GetMesh(),Rules,SpawnSocke);
+	
+}
+
 void ARL_Bow::FireProjectile(FVector AimLocation)
 {
 	FVector SocketLocation = SkeletalMeshComponent->GetSocketLocation(SpawnSocke);
 	FRotator SpawnRotation = (AimLocation - SocketLocation).Rotation();
 	FTransform SpawnTransform = FTransform(SpawnRotation,SocketLocation);
 	
-	ARL_ProjectileBase* Arrow = GetWorld()->SpawnActor<ARL_ProjectileBase>(ArrowClass,SpawnTransform);
+	Arrow = GetWorld()->SpawnActor<ARL_ProjectileBase>(ArrowClass,SpawnTransform);
 }
 
 void ARL_Bow::PullBowStart()
