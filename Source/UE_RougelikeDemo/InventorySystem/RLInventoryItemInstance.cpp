@@ -5,22 +5,36 @@
 #include "RLInventoryItemDefinition.h"
 #include "RLInventoryItemFragment.h"
 
-const URLInventoryItemFragment* URLInventoryItemInstance::FindFragmentByClass(TSubclassOf<URLInventoryItemFragment> FragmentClass) const
+const URLInventoryItemFragment* URLInventoryItemInstance::FindFragmentByClass(
+	TSubclassOf<URLInventoryItemFragment> FragmentClass) const
 {
-	if (FragmentClass != nullptr)
+	// 参数深度校验
+	if (!FragmentClass || !FragmentClass->IsValidLowLevel())
 	{
-		if (ItemDefinition != nullptr && ItemDefinition->FindFragmentByClass(FragmentClass))
+		return nullptr;
+	}
+
+	// 静态片段查询（带有效性检查）
+	if (IsValid(ItemDefinition))
+	{
+		const URLInventoryItemFragment* StaticFragment =
+			ItemDefinition->FindFragmentByClass(FragmentClass);
+		if (IsValid(StaticFragment))
 		{
-			return ItemDefinition->FindFragmentByClass(FragmentClass);
-		}
-		for (URLInventoryItemFragment* Fragment : DynamicFragments)
-		{
-			if (Fragment && Fragment->IsA(FragmentClass))
-			{
-				return Fragment;
-			}
+			return StaticFragment;
 		}
 	}
+
+	// 动态片段遍历（带线程安全保护）
+	TArray<URLInventoryItemFragment*> LocalDynamicFragments = DynamicFragments;
+	for (URLInventoryItemFragment* Fragment : LocalDynamicFragments)
+	{
+		if (IsValid(Fragment) && Fragment->IsA(FragmentClass))
+		{
+			return Fragment;
+		}
+	}
+
 	return nullptr;
 }
 
@@ -49,4 +63,13 @@ void URLInventoryItemInstance::GetOwnedGameplayTags(FGameplayTagContainer& TagCo
 	{
 		ItemDefinition->GetOwnedGameplayTags(TagContainer);
 	}
+}
+
+FGameplayTagContainer URLInventoryItemInstance::GetOwnedGameplayTag() const
+{
+	if (IsValid(ItemDefinition))
+	{
+		return ItemDefinition->ItemTags.Added;
+	}
+	return FGameplayTagContainer();
 }

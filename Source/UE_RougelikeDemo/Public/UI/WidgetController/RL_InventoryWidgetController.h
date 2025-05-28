@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UI/WidgetController/RL_WidgetController.h"
+#include "GameplayTagContainer.h"
 #include "RL_InventoryWidgetController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnInventoryItemSlotUpdate,
@@ -12,7 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnInventoryItemSlotUpdate,
 	URLInventoryItemInstance*, NewItem,
 	URLInventoryItemInstance*, OldItem);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FbOnEquip_UI, bool,bEquip);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FbOnEquip_UI, bool,bEquip, FGameplayTagContainer,SlotTags);
 /**
  * 
  */
@@ -40,5 +41,5 @@ public:
 	void HandleItemSlotUpdate(URLInventoryComponent* InventoryComponent, const FRLInventoryItemSlotHandle& SlotHandle, URLInventoryItemInstance* NewItem, URLInventoryItemInstance* OldItem);
 
 	UFUNCTION()
-	void SetbEquiped(bool bEquip);
+	void SetbEquiped(bool bEquip,FGameplayTagContainer SlotTags);
 };

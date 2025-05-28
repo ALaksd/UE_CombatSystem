@@ -205,13 +205,14 @@ AActor* ARL_BaseCharacter::GetAvatar_Implementation()
 
 void ARL_BaseCharacter::Die_Implementation()
 {
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	bIsDead = true;
-	OnDead();
-
+	GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
 	//禁止所用输入
 	MovementComponent->DisableAllInput();
 	MovementComponent->CancelLockOn();
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	bIsDead = true;
+	OnDead();
 
 	//这里暂时用Timer延迟5秒执行重生
 	FTimerHandle ReStartTimerHandle;
@@ -223,6 +224,11 @@ void ARL_BaseCharacter::KnockBack_Implementation(const FVector& KonckBackImpulse
 	// 移动（带碰撞）
 	FHitResult Hit;
 	GetCharacterMovement()->SafeMoveUpdatedComponent(KonckBackImpulse, GetActorRotation(), true, Hit);
+}
+
+void ARL_BaseCharacter::SwitchWeaponTypeForAnim_Implementation(E_WeaponType InWeaponType)
+{
+	OnSwitchWeapon(InWeaponType);
 }
 
 void ARL_BaseCharacter::ReStart()

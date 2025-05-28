@@ -103,7 +103,7 @@ void URL_MovementComponent::BeginPlay()
 
 void URL_MovementComponent::Move(const FInputActionValue& Value)
 {
-	if (!ownerCharacter || !playerController || !bAccecptInput) return;
+	if (!ownerCharacter && !playerController && !bAccecptInput) return;
 	
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	
@@ -119,7 +119,7 @@ void URL_MovementComponent::Move(const FInputActionValue& Value)
 
 void URL_MovementComponent::Look(const FInputActionValue& Value)
 {
-	if (!playerController) return;
+	if (!playerController && !bAccecptInput) return;
 
 	FVector2D LookAxis = Value.Get<FVector2D>();
 	playerController->AddYawInput(LookAxis.X);

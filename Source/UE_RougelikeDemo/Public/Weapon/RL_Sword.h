@@ -35,15 +35,15 @@ protected:
 	USkeletalMeshComponent* Mesh;
 	
 	//武器击退距离
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Attack")
 	float KnockDistance = 100.f;
 	
 	//单次攻击恢复的信仰值，会乘以武器当前的攻击倍率
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Attack")
 	float RestoreAttach = 0.2f;
 
 	//单次攻击恢复的信理智值，会乘以武器当前的攻击倍率
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Attack")
 	float RestoreSanity = 5.f;
 
 	

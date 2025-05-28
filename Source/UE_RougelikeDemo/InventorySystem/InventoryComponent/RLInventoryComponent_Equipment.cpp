@@ -153,7 +153,7 @@ bool URLInventoryComponent_Equipment::MakeItemEquipped_Internal(const FRLInvento
 	}
 
 	ItemInstance->SetbEquiped(true);
-	bOnEquip.ExecuteIfBound(true);
+	bOnEquip.ExecuteIfBound(true, ItemInstance->GetOwnedGameplayTag());
 	OnArmorUpdate.Broadcast(ItemInstance, SlotHandle);
 	return true;
 }
@@ -192,7 +192,7 @@ bool URLInventoryComponent_Equipment::MakeItemUnequipped_Internal(const FRLInven
 
 	// 更新物品实例的装备状态
 	ItemInstance->SetbEquiped(false);
-	bOnEquip.ExecuteIfBound(false);
+	bOnEquip.ExecuteIfBound(false, ItemInstance->GetOwnedGameplayTag());
 	OnArmorUpdate.Broadcast(NULL, SlotHandle);
 	return true;
 }
@@ -234,7 +234,7 @@ void URLInventoryComponent_Equipment::EquipWeapon(const FRLInventoryItemSlotHand
 
 	// 更新物品实例的装备状态
 	ItemInstance->SetbEquiped(true);
-	bOnEquip.ExecuteIfBound(true);
+	bOnEquip.ExecuteIfBound(true, ItemInstance->GetOwnedGameplayTag());
 }
 
 void URLInventoryComponent_Equipment::UnEquipWeapon(const FRLInventoryItemSlotHandle& SlotHandle,URLInventoryItemInstance* ItemInstance)
@@ -266,7 +266,7 @@ void URLInventoryComponent_Equipment::UnEquipWeapon(const FRLInventoryItemSlotHa
 	// 更新物品实例的装备状态
 	OnEquipUpdate.Broadcast(nullptr);
 	ItemInstance->SetbEquiped(false);
-	bOnEquip.ExecuteIfBound(false);
+	bOnEquip.ExecuteIfBound(false,ItemInstance->GetOwnedGameplayTag());
 }
 
 void URLInventoryComponent_Equipment::GiveAbilityToPlayer(FEquipWeapon& Weapon)
