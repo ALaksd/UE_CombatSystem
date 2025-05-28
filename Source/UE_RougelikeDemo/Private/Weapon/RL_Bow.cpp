@@ -38,14 +38,15 @@ void ARL_Bow::FireProjectile()
 void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag)
 {
 	FVector SocketLocation = SkeletalMeshComponent->GetSocketLocation(SpawnSocke);
-	FTransform SpawnTransform = FTransform(this->GetActorRotation(),SocketLocation);
+	FRotator SocketRotation = SkeletalMeshComponent->GetSocketRotation(SpawnSocke);
+	FTransform SpawnTransform = FTransform(SocketRotation,SocketLocation);
 
 	// 生成箭矢
 	Arrow = GetWorld()->SpawnActor<ARL_ProjectileBase>(ArrowClass,SpawnTransform);
 
 	// 将箭矢绑到弓弦上
 	FAttachmentTransformRules Rules = FAttachmentTransformRules::SnapToTargetIncludingScale;
-	Arrow->AttachToActor(this,Rules,SpawnSocke);
+	Arrow->AttachToComponent(GetMesh(),Rules,SpawnSocke);
 	
 }
 

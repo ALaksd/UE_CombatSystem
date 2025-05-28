@@ -26,9 +26,8 @@ ARL_ProjectileBase::ARL_ProjectileBase()
 
 void ARL_ProjectileBase::FireProjectile()
 {
-	ProjectileCom->InitialSpeed=MoveSpeed;
-	ProjectileCom->MaxSpeed=MoveSpeed;
-
+	ProjectileCom->Velocity = GetActorForwardVector()*MoveSpeed;
+	
 	this->SetLifeSpan(LifeTime);
 }
 
