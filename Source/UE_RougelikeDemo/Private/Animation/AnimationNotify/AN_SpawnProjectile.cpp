@@ -15,7 +15,10 @@ void UAN_SpawnProjectile::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
 	{
 		if (URL_ProjectileComponent* Com = Owner->FindComponentByClass<URL_ProjectileComponent>())
 		{
-			Com->PullBow(Damage,Tag);
+			if (bIsFireBall)
+				Com->PullBow(Damage,Tag);
+			else
+				Com->PullBow(Damage,Tag,Count,ArcCenterOffset,ArcRadius,ArcAngleDegrees);
 		}
 	}
 }

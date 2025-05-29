@@ -37,7 +37,7 @@ void URL_InventoryWidgetController::HandleItemSlotUpdate(URLInventoryComponent* 
 	OnInventoryItemSlotUpdate.Broadcast(InventoryComponent, SlotHandle, NewItem, OldItem);
 }
 
-void URL_InventoryWidgetController::SetbEquiped(bool bEquip)
+void URL_InventoryWidgetController::SetbEquiped(bool bEquip,FGameplayTagContainer SlotTags)
 {
-	bOnEquip_UI.Broadcast(bEquip);
+	bOnEquip_UI.Broadcast(bEquip, SlotTags);
 }

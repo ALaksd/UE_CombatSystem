@@ -138,6 +138,7 @@ public:
 
 	/** 输入权限相关 */
 	void SetbAcceptInput(bool newBool) { bAccecptInput = newBool; }
+	bool GetbAcceptInput() { return bAccecptInput; }
 
 	void BlockInputTag(FGameplayTagContainer InputTags);
 

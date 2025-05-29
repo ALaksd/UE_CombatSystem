@@ -21,6 +21,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PullBow(float Damage,FGameplayTag DamageTag);
 
+	// 生成火球
+	void PullBow(float Damage,FGameplayTag DamageTag,float Count,FVector CenterOffset,float Radius,float Angle);
+	
 	// 发射
 	UFUNCTION(BlueprintCallable)
 	void FireProjectile();

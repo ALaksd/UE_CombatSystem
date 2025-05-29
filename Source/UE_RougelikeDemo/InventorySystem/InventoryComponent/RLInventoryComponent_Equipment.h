@@ -66,7 +66,7 @@ struct FEquipWeapon
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipUpdate,URLInventoryItemInstance*, NewItem);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnArmorUpdate,URLInventoryItemInstance*, NewItem, const FRLInventoryItemSlotHandle&, SlotHandle);
 /** 是否装备 */
-DECLARE_DELEGATE_OneParam(FbOnEquip, bool);
+DECLARE_DELEGATE_TwoParams(FbOnEquip, bool, FGameplayTagContainer);
 
 UCLASS(BlueprintType, Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UE_ROUGELIKEDEMO_API URLInventoryComponent_Equipment : public URLInventoryComponent
@@ -90,6 +90,7 @@ public:
 
 	/** 查询接口 */
 
+	/** 重写父类接口*/
 	virtual bool PlaceItemSlot(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle) override;
 
 	/** 装备组件只需要移除ItemInstance,不移除Tag */

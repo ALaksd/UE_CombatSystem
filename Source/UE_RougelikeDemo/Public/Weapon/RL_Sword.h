@@ -6,6 +6,9 @@
 #include "Weapon/RL_BaseWeapon.h"
 #include "RL_Sword.generated.h"
 
+class UNiagaraSystem;
+class UNiagaraComponent;
+
 /**
  * 
  */
@@ -20,8 +23,19 @@ public:
 	void StartCombat();
 	void EndCombat();
 
+	//刀光特效
+	UFUNCTION()
+	void StartTrailEffect();
+
+	UFUNCTION()
+	void StopTrailEffect();
+
+
 protected:
 	void RestoreAttachResourceAndSanity(float DamageMultiplier);
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	UNiagaraComponent* TrailComponent;
 
 private:
 	void GetCurrentPointsLocation();
@@ -35,17 +49,19 @@ protected:
 	USkeletalMeshComponent* Mesh;
 	
 	//武器击退距离
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Attack")
 	float KnockDistance = 100.f;
 	
 	//单次攻击恢复的信仰值，会乘以武器当前的攻击倍率
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Attack")
 	float RestoreAttach = 0.2f;
 
 	//单次攻击恢复的信理智值，会乘以武器当前的攻击倍率
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Attack")
 	float RestoreSanity = 5.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Sound")
+	USoundBase* AttackSound;
 	
 private:
 	bool bCombat = false;	
