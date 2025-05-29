@@ -257,24 +257,25 @@ void URL_AbilitySystemLibrary::ApplyTemporaryTag(UAbilitySystemComponent* ASC, c
 		}, Duration, false);
 }
 
-void URL_AbilitySystemLibrary::ApplyChangeAttributeEffect(UAbilitySystemComponent* SourceASC, FGameplayAttribute bChangedAttribute, float InMagnitude)
+FActiveGameplayEffectHandle URL_AbilitySystemLibrary::ApplyChangeAttributeEffect(UAbilitySystemComponent* SourceASC, FGameplayAttribute bChangedAttribute, float InMagnitude, EGameplayEffectDurationType EffectDurationType)
 {
 	// 动态创建GE实例（使用SourceASC作为Outer防止GC回收）
 	UGameplayEffect* DynamicParryGE = NewObject<UGameplayEffect>(SourceASC, FName(TEXT("DynamicParryGE")));
-	DynamicParryGE->DurationPolicy = EGameplayEffectDurationType::Instant; // 即时生效
+	DynamicParryGE->DurationPolicy = EffectDurationType;
 
 	// 添加属性修饰符（这里减少体力）
 	FGameplayModifierInfo& Modifier = DynamicParryGE->Modifiers.AddDefaulted_GetRef();
 
 	Modifier.Attribute = bChangedAttribute;
-	Modifier.ModifierOp = EGameplayModOp::Additive; // 修改类型：叠加
+	Modifier.ModifierOp = EGameplayModOp::Additive; 
 	FScalableFloat Magnitude;
-	Magnitude.Value = InMagnitude; // 暂时造成敌人伤害两倍的属性削减
+	Magnitude.Value = InMagnitude;
 	Modifier.ModifierMagnitude = Magnitude;
 
 	// 创建效果规格并应用
 	FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
-	SourceASC->ApplyGameplayEffectToSelf(DynamicParryGE, 1.f, Context);
+	FActiveGameplayEffectHandle ActiveGameplayEffectHandle = SourceASC->ApplyGameplayEffectToSelf(DynamicParryGE, 1.f, Context);
+	return ActiveGameplayEffectHandle;
 }
 
 

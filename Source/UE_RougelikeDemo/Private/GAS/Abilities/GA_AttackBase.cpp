@@ -3,6 +3,9 @@
 #include "GAS/Abilities/GA_AttackBase.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include <GAS/RL_AbilitySystemLibrary.h>
+#include <GAS/AS/AS_Player.h>
+#include <Player/RL_PlayerState.h>
 
 UGA_AttackBase::UGA_AttackBase()
 {
@@ -21,7 +24,6 @@ void UGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 	if (CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
 		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-		//暂时只播放动画
 		if (UAnimMontage* MontageToPlay = AttackMontage)
 		{
 			UAbilityTask_PlayMontageAndWait* Task = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
@@ -42,13 +44,33 @@ void UGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 				Task->ReadyForActivation();
 			}
 		}
-	
+
+		//增加霸体GE
+		if (Dominance > 0.f)
+		{
+			ARL_PlayerState* PlayerState = Cast<ARL_PlayerState>(ActorInfo->OwnerActor);
+			if (PlayerState)
+			{
+				AS = Cast<UAS_Player>(PlayerState->GetAttributeSet());
+				if (AS)
+				{
+					AS->SetDominance(Dominance);
+				}
+			}
+		}
+
 	}
 }
 
 void UGA_AttackBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	UAbilitySystemBlueprintLibrary::RemoveLooseGameplayTags(GetAvatarActorFromActorInfo(), FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Window.ComboWindow"))));
+	if (AS)
+	{
+		AS->SetDominance(0.f);
+	}
+
+
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 

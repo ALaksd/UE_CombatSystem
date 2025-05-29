@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,6 +6,7 @@
 #include "GAS/Abilities/GA_Base.h"
 #include "GA_AttackBase.generated.h"
 
+class UAS_Player;
 /**
  * 
  */
@@ -27,6 +28,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	FGameplayTag TirggerTag;
 
+	//霸体值,0为没有，100为轻霸体,200为强霸体
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	float Dominance = 0.f;
+
 	UFUNCTION()
 	void OnMontageCompleted();
+
+private:
+	UPROPERTY()
+	UAS_Player* AS;
 };
