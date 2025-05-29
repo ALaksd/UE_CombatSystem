@@ -7,7 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Weapon/RL_BaseWeapon.h"
-#include "Weapon/RL_ProjectileBase.h"
+#include "Weapon/Projectile/RL_ProjectileBase.h"
 
 ARL_Bow::ARL_Bow()
 {
@@ -38,15 +38,21 @@ void ARL_Bow::FireProjectile()
 void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag)
 {
 	FVector SocketLocation = SkeletalMeshComponent->GetSocketLocation(SpawnSocke);
-	FTransform SpawnTransform = FTransform(this->GetActorRotation(),SocketLocation);
+	FRotator SocketRotation = SkeletalMeshComponent->GetSocketRotation(SpawnSocke);
+	FTransform SpawnTransform = FTransform(SocketRotation,SocketLocation);
 
 	// 生成箭矢
 	Arrow = GetWorld()->SpawnActor<ARL_ProjectileBase>(ArrowClass,SpawnTransform);
 
 	// 将箭矢绑到弓弦上
 	FAttachmentTransformRules Rules = FAttachmentTransformRules::SnapToTargetIncludingScale;
-	Arrow->AttachToActor(this,Rules,SpawnSocke);
+	Arrow->AttachToComponent(GetMesh(),Rules,SpawnSocke);
 	
+}
+
+void ARL_Bow::SpawnArrow(float Damage, FGameplayTag DamageTag, float Count, FVector CenterOffset, float Radius,
+	float Angle)
+{
 }
 
 void ARL_Bow::FireProjectile(FVector AimLocation)

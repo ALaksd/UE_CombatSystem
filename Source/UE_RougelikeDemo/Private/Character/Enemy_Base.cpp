@@ -145,6 +145,7 @@ void AEnemy_Base::Die_Implementation()
 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 

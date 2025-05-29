@@ -54,7 +54,7 @@ protected:
 	TObjectPtr<UAbilitySystemComponent> WeaponASC;
 	UPROPERTY()
 	TObjectPtr<UAS_Weapon> WeaponAttribute;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Attack Collision")
 	TSubclassOf<UGameplayEffect> DamageEffect;
 
 	//武器等级

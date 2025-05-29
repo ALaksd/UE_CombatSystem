@@ -1,4 +1,4 @@
-#include "Weapon/RL_ProjectileBase.h"
+#include "Weapon/Projectile/RL_ProjectileBase.h"
 
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -26,9 +26,8 @@ ARL_ProjectileBase::ARL_ProjectileBase()
 
 void ARL_ProjectileBase::FireProjectile()
 {
-	ProjectileCom->InitialSpeed=MoveSpeed;
-	ProjectileCom->MaxSpeed=MoveSpeed;
-
+	ProjectileCom->Velocity = GetActorForwardVector()*MoveSpeed;
+	
 	this->SetLifeSpan(LifeTime);
 }
 
