@@ -5,6 +5,9 @@
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryItemDefinition.h"
 #include "UE_RougelikeDemo/InventorySystem/Fragments/RLInventoryFragment_Equipment.h"
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryItemInstance.h"
+#include <Component/RL_MovementComponent.h>
+#include <Kismet/GameplayStatics.h>
+#include "GameFramework/Character.h"
 
 URLInventoryComponent_Equipment::URLInventoryComponent_Equipment(const FObjectInitializer& ObjectInitializer)
 {
@@ -70,26 +73,33 @@ URLInventoryItemInstance* URLInventoryComponent_Equipment::GetEqeippedItemByType
 
 void URLInventoryComponent_Equipment::SwitchWeapon(const FInputActionValue& Value)
 {
-	// 如果只装备一把武器,不进行操作
-	if (Weapon1.ItemInstance == nullptr || Weapon2.ItemInstance == nullptr) return;
-	
-	// 移除手上武器GA
-	// 给予另一把武器GA
-	if (CurrentWeapon==Weapon1)
+	if (URL_MovementComponent* MoveComp = UGameplayStatics::GetPlayerCharacter(GetOwner(),0)->FindComponentByClass<URL_MovementComponent>())
 	{
-		RemoveAbilityFromPlayer(Weapon1);
-		GiveAbilityToPlayer(Weapon2);
-		CurrentWeapon=Weapon2;
-	}
-	else
-	{
-		RemoveAbilityFromPlayer(Weapon2);
-		GiveAbilityToPlayer(Weapon1);
-		CurrentWeapon=Weapon1;
+		if (MoveComp->GetbAcceptInput())
+		{
+			// 如果只装备一把武器,不进行操作
+			if (Weapon1.ItemInstance == nullptr || Weapon2.ItemInstance == nullptr) return;
+
+			// 移除手上武器GA
+			// 给予另一把武器GA
+			if (CurrentWeapon == Weapon1)
+			{
+				RemoveAbilityFromPlayer(Weapon1);
+				GiveAbilityToPlayer(Weapon2);
+				CurrentWeapon = Weapon2;
+			}
+			else
+			{
+				RemoveAbilityFromPlayer(Weapon2);
+				GiveAbilityToPlayer(Weapon1);
+				CurrentWeapon = Weapon1;
+			}
+
+			// 通知ClosecombatComponent
+			OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance);
+		}
 	}
 
-	// 通知ClosecombatComponent
-	OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance);
 }
 
 void URLInventoryComponent_Equipment::BeginPlay()

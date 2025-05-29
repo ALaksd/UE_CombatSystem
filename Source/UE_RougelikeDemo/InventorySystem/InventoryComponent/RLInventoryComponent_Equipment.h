@@ -90,6 +90,7 @@ public:
 
 	/** 查询接口 */
 
+	/** 重写父类接口*/
 	virtual bool PlaceItemSlot(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle) override;
 
 	/** 装备组件只需要移除ItemInstance,不移除Tag */
