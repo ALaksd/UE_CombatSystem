@@ -27,6 +27,15 @@ void URL_ProjectileComponent::PullBow(float Damage,FGameplayTag DamageTag)
 	}
 }
 
+void URL_ProjectileComponent::PullBow(float Damage, FGameplayTag DamageTag, float Count, FVector CenterOffset,
+	float Radius, float Angle)
+{
+	if (Bow)
+	{
+		Bow->SpawnArrow(Damage,DamageTag,Count,CenterOffset,Radius,Angle);
+	}
+}
+
 void URL_ProjectileComponent::FireProjectile()
 {
 	if (Bow)

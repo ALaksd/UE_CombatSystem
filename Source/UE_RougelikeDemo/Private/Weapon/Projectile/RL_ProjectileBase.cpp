@@ -1,4 +1,4 @@
-#include "Weapon/RL_ProjectileBase.h"
+#include "Weapon/Projectile/RL_ProjectileBase.h"
 
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"

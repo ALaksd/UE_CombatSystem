@@ -34,7 +34,8 @@ public:
 	void FireProjectile();
 	
 	// 生成箭矢,绑到弓弦上
-	void SpawnArrow(float Damage,FGameplayTag DamageTag);
+	virtual void SpawnArrow(float Damage,FGameplayTag DamageTag);
+	virtual void SpawnArrow(float Damage, FGameplayTag DamageTag, float Count, FVector CenterOffset,float Radius, float Angle);
 
 	UFUNCTION(BlueprintCallable)
 	ACharacter* GetWeaponOwner(){return Cast<ACharacter>(WeaponOwner);};
