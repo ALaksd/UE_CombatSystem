@@ -12,6 +12,7 @@
 
 #include "Weapon/RL_Sword.h"
 #include <Interface/RL_CombatInterface.h>
+#include <AbilitySystemBlueprintLibrary.h>
 
 
 UCloseCombatComponent::UCloseCombatComponent()
@@ -86,6 +87,13 @@ void UCloseCombatComponent::SwitchWeapon(URLInventoryItemInstance* NewWeapon)
 			if (GetOwner()->Implements<URL_CombatInterface>())
 			{
 				IRL_CombatInterface::Execute_SwitchWeaponTypeForAnim(GetOwner(), CurrentWeapon->WeaponType);
+			}
+			//激活能力
+			UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner());
+			if (ASC)
+			{
+				FGameplayTagContainer AbilityTag = FGameplayTag::RequestGameplayTag("InputTag.Switch").GetSingleTagContainer();
+				ASC->TryActivateAbilitiesByTag(AbilityTag);
 			}
 		}
 	}
