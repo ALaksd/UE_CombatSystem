@@ -13,7 +13,7 @@
 		if (CommitAbility(Handle, ActorInfo, ActivationInfo))
 		{
 			Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-			URL_EnemyMovementComponent* EnemyMove = ActorInfo->AvatarActor->FindComponentByClass<URL_EnemyMovementComponent>();
+			EnemyMove = ActorInfo->AvatarActor->FindComponentByClass<URL_EnemyMovementComponent>();
 			UAnimMontage* MontageToPlay = nullptr;
 
 			if (EnemyMove)
@@ -93,7 +93,7 @@
 			// 允许的状态为空表示全部允许
 			if (Anim.AllowedStates.IsEmpty() || Anim.AllowedStates.HasTagExact(StateTag))
 			{
-				if (Anim.Montage != LastUsedMontages)
+				if (Anim.Montage != EnemyMove->GetLastUsedMontage())
 				{
 					ValidAnims.Add(Anim);
 				}
@@ -125,7 +125,7 @@
 			RandomPoint -= Anim.Weight;
 		}
 
-		LastUsedMontages = ValidAnims.Last().Montage;
+		EnemyMove->SetLastUsedMontage(ValidAnims.Last().Montage);
 
 		return ValidAnims.Last().Montage; // fallback
 	}

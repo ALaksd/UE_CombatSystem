@@ -6,6 +6,9 @@
 #include "Weapon/RL_BaseWeapon.h"
 #include "RL_Sword.generated.h"
 
+class UNiagaraSystem;
+class UNiagaraComponent;
+
 /**
  * 
  */
@@ -20,8 +23,19 @@ public:
 	void StartCombat();
 	void EndCombat();
 
+	//刀光特效
+	UFUNCTION()
+	void StartTrailEffect();
+
+	UFUNCTION()
+	void StopTrailEffect();
+
+
 protected:
 	void RestoreAttachResourceAndSanity(float DamageMultiplier);
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	UNiagaraComponent* TrailComponent;
 
 private:
 	void GetCurrentPointsLocation();
@@ -46,6 +60,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Attack")
 	float RestoreSanity = 5.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Sound")
+	USoundBase* AttackSound;
 	
 private:
 	bool bCombat = false;	

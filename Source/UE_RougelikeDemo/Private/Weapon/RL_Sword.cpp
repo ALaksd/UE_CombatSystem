@@ -11,7 +11,9 @@
 #include "Interface/RL_PlayerInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "System/RL_SanitySubsystem.h"
-
+#include <NiagaraFunctionLibrary.h>
+#include "NiagaraComponent.h"
+#include <RL_CharacterSelectionWidget.cpp>
 
 
 
@@ -19,6 +21,9 @@ ARL_Sword::ARL_Sword()
 {
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>("SwordMesh");
 	Mesh->SetupAttachment(GetRootComponent());
+
+	TrailComponent = CreateDefaultSubobject<UNiagaraComponent>("TrailComponent");
+	TrailComponent->SetupAttachment(Mesh);
 }
 
 void ARL_Sword::Tick(float DeltaTime)
@@ -30,7 +35,7 @@ void ARL_Sword::Tick(float DeltaTime)
 		GetCurrentPointsLocation();
 		 
 		//碰撞检测参数
-		EDrawDebugTrace::Type DrawDebugType = EDrawDebugTrace::ForDuration;
+		EDrawDebugTrace::Type DrawDebugType = EDrawDebugTrace::None;
 		FLinearColor TraceColor = FLinearColor::Red;
 		FLinearColor TraceHitColor = FLinearColor::Green;
 		float DrawTime = 0.5;
@@ -161,6 +166,26 @@ void ARL_Sword::EndCombat()
 	bCombat = false;
 	LastPoints.Empty();
 	HitActors.Empty();
+}
+
+void ARL_Sword::StartTrailEffect()
+{
+	if (TrailComponent)
+	{
+		TrailComponent->Activate(true);
+	}
+	if (AttackSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(WeaponOwner, AttackSound, WeaponOwner->GetActorLocation());
+	}
+}
+
+void ARL_Sword::StopTrailEffect()
+{
+	if (TrailComponent)
+	{
+		TrailComponent->Deactivate();
+	}
 }
 
 void ARL_Sword::GetCurrentPointsLocation()
