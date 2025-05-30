@@ -25,6 +25,8 @@ public:
 
 	virtual void FireProjectile() override;
 
+	virtual void FireProjectile(bool bIsOneFire) override;
+
 private:
 	TArray<ARL_Projectile_Fireball*> SpawnFireballs(float Damage,FGameplayTag DamageTag,TArray<FFirebalLocation> Locations ,AActor* Target);
 

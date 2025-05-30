@@ -34,6 +34,16 @@ void ARL_Staff::FireProjectile()
 	}
 }
 
+void ARL_Staff::FireProjectile(bool bIsOneFire)
+{
+	if (bIsOneFire)
+		if (Fireballs.Num()>0)
+		{
+			Fireballs[0]->FireProjectile();
+			Fireballs.RemoveAt(0);
+		}
+}
+
 TArray<ARL_Projectile_Fireball*> ARL_Staff::SpawnFireballs(float Damage,FGameplayTag DamageTag,TArray<FFirebalLocation> Locations ,AActor* Target)
 {
 	if (Locations.Num() <= 0) return Fireballs;
@@ -57,6 +67,14 @@ TArray<ARL_Projectile_Fireball*> ARL_Staff::SpawnFireballs(float Damage,FGamepla
 			Fireball->Target=Target;
 			Fireball->InitProjectile(Damage,DamageTag);
 			Fireballs.Add(Fireball);
+
+			FAttachmentTransformRules AttachRules= FAttachmentTransformRules(
+				EAttachmentRule::KeepWorld,
+				EAttachmentRule::SnapToTarget, 
+				EAttachmentRule::KeepWorld, 
+				false);
+			Fireball->AttachToActor(WeaponOwner,AttachRules);
+			Fireball->SetActorLocation(SpawnLocation);
 		}
 	}
 	

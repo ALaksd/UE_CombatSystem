@@ -28,6 +28,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void FireProjectile();
 
+	void FireProjectile(bool bIsOneFire);
 	
 protected:
 	virtual void BeginPlay() override;

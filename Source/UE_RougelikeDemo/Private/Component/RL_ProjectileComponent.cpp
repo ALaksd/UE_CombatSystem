@@ -45,6 +45,14 @@ void URL_ProjectileComponent::FireProjectile()
 	}
 }
 
+void URL_ProjectileComponent::FireProjectile(bool bIsOneFire)
+{
+	if (Bow)
+	{
+		Bow->FireProjectile(bIsOneFire);
+	}
+}
+
 void URL_ProjectileComponent::EquipWeapon()
 {
 	if (BowClass)

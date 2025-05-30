@@ -33,6 +33,8 @@ public:
 	ARL_Bow();
 
 	virtual void FireProjectile();
+
+	virtual void FireProjectile(bool bIsOneFire);
 	
 	// 生成箭矢,绑到弓弦上
 	virtual void SpawnArrow(float Damage,FGameplayTag DamageTag);

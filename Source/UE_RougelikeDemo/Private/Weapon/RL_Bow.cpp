@@ -38,6 +38,10 @@ void ARL_Bow::FireProjectile()
 	}
 }
 
+void ARL_Bow::FireProjectile(bool bIsOneFire)
+{
+}
+
 void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag)
 {
 	FVector SocketLocation = SkeletalMeshComponent->GetSocketLocation(SpawnSocke);
