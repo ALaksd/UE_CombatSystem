@@ -94,6 +94,9 @@ public:
 
 	void InitializePatrolPoints(USplineComponent* NewSpline);
 
+	UAnimMontage* GetLastUsedMontage() { return LastUsedMontage; }
+	void SetLastUsedMontage(UAnimMontage* InMontage) { LastUsedMontage = InMontage; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -112,6 +115,10 @@ protected:
 	//敌人配置表
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")
 	TObjectPtr<URL_EnemyConfig> EnemyConfig;
+
+	// 记录已使用过的动画蒙太奇，避免重复选择
+	UPROPERTY()
+	UAnimMontage* LastUsedMontage;
 
 private:
 	UPROPERTY()

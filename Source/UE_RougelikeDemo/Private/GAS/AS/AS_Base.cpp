@@ -93,7 +93,10 @@ void UAS_Base::PostGameplayEffectExecute(const struct FGameplayEffectModCallback
 				EventData.EventMagnitude = KnockbackMagnitude; // 传入击退力的大小
 				EventData.ContextHandle = Props.EffectContextHandle;
 
-				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+				//击退力减去霸体值
+				EventData.EventMagnitude -= GetDominance();
+
+ 				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 					Props.TargetAvatarActor,
 					FGameplayTag::RequestGameplayTag(FName("Event.HitReact")),
 					EventData

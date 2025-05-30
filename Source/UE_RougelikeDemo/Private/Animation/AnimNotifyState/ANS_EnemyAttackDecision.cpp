@@ -17,6 +17,7 @@
 #include "Engine/OverlapResult.h"
 #include <Interface/RL_CombatInterface.h>
 #include "GameFramework/Character.h"
+#include <Kismet/GameplayStatics.h>
 
 void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
@@ -31,6 +32,12 @@ void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAn
 	{
 		SourceASC->AddLooseGameplayTag(DamageTypeTag);
 		SourceASC->SetTagMapCount(DamageTypeTag, 1);
+	}
+
+	if (AttackSound && OwnerActor)
+	{
+		UGameplayStatics::PlaySoundAtLocation(OwnerActor, AttackSound, OwnerActor->GetActorLocation());
+
 	}
 }
 

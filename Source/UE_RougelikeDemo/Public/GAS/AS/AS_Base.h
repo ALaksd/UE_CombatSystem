@@ -77,6 +77,11 @@ public:
 	FGameplayAttributeData DefensePower;
 	ATTRIBUTE_ACCESSORS(UAS_Base,DefensePower);
 
+	//霸体值
+	UPROPERTY(EditDefaultsOnly, Category = "Attribute")
+	FGameplayAttributeData Dominance;
+	ATTRIBUTE_ACCESSORS(UAS_Base, Dominance);
+
 	//一次性伤害
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData IncomingDamage;
