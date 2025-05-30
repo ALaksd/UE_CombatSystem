@@ -8,6 +8,9 @@
 #include "Sound/SoundCue.h"
 #include "Weapon/RL_BaseWeapon.h"
 #include "Weapon/Projectile/RL_ProjectileBase.h"
+#include "Data/Structs.h"
+
+
 
 ARL_Bow::ARL_Bow()
 {
@@ -50,8 +53,7 @@ void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag)
 	
 }
 
-void ARL_Bow::SpawnArrow(float Damage, FGameplayTag DamageTag, float Count, FVector CenterOffset, float Radius,
-	float Angle)
+void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag,TArray<FFirebalLocation> Locations ,AActor* Target)
 {
 }
 

@@ -18,11 +18,11 @@ public:
 	URL_ProjectileComponent();
 
 	// 拉弓
-	UFUNCTION(BlueprintCallable)
 	void PullBow(float Damage,FGameplayTag DamageTag);
 
 	// 生成火球
-	void PullBow(float Damage,FGameplayTag DamageTag,float Count,FVector CenterOffset,float Radius,float Angle);
+	UFUNCTION(BlueprintCallable)
+	void PullBow(float Damage,FGameplayTag DamageTag,TArray<FFirebalLocation> Locations ,AActor* Target);
 	
 	// 发射
 	UFUNCTION(BlueprintCallable)
@@ -45,6 +45,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<ARL_Bow> Bow;
 
+	template <typename  T>
+	T* SpawnWeapon(TSubclassOf<T> SpawnClass);
 
 	
 };
+

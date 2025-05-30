@@ -3,6 +3,8 @@
 #include "Component/RL_ProjectileComponent.h"
 
 #include "Weapon/RL_Bow.h"
+#include "Data/Structs.h"
+
 
 URL_ProjectileComponent::URL_ProjectileComponent()
 {
@@ -27,12 +29,11 @@ void URL_ProjectileComponent::PullBow(float Damage,FGameplayTag DamageTag)
 	}
 }
 
-void URL_ProjectileComponent::PullBow(float Damage, FGameplayTag DamageTag, float Count, FVector CenterOffset,
-	float Radius, float Angle)
+void URL_ProjectileComponent::PullBow(float Damage,FGameplayTag DamageTag,TArray<FFirebalLocation> Locations ,AActor* Target)
 {
 	if (Bow)
 	{
-		Bow->SpawnArrow(Damage,DamageTag,Count,CenterOffset,Radius,Angle);
+		Bow->SpawnArrow(Damage,DamageTag,Locations,Target);
 	}
 }
 
@@ -48,7 +49,7 @@ void URL_ProjectileComponent::EquipWeapon()
 {
 	if (BowClass)
 	{
-		Bow = GetWorld()->SpawnActor<ARL_Bow>(BowClass);
+		Bow = SpawnWeapon<>(BowClass);
 		
 		if (Bow)
 		{
@@ -61,3 +62,12 @@ void URL_ProjectileComponent::EquipWeapon()
 	
 }
 
+template <typename T>
+T* URL_ProjectileComponent::SpawnWeapon(TSubclassOf<T> SpawnClass)
+{
+	if (SpawnClass)
+	{
+		return GetWorld()->SpawnActor<T>(SpawnClass);
+	}
+	return nullptr;
+}
