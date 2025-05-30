@@ -9,6 +9,7 @@
 
 
 class UGameplayEffect;
+class URL_EnemyMovementComponent;
 /**
  * 敌人能力基础
  */
@@ -31,8 +32,7 @@ protected:
 private:
 	FTimerHandle FacingUpdateTimerHandle;
 
-	// 记录已使用过的动画蒙太奇，避免重复选择
 	UPROPERTY()
-	UAnimMontage* LastUsedMontages;
+	URL_EnemyMovementComponent* EnemyMove;
 
 };

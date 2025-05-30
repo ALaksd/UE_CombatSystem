@@ -50,11 +50,13 @@ void UCloseCombatComponent::BeginPlay()
 void UCloseCombatComponent::StartCombat() const
 {
 	CurrentWeapon->StartCombat();
+	CurrentWeapon->StartTrailEffect();
 }
 
 void UCloseCombatComponent::EndCombat() const
 {
 	CurrentWeapon->EndCombat();
+	CurrentWeapon->StopTrailEffect();
 }
 
 void UCloseCombatComponent::SwitchWeapon(URLInventoryItemInstance* NewWeapon)
