@@ -36,3 +36,19 @@ public:
 	TArray<TSubclassOf<UGameplayAbility>> GA;
 	
 };
+
+USTRUCT(BlueprintType,Blueprintable)
+struct FFirebalLocation
+{
+	GENERATED_BODY()
+
+public:
+	
+	// 火球生成位置	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector Location;
+
+	// 火球生成旋转
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FRotator Rotation;
+};

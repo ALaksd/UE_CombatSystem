@@ -26,8 +26,10 @@ ARL_ProjectileBase::ARL_ProjectileBase()
 
 void ARL_ProjectileBase::FireProjectile()
 {
+	// 移除附加关系
+	this->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	ProjectileCom->Velocity = GetActorForwardVector()*MoveSpeed;
-	
+
 	this->SetLifeSpan(LifeTime);
 }
 

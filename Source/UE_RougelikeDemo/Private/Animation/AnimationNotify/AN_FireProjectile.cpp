@@ -14,7 +14,10 @@ void UAN_FireProjectile::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 	{
 		if (URL_ProjectileComponent* Com = Owner->FindComponentByClass<URL_ProjectileComponent>())
 		{
-			Com->FireProjectile();
+			if (bIsOneFire)
+				Com->FireProjectile(bIsOneFire);
+			else
+				Com->FireProjectile();
 		}
 	}
 }
