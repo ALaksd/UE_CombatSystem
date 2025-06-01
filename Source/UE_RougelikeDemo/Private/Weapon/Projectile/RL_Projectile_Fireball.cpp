@@ -5,6 +5,11 @@
 
 #include "GameFramework/ProjectileMovementComponent.h"
 
+ARL_Projectile_Fireball::ARL_Projectile_Fireball()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
 void ARL_Projectile_Fireball::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);

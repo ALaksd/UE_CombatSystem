@@ -8,6 +8,7 @@
 #include "RL_Bow.generated.h"
 
 
+struct FFirebalLocation;
 struct FGameplayTag;
 enum class E_WeaponType : uint8;
 class UCapsuleComponent;
@@ -31,11 +32,13 @@ class UE_ROUGELIKEDEMO_API ARL_Bow : public AActor
 public:
 	ARL_Bow();
 
-	void FireProjectile();
+	virtual void FireProjectile();
+
+	virtual void FireProjectile(bool bIsOneFire);
 	
 	// 生成箭矢,绑到弓弦上
 	virtual void SpawnArrow(float Damage,FGameplayTag DamageTag);
-	virtual void SpawnArrow(float Damage, FGameplayTag DamageTag, float Count, FVector CenterOffset,float Radius, float Angle);
+	virtual void SpawnArrow(float Damage,FGameplayTag DamageTag,TArray<FFirebalLocation> Locations ,AActor* Target);
 
 	UFUNCTION(BlueprintCallable)
 	ACharacter* GetWeaponOwner(){return Cast<ACharacter>(WeaponOwner);};
@@ -64,8 +67,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Components")
 	TObjectPtr<UCapsuleComponent> CapsuleComponent;
 	
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Components")
-	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
+
 
 	// 箭矢
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Arrow")
@@ -90,6 +92,10 @@ protected:
 	UAudioComponent* SoundToPlay;
 
 private:
+	UPROPERTY(EditDefaultsOnly,Category="Components")
+	TObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;
+
+	
 	UPROPERTY()
 	ARL_ProjectileBase* Arrow;
 
