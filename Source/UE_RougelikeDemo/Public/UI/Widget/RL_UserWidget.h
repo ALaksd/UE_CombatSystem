@@ -21,7 +21,7 @@ struct FWidgetInitParams
 	FGameplayTag TransTag;
 };
 
-struct FSkillList;
+struct FRL_Skill;
 
 UCLASS()
 class UE_ROUGELIKEDEMO_API URL_UserWidget : public UUserWidget

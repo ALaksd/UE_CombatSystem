@@ -8,6 +8,7 @@
 
 #include "RL_SkillUnlockWidget.generated.h"
 
+class URLItemFragment_Skill;
 class UButton;
 class UScrollBox;
 class UTextBlock;
@@ -46,7 +47,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	void AddSkillSlot(const FSkillList& SkillInfor);
+	void AddSkillSlot(const FRL_Skill& SkillInfor);
 
 	virtual bool Initialize() override;
 private:
@@ -56,12 +57,12 @@ private:
 
 	void SetButtonNormalStyleImage(UButton* Button, UTexture2D* NewImage);
 	//存储所有的按键对应的技能,用于后续技能显示
-	TMap<TObjectPtr<UButton>,FSkillList> SkillMap;
+	TMap<TObjectPtr<UButton>,FRL_Skill> SkillMap;
 
 	UFUNCTION(BlueprintCallable)
 	void OnSkillButtonClicked(UButton* ButtonClicked);
 
-	FSkillList* CurrentSkill;
+	FRL_Skill* CurrentSkill;
 	UFUNCTION()
 	void OnLearnClicked();
 
