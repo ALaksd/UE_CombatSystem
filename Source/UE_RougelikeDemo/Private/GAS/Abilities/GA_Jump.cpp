@@ -2,7 +2,7 @@
 
 
 #include "GAS/Abilities/GA_Jump.h"
-
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Character/RL_BaseCharacter.h"
 
 UGA_Jump::UGA_Jump()
@@ -18,7 +18,27 @@ void UGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FG
 	{
 		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 		Cast<ARL_BaseCharacter>(ActorInfo->AvatarActor)->Jump();
-		EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
+
+		if (UAnimMontage* MontageToPlay = JumpMontage)
+		{
+			UAbilityTask_PlayMontageAndWait* Task = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+				this,
+				NAME_None,
+				MontageToPlay,
+				1.0f,
+				NAME_None,
+				false
+			);
+
+			if (Task)
+			{
+				Task->OnCompleted.AddDynamic(this, &UGA_Jump::OnMontageCompleted);
+				Task->OnCancelled.AddDynamic(this, &UGA_Jump::OnMontageCompleted);
+				Task->OnBlendOut.AddDynamic(this, &UGA_Jump::OnMontageCompleted);
+				Task->OnInterrupted.AddDynamic(this, &UGA_Jump::OnMontageCompleted);
+				Task->ReadyForActivation();
+			}
+		}
 	}
 }
 
@@ -26,4 +46,9 @@ void UGA_Jump::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGamepl
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
+
+void UGA_Jump::OnMontageCompleted()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
