@@ -162,5 +162,12 @@ void UAS_Base::SetEffectProperties(const FGameplayEffectModCallbackData& Data, F
 
 void UAS_Base::HandleSpecialDamage(float& Damage)
 {
-	Damage -= GetDefensePower();
+	// 1. 获取防御力数值
+	const float InDefensePower = GetDefensePower();
+
+	// 2. 将防御力转换为减伤百分比（非线性公式）
+	const float DamageReduction = InDefensePower / (InDefensePower + 100.0f);
+
+	// 3. 应用百分比减伤
+	Damage *= (1.0f - DamageReduction);
 }
