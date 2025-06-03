@@ -26,6 +26,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	AActor* SpawnItemActorFromDefinition(URLInventoryItemDefinition* ItemDefinition, const FVector& Location);
 
+	void ResetHealthBottle();
+
 	/**
 	* 升级武器并消耗材料
 	* @param WeaponInstance 要升级的武器实例

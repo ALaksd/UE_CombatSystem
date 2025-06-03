@@ -26,6 +26,9 @@ public:
 
 	const URLInventoryItemFragment* FindFragmentByClass(TSubclassOf<URLInventoryItemFragment> FragmentClass) const;
 
+	template <typename T>
+	const T* FindFragmentByClass(TSubclassOf<T> FragmentClass) const;
+
 	//将自己的CombinedTags添加到输入参数TagContainer中
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
@@ -44,6 +47,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory")
 	int32 MaxStack = 1;
 
+	// 初始数量
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory")
+	int32 InitialStack = 1;
+
 	// 是否允许堆叠（根据标签或其他条件判断）
+	UFUNCTION(BlueprintCallable,BlueprintPure)
 	bool IsStackable() const { return MaxStack > 1; }
 };
+
+

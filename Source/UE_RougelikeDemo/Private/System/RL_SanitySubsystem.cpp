@@ -73,7 +73,8 @@ void URL_SanitySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 
 	SanityState=E_SanityState::Sane;
-	OnSanityStateChanged.Broadcast(GetSanityState(), CurrentSanity);
 	MaxSanity=100;
 	CurrentSanity=MaxSanity;
+	OnSanityStateChanged.Broadcast(GetSanityState(), CurrentSanity);
+	
 }

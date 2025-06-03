@@ -35,6 +35,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Damage")
 	float Breakingvalue = 40.0f;
 
+	//弹反成功回复的理智值
+	UPROPERTY(EditAnywhere, Category = "Damage")
+	float RestoreSanity = 40.0f;
+
 	//减少理智的量 = Damage * ReduceSantiyFactor
 	UPROPERTY(EditAnywhere, Category = "Damage")
 	float ReduceSantiyFactor = 0.5f;
