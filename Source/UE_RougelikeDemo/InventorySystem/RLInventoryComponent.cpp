@@ -101,13 +101,6 @@ bool URLInventoryComponent::PlaceItemSlot(URLInventoryItemInstance* Item, const 
 {
 	FRLInventoryItemSlot& Slot = GetItemSlot(ItemHandle);
 
-	//// 如果目标槽位已有物品且可堆叠
-	//if (Slot.ItemInstance && CanStackItem(Slot, Item))
-	//{
-	//	const int32 Remaining = AttemptStackItem(Slot, Item);
-	//	return Remaining == 0;
-	//}
-
 	// 原有放置逻辑（空槽或不可堆叠物品）
 	if (Slot.ItemInstance != nullptr) return false;
 
@@ -282,7 +275,7 @@ int32 URLInventoryComponent::AttemptStackItem(FRLInventoryItemSlot& Slot, URLInv
 {
 	URLInventoryItemInstance* ExistingItem = Slot.ItemInstance;
 	const int32 AvailableSpace = ExistingItem->GetMaxStack() - ExistingItem->GetCurrentStack();
-	const int32 ToAdd = FMath::Min(AvailableSpace, NewItem->GetCurrentStack());
+	const int32 ToAdd = FMath::Min(AvailableSpace, NewItem->GetInitialStack());
 
 	const int32 Remaining = ExistingItem->AddStack(ToAdd);
 

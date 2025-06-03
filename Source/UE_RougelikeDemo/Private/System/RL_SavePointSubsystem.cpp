@@ -8,6 +8,7 @@
 #include <Player/RL_PlayerState.h>
 #include "GameFramework/Character.h"
 #include <System/RL_SanitySubsystem.h>
+#include "UE_RougelikeDemo\InventorySystem\RLInventorySubsystem.h"
 
 void URL_SavePointSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -80,12 +81,17 @@ void URL_SavePointSubsystem::Reset(const FSavePointData& SavePointData)
 	}
 
 	//重置UI
-	URL_UIManagerSubsystem* UIManagerSubsystem = GameInstance->GetSubsystem<URL_UIManagerSubsystem>();
+	/*URL_UIManagerSubsystem* UIManagerSubsystem = GameInstance->GetSubsystem<URL_UIManagerSubsystem>();
 	if (UIManagerSubsystem)
 	{
 		UIManagerSubsystem->ResetUI();
-	}
+	}*/
 	//重置血瓶数量，调用仓库System的函数
+	URLInventorySubsystem* InventorySystem = GameInstance->GetSubsystem<URLInventorySubsystem>();
+	if(InventorySystem)
+	{
+		InventorySystem->ResetHealthBottle();
+	}
 }
 
 void URL_SavePointSubsystem::ResetEnemy(const FSavePointData& SavePointData)

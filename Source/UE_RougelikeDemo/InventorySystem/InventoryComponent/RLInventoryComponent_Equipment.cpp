@@ -48,6 +48,18 @@ bool URLInventoryComponent_Equipment::RemoveItemFromInventory(const FRLInventory
 
 	if (!ItemSlot.ItemInstance) return false;
 
+	// 处理堆叠物品
+	if (ItemSlot.ItemInstance->GetItemDefinition()->IsStackable())
+	{
+		const int32 NewQuantity = ItemSlot.ItemInstance->GetCurrentStack() - RemoveQuantity;
+		if (NewQuantity > 0)
+		{
+			ItemSlot.ItemInstance->SetStack(NewQuantity);
+			OnItemSlotUpdate.Broadcast(this, SlotHandle, ItemSlot.ItemInstance, ItemSlot.ItemInstance);
+			return true;
+		}
+	}
+
 	ItemSlot.ItemInstance = nullptr;
 
 	OnItemSlotUpdate.Broadcast(this, SlotHandle, ItemSlot.ItemInstance, PreviousItem);

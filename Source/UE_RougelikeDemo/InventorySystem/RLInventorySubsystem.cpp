@@ -10,6 +10,9 @@
 #include "Fragments/RLItemFragment_WeaponLevelData.h"
 #include "RLInventoryComponent.h"
 #include <Player/RL_PlayerState.h>
+#include <Kismet/GameplayStatics.h>
+#include "GameFramework/Character.h"
+#include "UE_RougelikeDemo/InventorySystem/InventoryComponent/RLInventoryComponent_Equipment.h"
 
 
 URLInventoryItemInstance* URLInventorySubsystem::GenerateItemInstance(URLInventoryItemDefinition* ItemDefinition)
@@ -67,6 +70,28 @@ AActor* URLInventorySubsystem::SpawnItemActorFromDefinition(URLInventoryItemDefi
 	URLInventoryItemInstance* NewInstance = GenerateItemInstance(ItemDefinition);
 	AActor* SpawnedActor = SpawnItemActorFromInstance(NewInstance,Location);
 	return SpawnedActor;
+}
+
+
+void URLInventorySubsystem::ResetHealthBottle()
+{
+	APlayerState* PlayerState = UGameplayStatics::GetPlayerState(GetWorld(), 0);
+	if (PlayerState)
+	{
+		URLInventoryComponent* InventoryCom = PlayerState->FindComponentByClass<URLInventoryComponent>();
+		if (InventoryCom)
+		{
+			FRLInventoryItemSlotHandle InventorySlotHandle = InventoryCom->GetSlotHandleByTag(FGameplayTag::RequestGameplayTag("Item.Use.HealthPotion"));
+			URLInventoryItemInstance* ItemInstance = InventoryCom->GetItemInstanceInSlot(InventorySlotHandle);
+			if (ItemInstance)
+			{
+				ItemInstance->ResetStack();
+				InventoryCom->OnItemSlotUpdate.Broadcast(InventoryCom, InventorySlotHandle, ItemInstance, ItemInstance);
+			}
+	
+		}
+		
+	}
 }
 
 bool URLInventorySubsystem::UpgradeWeapon(URLInventoryItemInstance* WeaponInstance, URLInventoryComponent* OwnerInventory)

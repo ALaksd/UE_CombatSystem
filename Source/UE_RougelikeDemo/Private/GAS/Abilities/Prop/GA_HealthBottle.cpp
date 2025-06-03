@@ -6,6 +6,8 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Component/RL_MovementComponent.h"
+#include "UE_RougelikeDemo/InventorySystem/InventoryComponent/RLInventoryComponent_Equipment.h"
+#include "UE_RougelikeDemo\InventorySystem\RLInventoryItemInstance.h"
 
 UGA_HealthBottle::UGA_HealthBottle()
 {
@@ -17,30 +19,50 @@ void UGA_HealthBottle::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                        const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                        const FGameplayEventData* TriggerEventData)
 {
-	if (CommitAbility(Handle, ActorInfo, ActivationInfo))
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	int32 BottleCount;
+	URLInventoryComponent_Equipment* InventoryComp = ActorInfo->OwnerActor.Get()->FindComponentByClass<URLInventoryComponent_Equipment>();
+	if (InventoryComp)
 	{
-		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-		ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->UpdateMovementState(EMovementState::Walking);
-		if (UseItemMontage)
+		FRLInventoryItemSlotHandle InventorySlotHandle = InventoryComp->GetSlotHandleByTag(UseItemTag);
+		URLInventoryItemInstance* ItemInstance = InventoryComp->GetItemInstanceInSlot(InventorySlotHandle);
+	
+		if (ItemInstance)
 		{
-			UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-				this,
-				NAME_None,
-				UseItemMontage,
-				1.0f,
-				NAME_None,
-				false
-			);
+			BottleCount = ItemInstance->GetCurrentStack();
 
-			if (PlayMontageTask)
+			//物品数量大于0
+			if (BottleCount > 0)
 			{
-				PlayMontageTask->OnCompleted.AddDynamic(this, &UGA_HealthBottle::OnMontageCompleted);
-				PlayMontageTask->OnCancelled.AddDynamic(this, &UGA_HealthBottle::OnMontageCompleted);
-				PlayMontageTask->OnInterrupted.AddDynamic(this, &UGA_HealthBottle::OnMontageCompleted);
-				PlayMontageTask->ReadyForActivation();
+				ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->UpdateMovementState(EMovementState::Walking);
+				if (UseItemMontage)
+				{
+					UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+						this,
+						NAME_None,
+						UseItemMontage,
+						1.0f,
+						NAME_None,
+						false
+					);
+
+					if (PlayMontageTask)
+					{
+						PlayMontageTask->OnCompleted.AddDynamic(this, &UGA_HealthBottle::OnMontageCompleted);
+						PlayMontageTask->OnCancelled.AddDynamic(this, &UGA_HealthBottle::OnMontageCompleted);
+						PlayMontageTask->OnInterrupted.AddDynamic(this, &UGA_HealthBottle::OnMontageCompleted);
+						PlayMontageTask->ReadyForActivation();
+					}
+
+					//数量减1
+					ItemInstance->AddStack(-1);
+					InventoryComp->OnItemSlotUpdate.Broadcast(InventoryComp, InventorySlotHandle, ItemInstance, ItemInstance);
+				}
 			}
 		}
+		
 	}
+
 }
 
 void UGA_HealthBottle::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
