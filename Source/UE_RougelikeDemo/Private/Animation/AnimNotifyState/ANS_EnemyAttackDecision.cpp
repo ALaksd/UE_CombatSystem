@@ -232,7 +232,7 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 		}
 
 		// 回复理智
-		if (URL_SanitySubsystem* SanitySystem = GetWorld()->GetGameInstance()->GetSubsystem<URL_SanitySubsystem>())
+		if (URL_SanitySubsystem* SanitySystem = OwnerActor->GetWorld()->GetGameInstance()->GetSubsystem<URL_SanitySubsystem>())
 			SanitySystem->RestoreSanity(RestoreSanity);
 
 		// 弹反成功直接返回，不执行后续伤害逻辑
