@@ -26,6 +26,9 @@ public:
 
 	const URLInventoryItemFragment* FindFragmentByClass(TSubclassOf<URLInventoryItemFragment> FragmentClass) const;
 
+	template <typename T>
+	const T* FindFragmentByClass(TSubclassOf<T> FragmentClass) const;
+
 	//将自己的CombinedTags添加到输入参数TagContainer中
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
@@ -52,3 +55,5 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	bool IsStackable() const { return MaxStack > 1; }
 };
+
+
