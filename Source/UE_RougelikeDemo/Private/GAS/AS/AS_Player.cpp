@@ -28,13 +28,13 @@ UAS_Player::UAS_Player()
 	MaxHealthDelegate.BindStatic(GetMaxHealthAttribute);
 	TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxHealth, MaxHealthDelegate);
 
-	FAttributeSignature MaxEnduranceDelegate;
-	MaxEnduranceDelegate.BindStatic(GetMaxEnduranceAttribute);
-	TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxEndurance, MaxEnduranceDelegate);
+	// FAttributeSignature MaxEnduranceDelegate;
+	// MaxEnduranceDelegate.BindStatic(GetMaxEnduranceAttribute);
+	// TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxEndurance, MaxEnduranceDelegate);
 
-	FAttributeSignature MaxAttachResourceDelegate;
-	MaxAttachResourceDelegate.BindStatic(GetMaxAttachResourceAttribute);
-	TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxAttachResource, MaxAttachResourceDelegate);
+	// FAttributeSignature MaxAttachResourceDelegate;
+	// MaxAttachResourceDelegate.BindStatic(GetMaxAttachResourceAttribute);
+	// TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxAttachResource, MaxAttachResourceDelegate);
 
 	FAttributeSignature DefensePowerDelegate;
 	DefensePowerDelegate.BindStatic(GetDefensePowerAttribute);
@@ -45,11 +45,11 @@ void UAS_Player::PreAttributeBaseChange(const FGameplayAttribute& Attribute, flo
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue);
 
-	//限制属性不能超过最大值
-	if (Attribute == GetEnduranceAttribute())
-		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxEndurance());
-	else if (Attribute == GetAttachResourceAttribute())
-		NewValue = FMath::Clamp(NewValue,0.f,GetMaxAttachResource());
+	// //限制属性不能超过最大值
+	// if (Attribute == GetEnduranceAttribute())
+	// 	NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxEndurance());
+	// else if (Attribute == GetAttachResourceAttribute())
+	// 	NewValue = FMath::Clamp(NewValue,0.f,GetMaxAttachResource());
 
 	
 }
@@ -62,17 +62,17 @@ void UAS_Player::PostAttributeChange(const FGameplayAttribute& Attribute, float 
 		bLevelHealth = false;
 	}
 
-	if (Attribute == GetMaxEnduranceAttribute() && bLevelEndurance)
-	{
-		SetEndurance(GetMaxEndurance());
-		bLevelEndurance = false;
-	}
-
-	if (Attribute == GetMaxAttachResourceAttribute() && bLevelAttachResource)
-	{
-		SetAttachResource(GetMaxAttachResource());
-		bLevelAttachResource = false;
-	}
+	// if (Attribute == GetMaxEnduranceAttribute() && bLevelEndurance)
+	// {
+	// 	SetEndurance(GetMaxEndurance());
+	// 	bLevelEndurance = false;
+	// }
+	//
+	// if (Attribute == GetMaxAttachResourceAttribute() && bLevelAttachResource)
+	// {
+	// 	SetAttachResource(GetMaxAttachResource());
+	// 	bLevelAttachResource = false;
+	// }
 }
 
 void UAS_Player::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)

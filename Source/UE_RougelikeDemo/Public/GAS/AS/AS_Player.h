@@ -31,28 +31,28 @@ public:
 	FGameplayAttributeData Power;  //气势，影响最大气势上限
 	ATTRIBUTE_ACCESSORS(UAS_Player, Power); //最大耐力值
 
-	/*次要属性，无限,受主要属性影响*/
-	UPROPERTY(EditDefaultsOnly, Category = "Attribute")
-	FGameplayAttributeData MaxEndurance;
-	ATTRIBUTE_ACCESSORS(UAS_Player, MaxEndurance); //最大耐力值
+	// /*次要属性，无限,受主要属性影响*/
+	// UPROPERTY(EditDefaultsOnly, Category = "Attribute")
+	// FGameplayAttributeData MaxEndurance;
+	// ATTRIBUTE_ACCESSORS(UAS_Player, MaxEndurance); //最大耐力值
+	//
+	// /*重要属性,无限,受次要属性影响*/
+	// //当前耐力值
+	// UPROPERTY(EditDefaultsOnly,Category="Attribute")
+	// FGameplayAttributeData Endurance;
+	// ATTRIBUTE_ACCESSORS(UAS_Player,Endurance);
 
-	//气势条最大值
-	UPROPERTY(EditDefaultsOnly, Category = "Attribute")
-	FGameplayAttributeData MaxAttachResource;
-	ATTRIBUTE_ACCESSORS(UAS_Player, MaxAttachResource);		//气势条最大值
+	// //气势条   你们谁有更好的想法就改个名字吧
+	// UPROPERTY(EditDefaultsOnly,Category="Attribute")
+	// FGameplayAttributeData AttachResource;
+	// ATTRIBUTE_ACCESSORS(UAS_Player,AttachResource);
+	//
+	// //气势条最大值
+	// UPROPERTY(EditDefaultsOnly, Category = "Attribute")
+	// FGameplayAttributeData MaxAttachResource;
+	// ATTRIBUTE_ACCESSORS(UAS_Player, MaxAttachResource);		//气势条最大值
 
-	/*重要属性,无限,受次要属性影响*/
-	//当前耐力值
-	UPROPERTY(EditDefaultsOnly,Category="Attribute")
-	FGameplayAttributeData Endurance;
-	ATTRIBUTE_ACCESSORS(UAS_Player,Endurance);
-
-	//气势条   你们谁有更好的想法就改个名字吧
-	UPROPERTY(EditDefaultsOnly,Category="Attribute")
-	FGameplayAttributeData AttachResource;
-	ATTRIBUTE_ACCESSORS(UAS_Player,AttachResource);
-
-	 //标签和属性对应的键值表
+	//标签和属性对应的键值表
 	TMap<FGameplayTag, FAttributeSignature> TagsToAttribute;
 
 protected:

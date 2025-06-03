@@ -115,33 +115,6 @@ void ARL_Sword::Tick(float DeltaTime)
 
 void ARL_Sword::RestoreAttachResourceAndSanity(float DamageMultiplier)
 {
-	// 创建动态GE增加玩家的气势值
-	IAbilitySystemInterface* SourceAbilityStystemInterface = Cast<IAbilitySystemInterface>(WeaponOwner);
-	if (SourceAbilityStystemInterface)
-	{
-		UAbilitySystemComponent* SourceASC = SourceAbilityStystemInterface->GetAbilitySystemComponent();
-		UGameplayEffect* DynamicParryGE = NewObject<UGameplayEffect>(SourceASC, FName(TEXT("DynamicParryGE")));
-		DynamicParryGE->DurationPolicy = EGameplayEffectDurationType::Instant; // 即时生效
-
-		FGameplayModifierInfo& Modifier = DynamicParryGE->Modifiers.AddDefaulted_GetRef();
-		if (WeaponOwner->Implements<URL_PlayerInterface>())
-		{
-			UAS_Player* AS = IRL_PlayerInterface::Execute_GetPlayerAS(WeaponOwner);
-			if (AS)
-			{
-				Modifier.Attribute = FGameplayAttribute(AS->GetAttachResourceAttribute());
-				Modifier.ModifierOp = EGameplayModOp::Additive; // 修改类型：叠加
-				FScalableFloat Magnitude;
-				Magnitude.Value = 1.f * DamageMultiplier; // 暂时10 * 武器倍率
-				Modifier.ModifierMagnitude = Magnitude;
-
-				// 创建效果规格并应用
-				FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
-				SourceASC->ApplyGameplayEffectToSelf(DynamicParryGE, 1.f, Context);
-			}
-		}
-	}
-
 	//恢复理智
 	URL_SanitySubsystem* SanitySubsystem = GetGameInstance()->GetSubsystem<URL_SanitySubsystem>();
 	if (SanitySubsystem)
