@@ -231,6 +231,10 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 			IRL_CombatInterface::Execute_KnockBack(TargetActor, (OwnerActor->GetActorForwardVector()).GetSafeNormal() * KnockDistance);
 		}
 
+		// 回复理智
+		if (URL_SanitySubsystem* SanitySystem = GetWorld()->GetGameInstance()->GetSubsystem<URL_SanitySubsystem>())
+			SanitySystem->RestoreSanity(RestoreSanity);
+
 		// 弹反成功直接返回，不执行后续伤害逻辑
 		return true;
 	}

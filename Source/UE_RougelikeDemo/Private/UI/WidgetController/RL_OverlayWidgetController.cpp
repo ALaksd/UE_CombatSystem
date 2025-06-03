@@ -11,10 +11,6 @@ void URL_OverlayWidgetController::BroadcastInitialValue()
 {
 	OnHealthChanged.Broadcast(GetPlayerAS()->GetHealth());
 	OnMaxHealthChanged.Broadcast(GetPlayerAS()->GetMaxHealth());
-	OnEnduranceChanged.Broadcast(GetPlayerAS()->GetEndurance());
-	OnMaxEnduranceChanged.Broadcast(GetPlayerAS()->GetMaxEndurance());
-	OnAttachResourceChanged.Broadcast(GetPlayerAS()->GetAttachResource());
-	OnMaxAttachResourceChanged.Broadcast(GetPlayerAS()->GetMaxAttachResource());
 }
 
 void URL_OverlayWidgetController::BindCallbacksToDependencies()
@@ -37,35 +33,6 @@ void URL_OverlayWidgetController::BindCallbacksToDependencies()
 				OnMaxHealthChanged.Broadcast(Data.NewValue);
 			}
 		);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		PlayerAttributeSet->GetEnduranceAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnEnduranceChanged.Broadcast(Data.NewValue);
-			}
-		);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		PlayerAttributeSet->GetMaxEnduranceAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnMaxEnduranceChanged.Broadcast(Data.NewValue);
-			}
-		);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		PlayerAttributeSet->GetAttachResourceAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnAttachResourceChanged.Broadcast(Data.NewValue);
-			}
-		);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		PlayerAttributeSet->GetMaxAttachResourceAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnMaxAttachResourceChanged.Broadcast(Data.NewValue);
-			}
-		);
-
 
 	GetPlayerState()->OnSoulChanged.AddLambda(
 		[this](int32 NewSoul)
@@ -95,10 +62,6 @@ void URL_OverlayWidgetController::UnbindAllDelegate()
 {
 	OnHealthChanged.Clear();
 	OnMaxHealthChanged.Clear();
-	OnEnduranceChanged.Clear();
-	OnMaxEnduranceChanged.Clear();
-	OnAttachResourceChanged.Clear();
-	OnMaxAttachResourceChanged.Clear();
 	OnLevelChanged.Clear();
 	OnSoulChanged.Clear();
 }
