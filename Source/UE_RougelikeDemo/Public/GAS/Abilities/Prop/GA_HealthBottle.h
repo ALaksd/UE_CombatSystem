@@ -22,6 +22,9 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category = "Prop")
 	TObjectPtr<UAnimMontage> UseItemMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Prop")
+	FGameplayTag UseItemTag;
+
 	UFUNCTION()
 	void OnMontageCompleted();
 

@@ -44,6 +44,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory")
 	int32 MaxStack = 1;
 
+	// 初始数量
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory")
+	int32 InitialStack = 1;
+
 	// 是否允许堆叠（根据标签或其他条件判断）
+	UFUNCTION(BlueprintCallable,BlueprintPure)
 	bool IsStackable() const { return MaxStack > 1; }
 };
