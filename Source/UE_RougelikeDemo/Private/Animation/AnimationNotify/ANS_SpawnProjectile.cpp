@@ -7,6 +7,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Component/RL_ProjectileComponent.h"
 #include "GAS/RL_AbilitySystemLibrary.h"
+#include <Data/Enums.h>
 
 
 void UANS_SpawnProjectile::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
@@ -65,13 +66,16 @@ void UANS_SpawnProjectile::ShowFireballLocation(AActor* Owner)
 		TArray<FHitResult> Hits;
 		TArray<AActor*> ActorsToIgnore;
 		FVector RectangleParam = FVector(5, 5, 5);
-		URL_AbilitySystemLibrary::GetLivePlayersInEllipse(
+		float ShpereRadius = 5.f;
+		URL_AbilitySystemLibrary::GetLivePlayersInArea(
 			Owner,
 			Hits,
 			ActorsToIgnore,
 			Location.Location,
 			RectangleParam,
+			ShpereRadius,
 			FRotator::ZeroRotator,
+			EDetectionShapeType::Sphere,
 			true,   
 			10.f,
 			FColor::Green

@@ -101,15 +101,15 @@ protected:
 	virtual void BeginPlay() override;
 
 	//样条线组件指针，从Owner获取
-	UPROPERTY(BlueprintReadWrite, Category = "AI|Patrol")
+	UPROPERTY(BlueprintReadWrite, Category = "Enemy|AI|Patrol")
 	TObjectPtr<USplineComponent> PatrolSpline;
 
 	// 巡逻参数
-	UPROPERTY(EditAnywhere, Category = "AI|Patrol")
+	UPROPERTY(EditAnywhere, Category = "Enemy|AI|Patrol")
 	FPatrolConfig PatrolConfig;
 
 	//对峙参数
-	UPROPERTY(EditAnywhere, Category = "AI|Confrontation")
+	UPROPERTY(EditAnywhere, Category = "Enemy|AI|Confrontation")
 	FConfrontationConfig ConfrontationConfig;
 
 	//敌人配置表

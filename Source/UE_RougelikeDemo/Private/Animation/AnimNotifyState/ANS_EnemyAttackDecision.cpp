@@ -19,6 +19,11 @@
 #include "GameFramework/Character.h"
 #include <Kismet/GameplayStatics.h>
 
+UANS_EnemyAttackDecision::UANS_EnemyAttackDecision()
+{
+	DamageTypeTag = FGameplayTag::RequestGameplayTag("damage.Normal");
+}
+
 void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
@@ -76,14 +81,16 @@ void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* Mesh
 	TArray<AActor*> ActorsToIgnore;
 	ActorsToIgnore.Add(OwnerActor);
 
-	URL_AbilitySystemLibrary::GetLivePlayersInEllipse(
+	URL_AbilitySystemLibrary::GetLivePlayersInArea(
 		OwnerActor,
 		Hits,
 		ActorsToIgnore,
 		Center,
 		RectangleParam,
+		SphereRadius,
 		Rotation,
-		true,   
+		DetectionShape,
+		true,
 		0.f,
 		FColor::Emerald
 	);
@@ -199,7 +206,7 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 		//URL_AbilitySystemLibrary::ApplyTemporaryTag(TargetASC, FGameplayTag::RequestGameplayTag("State.BounceBack.Continuous"), 1.f);
 
 		//3.敌人播放弹反受击动画（KonckDistance >= 200.f）,并且敌人后退
-		if (KnockDistance >= 200.f)
+		if (KnockDistance >= URL_AbilitySystemLibrary::GetEnemyConfig(OwnerActor)->HitThreshold)
 		{
 			UAnimInstance* AnimInstance = Cast<ACharacter>(OwnerActor)->GetMesh()->GetAnimInstance();
 			if (AnimInstance)
@@ -214,7 +221,7 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 				
 			}
 
-			FGameplayTag EnemyGuardBrokenTag = FGameplayTag::RequestGameplayTag("EnemyState.GuardBroken");
+			FGameplayTag EnemyGuardBrokenTag = FGameplayTag::RequestGameplayTag("EnemyState.ParryHit");
 			SourceASC->AddLooseGameplayTag(EnemyGuardBrokenTag);
 
 			FTimerHandle TimerHandle;

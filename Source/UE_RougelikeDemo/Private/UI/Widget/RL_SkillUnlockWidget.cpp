@@ -13,7 +13,8 @@
 #include "Player/RL_PlayerState.h"
 #include "UI/Widget/RL_SkillSlotWidget.h"
 #include "Styling/CoreStyle.h"
-#include "UE_RougelikeDemo/InventorySystem/Fragments/RLItemFragment_Skill.h"
+#include "UE_RougelikeDemo/InventorySystem/RLInventorySubsystem.h"
+#include "UE_RougelikeDemo/InventorySystem/RLInventoryComponent.h"
 
 void URL_SkillUnlockWidget::AddSkillSlot(const FRL_Skill&  SkillInfor)
 {
@@ -100,15 +101,14 @@ void URL_SkillUnlockWidget::OnLearnClicked()
 {
 	if (!CurrentSkill) return ;
 
-	for (TSubclassOf<UGameplayAbility> NewAbility : CurrentSkill->GA)
+	if (ARL_PlayerState* PlayerState = Cast<ARL_PlayerState>(UGameplayStatics::GetPlayerState(GetWorld(), 0)))
 	{
-		if (ARL_PlayerState* PlayerState = Cast<ARL_PlayerState>(UGameplayStatics::GetPlayerState(GetWorld(),0)))
+		URLInventoryComponent* InventoryComp = PlayerState->FindComponentByClass<URLInventoryComponent>();
+		URLInventorySubsystem* InventorySubSystem = GetWorld()->GetGameInstance()->GetSubsystem<URLInventorySubsystem>();
+		if (InventoryComp && InventorySubSystem && CurrentSkill->SkillDefinition)
 		{
-			if (UASC_Base* ASC = Cast<UASC_Base>(PlayerState->GetAbilitySystemComponent()))
-			{
-				// TODO:将技能装入技能背包
-				ASC->AddCharacterAbility(NewAbility);
-			}
+			InventoryComp->LootItem(InventorySubSystem->GenerateItemInstance(CurrentSkill->SkillDefinition));
 		}
+		
 	}
 }

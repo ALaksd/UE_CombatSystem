@@ -33,9 +33,6 @@ AEnemy_Base::AEnemy_Base()
 
 	WeaponStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("WeaponStaticMeshComponent");
 
-	RedAttackNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("RedAttackNiagaraComponent");
-	RedAttackNiagaraComponent->SetupAttachment(GetMesh());
-
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -198,11 +195,6 @@ AActor* AEnemy_Base::GetCombatTarget_Implementation() const
 void AEnemy_Base::SetCombatTarget_Implementation(AActor* InCombatTarget)
 {
 	TargetActor = InCombatTarget;
-}
-
-UNiagaraComponent* AEnemy_Base::GetRedAttackNiagaraComponent_Implementation() const
-{
-	return RedAttackNiagaraComponent;
 }
 
 void AEnemy_Base::SetHealthBarVisible_Implementation(bool bVisible) const

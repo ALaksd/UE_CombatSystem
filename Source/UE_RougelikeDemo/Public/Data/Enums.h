@@ -23,3 +23,10 @@ enum class E_SanityState : uint8
 	Sane        UMETA(DisplayName = "清醒"),  // 理智正常  
 	Chaotic     UMETA(DisplayName = "混沌")   // 理智崩坏  
 };  
+
+UENUM(BlueprintType)
+enum class EDetectionShapeType : uint8
+{
+	Rectangle UMETA(DisplayName = "Box"),
+	Sphere    UMETA(DisplayName = "Sphere")
+};

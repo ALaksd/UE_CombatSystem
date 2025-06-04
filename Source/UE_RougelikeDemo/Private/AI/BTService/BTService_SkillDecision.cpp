@@ -26,6 +26,17 @@ void UBTService_SkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		Blackboard->SetValueAsBool(bBroken.SelectedKeyName, false);
 	}
 
+	//弹反状态判断
+	if (ASC->HasAnyMatchingGameplayTags(ParryTags))
+	{
+		Blackboard->SetValueAsBool(bParry.SelectedKeyName, true);
+	}
+	else
+	{
+		Blackboard->SetValueAsBool(bParry.SelectedKeyName, false);
+	}
+
+
 	//玩家位置信息更新
 	AActor* Player = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(Target.SelectedKeyName));
 	AActor* ControllerActor = OwnerComp.GetAIOwner()->GetPawn();
