@@ -39,7 +39,7 @@ public:
 private:
 	
 	//属性
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
 
 	// 存储状态相关的标签(暂时只放破防与蹒跚状态)
@@ -165,7 +165,7 @@ protected:
 	
 	/** AI*/
 
-	UPROPERTY(EditAnywhere, Category = "AI")
+	UPROPERTY(EditAnywhere, Category = "Enemy|AI")
 	TObjectPtr<UBehaviorTree> BeahabviorTree;
 
 	UPROPERTY()
@@ -208,14 +208,11 @@ protected:
 
 	float BaseWalkSpeed = 500.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
-	TObjectPtr<UAnimMontage> HitReactMontage;
-
 	UPROPERTY(BlueprintReadWrite)
 	bool bDead;
 
 	/** Ability */
-	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy")
 	TArray<TSubclassOf<UGameplayAbility>> Abilites;
 
 	void AddCharacterAbilities();

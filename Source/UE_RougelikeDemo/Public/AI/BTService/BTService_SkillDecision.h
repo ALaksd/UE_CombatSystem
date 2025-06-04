@@ -23,9 +23,6 @@ protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere)
-	FBlackboardKeySelector CurrentActionState;
-
-	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector PositionType;
 
 	UPROPERTY(EditAnywhere)
@@ -34,7 +31,12 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector bBroken;
 
+	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector bParry;
 
 	UPROPERTY(EditAnywhere)
 	FGameplayTagContainer BrokenTags;
+
+	UPROPERTY(EditAnywhere)
+	FGameplayTagContainer ParryTags;
 };
