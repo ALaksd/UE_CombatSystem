@@ -54,4 +54,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
 	UAS_Player* GetPlayerAS() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
+	float GetHitThreshold() const;
 };

@@ -43,7 +43,7 @@ protected:
 
 
 public:	
-	void StartCombat() const;
+	void StartCombat(float StaminaReduce,float ResilienceReduce) const;
 	void EndCombat() const;
 
 private:

@@ -18,22 +18,24 @@ void UGCN_PlaySoundAndSystem::HandleGameplayCue(AActor* TargetActor, EGameplayCu
 		const FVector ImpactLocation = Parameters.Location;
 		const FVector ImpactNormal = Parameters.Normal;
 
-	   // 播放带强度控制的特效
-		if (Effect)
+
+		// 1. 播放保持默认旋转的特效（保持 Niagara 资产内的 Rotation 设置）
+		if (DefaultRotEffect)
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 				this,
-				Effect,
-				TargetActor->GetActorLocation(),
-				TargetActor->GetActorRotation()
+				DefaultRotEffect,
+				ImpactLocation,
+				ImpactNormal.Rotation()
 			);
 		}
 
-		if (HitEffect)
+		// 2. 播放根据法线调整方向的特效
+		if (AlignToNormalEffect)
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 				this,
-				HitEffect,
+				AlignToNormalEffect,
 				ImpactLocation,
 				UKismetMathLibrary::MakeRotFromZ(ImpactNormal)
 			);

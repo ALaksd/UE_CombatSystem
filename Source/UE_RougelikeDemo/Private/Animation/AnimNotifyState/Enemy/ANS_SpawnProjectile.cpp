@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Animation/AnimationNotify/ANS_SpawnProjectile.h"
+#include "Animation/AnimNotifyState/Enemy/ANS_SpawnProjectile.h"
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"

@@ -51,6 +51,7 @@ void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag)
 	// 生成箭矢
 	Arrow = GetWorld()->SpawnActor<ARL_ProjectileBase>(ArrowClass,SpawnTransform);
 
+	Arrow->SetWeaponOwner(WeaponOwner);
 	// 将箭矢绑到弓弦上
 	FAttachmentTransformRules Rules = FAttachmentTransformRules::SnapToTargetIncludingScale;
 	Arrow->AttachToComponent(GetMesh(),Rules,SpawnSocke);

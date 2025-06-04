@@ -8,13 +8,12 @@
 #include "GAS/AS/AS_Player.h"
 #include "Interface/RL_DamageInterface.h"
 #include "Interface/RL_EnemyInterface.h"
-#include "Interface/RL_PlayerInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "System/RL_SanitySubsystem.h"
-#include <NiagaraFunctionLibrary.h>
 #include "NiagaraComponent.h"
 #include <RL_CharacterSelectionWidget.cpp>
 
+#include "GAS/AS/AS_Enemy.h"
 
 
 ARL_Sword::ARL_Sword()
@@ -91,6 +90,9 @@ void ARL_Sword::Tick(float DeltaTime)
 								{
 									UAbilitySystemComponent* TargetASC = TargetAbilityStystemInterface->GetAbilitySystemComponent();
 									TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.MeeleHit"), CueParams);
+									// 削减体力与精力
+									UGameplayEffect* ReduceGE = CreateReduceGE(StaminaReduce,ResilienceReduce);
+									TargetASC->ApplyGameplayEffectToSelf(ReduceGE,1,Context);
 								}
 
 								RestoreAttachResourceAndSanity(DamageMultiplier);
@@ -112,6 +114,25 @@ void ARL_Sword::Tick(float DeltaTime)
 	}
 }
 
+UGameplayEffect* ARL_Sword::CreateReduceGE(float Stamina,float Resilience)
+{
+	UGameplayEffect* GE = NewObject<UGameplayEffect>();
+	GE->DurationPolicy = EGameplayEffectDurationType::Instant;
+
+	FGameplayModifierInfo DamageMod;
+	DamageMod.Attribute = UAS_Enemy::GetStaminaAttribute();
+	DamageMod.ModifierOp = EGameplayModOp::Additive;
+	DamageMod.ModifierMagnitude = FScalableFloat(-Stamina);
+	GE->Modifiers.Add(DamageMod);
+
+	DamageMod.Attribute = UAS_Enemy::GetResilienceAttribute();
+	DamageMod.ModifierOp = EGameplayModOp::Additive;
+	DamageMod.ModifierMagnitude = FScalableFloat(-Resilience);
+	GE->Modifiers.Add(DamageMod);
+
+	return GE;
+}
+
 
 void ARL_Sword::RestoreAttachResourceAndSanity(float DamageMultiplier)
 {
@@ -125,9 +146,11 @@ void ARL_Sword::RestoreAttachResourceAndSanity(float DamageMultiplier)
 }
 
 
-void ARL_Sword::StartCombat()
+void ARL_Sword::StartCombat(float StaminaReduce_T,float ResilienceReduce_T)
 {
 	bCombat = true;
+	StaminaReduce=StaminaReduce_T;
+	ResilienceReduce=ResilienceReduce_T;
 	
 	//创建GameplayEffect
 	DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffect,WeaponLevel,WeaponASC->MakeEffectContext());
@@ -136,6 +159,8 @@ void ARL_Sword::StartCombat()
 
 void ARL_Sword::EndCombat()
 {
+	StaminaReduce=0;
+	ResilienceReduce=0;
 	bCombat = false;
 	LastPoints.Empty();
 	HitActors.Empty();
