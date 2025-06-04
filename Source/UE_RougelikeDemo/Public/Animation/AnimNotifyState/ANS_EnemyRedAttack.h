@@ -16,7 +16,5 @@ class UE_ROUGELIKEDEMO_API UANS_EnemyRedAttack : public UANS_EnemyAttackDecision
 	GENERATED_BODY()
 	
 public:
-	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference);
-	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference);
-
+	UANS_EnemyRedAttack();
 };

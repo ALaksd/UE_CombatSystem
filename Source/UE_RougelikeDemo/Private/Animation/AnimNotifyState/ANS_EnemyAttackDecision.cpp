@@ -19,6 +19,11 @@
 #include "GameFramework/Character.h"
 #include <Kismet/GameplayStatics.h>
 
+UANS_EnemyAttackDecision::UANS_EnemyAttackDecision()
+{
+	DamageTypeTag = FGameplayTag::RequestGameplayTag("damage.Normal");
+}
+
 void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
@@ -76,14 +81,16 @@ void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* Mesh
 	TArray<AActor*> ActorsToIgnore;
 	ActorsToIgnore.Add(OwnerActor);
 
-	URL_AbilitySystemLibrary::GetLivePlayersInEllipse(
+	URL_AbilitySystemLibrary::GetLivePlayersInArea(
 		OwnerActor,
 		Hits,
 		ActorsToIgnore,
 		Center,
 		RectangleParam,
+		SphereRadius,
 		Rotation,
-		true,   
+		DetectionShape,
+		true,
 		0.f,
 		FColor::Emerald
 	);

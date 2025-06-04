@@ -82,7 +82,6 @@ public:
 	/** EnemyInterface */
 	virtual AActor* GetCombatTarget_Implementation()const override;
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
-	virtual UNiagaraComponent* GetRedAttackNiagaraComponent_Implementation() const override;
 	virtual void SetHealthBarVisible_Implementation(bool bVisible) const override;
 	virtual void SetLockTarget_Implementation(bool bInLock) override;
 	virtual void SetLockUIRed_Implementation(bool bInRedLock) override;
@@ -109,7 +108,6 @@ public:
 	/*-------------------------破防状态相关-------------------------*/
 	
 	FORCEINLINE UStaticMeshComponent* GetWeaponStaticComponnent() { return WeaponStaticMeshComponent; }
-	FORCEINLINE UNiagaraComponent* GetNiagaraComponent() { return RedAttackNiagaraComponent; }
 
 	/** Spawner */
 
@@ -176,9 +174,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<UStaticMeshComponent> WeaponStaticMeshComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
-	TObjectPtr<UNiagaraComponent> RedAttackNiagaraComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<URL_EnemyMovementComponent> EnemyMovementComponent;
