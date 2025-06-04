@@ -15,6 +15,9 @@ class UE_ROUGELIKEDEMO_API UBTTask_Teleport : public UBTTaskNode
 	GENERATED_BODY()
 
 public:
+	UBTTask_Teleport();
+	
+public:
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector LocationToGo;
 	

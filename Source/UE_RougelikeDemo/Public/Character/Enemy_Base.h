@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "Data/Enums.h"
 #include "Interface/RL_CombatInterface.h"
 #include "Interface/RL_EnemyInterface.h"
 #include "UI/WidgetController/RL_OverlayWidgetController.h"
@@ -213,6 +214,11 @@ protected:
 	void AddCharacterAbilities();
 
 private:
+	// 理智变化回调,处理清醒与混沌状态敌人属性变化
+	UFUNCTION()
+	void PlayerSanityChangeCallBack(E_SanityState ESanityState,float CurrentSanity);
+	E_SanityState CurrentSanityState = E_SanityState::Sane;
+	
 	void InitAbilityActorInfo();
 
 	void InitializeAttribute();
