@@ -20,7 +20,7 @@ class UE_ROUGELIKEDEMO_API ARL_Sword : public ARL_BaseWeapon
 public:
 	ARL_Sword();
 
-	void StartCombat();
+	void StartCombat(float StaminaReduce_T,float ResilienceReduce_T);
 	void EndCombat();
 
 	//刀光特效
@@ -43,6 +43,14 @@ private:
 	void SetLastPointsLocation();
 
 	virtual void Tick(float DeltaTime) override;
+
+	// 体力削减
+	float StaminaReduce;
+
+	// 韧性削减
+	float ResilienceReduce;
+
+	UGameplayEffect* CreateReduceGE(float Stamina,float Resilience);
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon|Mesh")
