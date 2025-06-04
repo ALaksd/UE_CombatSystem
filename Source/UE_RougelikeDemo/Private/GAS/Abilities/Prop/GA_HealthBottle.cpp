@@ -74,8 +74,5 @@ void UGA_HealthBottle::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 
 void UGA_HealthBottle::OnMontageCompleted()
 {
-	FGameplayEffectContextHandle Handle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(EffectClass, 1, Handle);
-	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }

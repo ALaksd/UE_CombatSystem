@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include <GameplayTagContainer.h>
+#include <Data/Enums.h>
 #include "ANS_EnemyAttackDecision.generated.h"
+
 
 
 class UGameplayEffect;
@@ -21,6 +23,8 @@ class UE_ROUGELIKEDEMO_API UANS_EnemyAttackDecision : public UAnimNotifyState
 	
 
 public:
+	UANS_EnemyAttackDecision();
+
 	// 伤害配置
 	UPROPERTY(EditAnywhere, Category = "Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
@@ -47,9 +51,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Damage")
 	float KnockDistance = 150.f;
 
-	// 攻击检测范围
+	// 检测形状类型（矩形/球形）
 	UPROPERTY(EditAnywhere, Category = "Detection")
-	FVector RectangleParam = FVector(20, 20, 60); // 前向50，横向50，垂直50
+	EDetectionShapeType DetectionShape = EDetectionShapeType::Rectangle;
+
+	// 矩形参数：长宽高（X:前后 Y:左右 Z:上下）
+	UPROPERTY(EditAnywhere, Category = "Detection", meta = (EditCondition = "DetectionShape == EDetectionShapeType::Rectangle"))
+	FVector RectangleParam = FVector(20, 20, 60);
+
+	// 球形参数：半径
+	UPROPERTY(EditAnywhere, Category = "Detection", meta = (EditCondition = "DetectionShape == EDetectionShapeType::Sphere"))
+	float SphereRadius = 80.f;
+
 
 	UPROPERTY(EditAnywhere, Category = "Detection")
 	FVector LocationOffset = FVector::ZeroVector; // 相对于骨骼的局部偏移
