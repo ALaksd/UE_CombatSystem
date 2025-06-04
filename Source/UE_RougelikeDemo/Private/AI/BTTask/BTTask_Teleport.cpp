@@ -39,7 +39,7 @@ EBTNodeResult::Type UBTTask_Teleport::ExecuteTask(UBehaviorTreeComponent& OwnerC
 
 			// 播放瞬移的蒙太奇
 			Anim->Montage_Play(EnemySkill.Animations[0].Montage);
-
+ 
 			for (FAnimNotifyEvent& Notify : EnemySkill.Animations[0].Montage->Notifies)
 			{
 				UAN_Teleport* Event = Cast<UAN_Teleport>(Notify.Notify);

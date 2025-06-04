@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Animation/AnimNotifyState/ANS_EnemyAttackDecision.h"
+#include "ANS_EnemyAttackDecision.h"
 #include "ANS_EnemyRedAttack.generated.h"
 
 class UNiagaraSystem;

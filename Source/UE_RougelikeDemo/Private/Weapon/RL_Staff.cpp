@@ -66,6 +66,7 @@ TArray<ARL_Projectile_Fireball*> ARL_Staff::SpawnFireballs(float Damage,FGamepla
 		{
 			Fireball->Target=Target;
 			Fireball->InitProjectile(Damage,DamageTag);
+			Fireball->SetWeaponOwner(WeaponOwner);
 			Fireballs.Add(Fireball);
 
 			FAttachmentTransformRules AttachRules= FAttachmentTransformRules(
