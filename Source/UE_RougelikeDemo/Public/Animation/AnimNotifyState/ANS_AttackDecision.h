@@ -18,7 +18,14 @@ class UE_ROUGELIKEDEMO_API UANS_AttackDecision : public UAnimNotifyState
 public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UGameplayEffect> GameEffect;
-	
+
+	// 体力削减
+	UPROPERTY(EditAnywhere,Category="Reduce")
+	float StaminaReduce;
+
+	// 韧性削减
+	UPROPERTY(EditAnywhere,Category="Reduce")
+	float ResilienceReduce;
 	
 	virtual void NotifyBegin(USkeletalMeshComponent * MeshComp, UAnimSequenceBase * Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference);
 	virtual void NotifyEnd(USkeletalMeshComponent * MeshComp, UAnimSequenceBase * Animation, const FAnimNotifyEventReference& EventReference);
