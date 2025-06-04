@@ -35,10 +35,14 @@ void URL_EnemyMovementComponent::InitializeComponent()
 
 				// 附加到角色的骨骼网格体上
 				USkeletalMeshComponent* CharacterMesh = OwnerActor->FindComponentByClass<USkeletalMeshComponent>();
-				if (CharacterMesh)
+				if (CharacterMesh && EnemyConfig->EnemySkeletalMesh && EnemyConfig->EnemyAnimInstanceClass)
 				{
 					const FName SocketName = GetEnemyConfig()->WeaponAttachSocket;
 					WeaponMeshComponent->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
+
+					CharacterMesh->SetSkeletalMesh(EnemyConfig->EnemySkeletalMesh);
+					CharacterMesh->SetAnimInstanceClass(EnemyConfig->EnemyAnimInstanceClass);
+
 				}
 			}
 		}

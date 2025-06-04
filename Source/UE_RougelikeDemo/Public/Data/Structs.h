@@ -12,6 +12,7 @@
  */
 
 class UGameplayAbility;
+class URLInventoryItemDefinition;
 
 USTRUCT(BlueprintType,Blueprintable)
 struct FRL_Skill : public FTableRowBase
@@ -37,7 +38,7 @@ public:
 	FString Description;
 	// 技能GA
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TSubclassOf<UGameplayAbility>> GA;
+	TObjectPtr<URLInventoryItemDefinition> SkillDefinition;
 	
 };
 

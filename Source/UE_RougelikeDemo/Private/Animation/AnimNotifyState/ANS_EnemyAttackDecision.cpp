@@ -199,7 +199,7 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 		//URL_AbilitySystemLibrary::ApplyTemporaryTag(TargetASC, FGameplayTag::RequestGameplayTag("State.BounceBack.Continuous"), 1.f);
 
 		//3.敌人播放弹反受击动画（KonckDistance >= 200.f）,并且敌人后退
-		if (KnockDistance >= 200.f)
+		if (KnockDistance >= URL_AbilitySystemLibrary::GetEnemyConfig(OwnerActor)->HitThreshold)
 		{
 			UAnimInstance* AnimInstance = Cast<ACharacter>(OwnerActor)->GetMesh()->GetAnimInstance();
 			if (AnimInstance)
@@ -214,7 +214,7 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 				
 			}
 
-			FGameplayTag EnemyGuardBrokenTag = FGameplayTag::RequestGameplayTag("EnemyState.GuardBroken");
+			FGameplayTag EnemyGuardBrokenTag = FGameplayTag::RequestGameplayTag("EnemyState.ParryHit");
 			SourceASC->AddLooseGameplayTag(EnemyGuardBrokenTag);
 
 			FTimerHandle TimerHandle;
