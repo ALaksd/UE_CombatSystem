@@ -357,6 +357,12 @@ void AEnemy_Base::BeginPlay()
 	//绑定标签变化
 	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Effect.HitReact")),EGameplayTagEventType::NewOrRemoved).AddUObject
 	(this, &AEnemy_Base::HitReactTagChanged);
+
+	// 绑定理智状态变化
+	if (URL_SanitySubsystem* SanitySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<URL_SanitySubsystem>())
+	{
+		SanitySubsystem->OnSanityStateChanged.AddDynamic(this,&AEnemy_Base::PlayerSanityChangeCallBack);
+	}
 }
 
 void AEnemy_Base::PossessedBy(AController* NewController)
@@ -464,5 +470,64 @@ void AEnemy_Base::AddCharacterAbilities()
 
 	//通用技能
 	ASC->AddCharacterAbilities(Abilites);
+}
+
+void AEnemy_Base::PlayerSanityChangeCallBack(E_SanityState ESanityState,float CurrentSanity)
+{
+	if (CurrentSanityState == E_SanityState::Sane && ESanityState == E_SanityState::Chaotic)
+	{
+		// 理智变得不正常
+		CurrentSanityState=E_SanityState::Chaotic;
+
+		// 修改韧性
+		FGameplayEffectContextHandle Context = GetAbilitySystemComponent()->MakeEffectContext();
+		Context.AddSourceObject(this);
+		// 创建临时GE
+		UGameplayEffect* GE = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("DynamicDamageEffect")));
+		GE->DurationPolicy = EGameplayEffectDurationType::Instant;
+		float Multiplier = EnemyMovementComponent->GetEnemyConfig()->ResilienceMultiplicitive;
+		/// 添加修饰器
+		// 修改最大韧性
+		FGameplayModifierInfo Modifier;
+		Modifier.Attribute=UAS_Enemy::GetMaxResilienceAttribute();
+		Modifier.ModifierMagnitude = FScalableFloat(Multiplier);
+		Modifier.ModifierOp = EGameplayModOp::Multiplicitive;
+		GE->Modifiers.Add(Modifier);
+		// 修改当前韧性
+		Modifier.Attribute=UAS_Enemy::GetResilienceAttribute();
+		Modifier.ModifierMagnitude = FScalableFloat(Multiplier);
+		Modifier.ModifierOp = EGameplayModOp::Multiplicitive;
+		GE->Modifiers.Add(Modifier);
+
+		GetAbilitySystemComponent()->ApplyGameplayEffectToSelf(GE,1,Context);
+	}
+	if (CurrentSanityState == E_SanityState::Chaotic && ESanityState == E_SanityState::Sane)
+	{
+		// 理智回归正常
+		CurrentSanityState=E_SanityState::Sane;
+
+		// 修改韧性
+		FGameplayEffectContextHandle Context = GetAbilitySystemComponent()->MakeEffectContext();
+		Context.AddSourceObject(this);
+		// 创建临时GE
+		UGameplayEffect* GE = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("DynamicDamageEffect")));
+		GE->DurationPolicy = EGameplayEffectDurationType::Instant;
+		float Multiplier = EnemyMovementComponent->GetEnemyConfig()->ResilienceMultiplicitive;
+		/// 添加修饰器
+		// 修改最大韧性
+		FGameplayModifierInfo Modifier;
+		Modifier.Attribute=UAS_Enemy::GetMaxResilienceAttribute();
+		Modifier.ModifierMagnitude = FScalableFloat(Multiplier);
+		Modifier.ModifierOp = EGameplayModOp::Division;
+		GE->Modifiers.Add(Modifier);
+		// 修改当前韧性
+		Modifier.Attribute=UAS_Enemy::GetResilienceAttribute();
+		Modifier.ModifierMagnitude = FScalableFloat(Multiplier);
+		Modifier.ModifierOp = EGameplayModOp::Division;
+		GE->Modifiers.Add(Modifier);
+
+		GetAbilitySystemComponent()->ApplyGameplayEffectToSelf(GE,1,Context);
+		
+	}
 }
 

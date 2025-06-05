@@ -9,6 +9,12 @@
 #include "BehaviorTree/BlackboardComponent.h"
 
 
+UBTTask_Teleport::UBTTask_Teleport()
+{
+	NodeName = TEXT("Teleport");
+	bNotifyTaskFinished = true;
+}
+
 EBTNodeResult::Type UBTTask_Teleport::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();

@@ -92,6 +92,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Attributes")
 	TSubclassOf<UGameplayEffect> PrimariAttribute;
 
+	// 混沌状态下韧性变化
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Attributes")
+	float ResilienceMultiplicitive;
+
 	//受击阈值,大于该值播放大受击动画以及弹反反馈动画
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage|Hurt")
 	float HitThreshold = 200.f;
