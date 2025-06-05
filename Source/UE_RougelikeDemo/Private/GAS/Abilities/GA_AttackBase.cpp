@@ -7,6 +7,8 @@
 #include <GAS/AS/AS_Player.h>
 #include <Player/RL_PlayerState.h>
 
+#include "System/RL_SanitySubsystem.h"
+
 UGA_AttackBase::UGA_AttackBase()
 {
 	//监听一个Tag,当SendGameplayEvent时可触发监听Tag的能力
@@ -42,6 +44,13 @@ void UGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 				Task->OnBlendOut.AddDynamic(this, &UGA_AttackBase::OnMontageCompleted);
 				Task->OnInterrupted.AddDynamic(this, &UGA_AttackBase::OnMontageCompleted);
 				Task->ReadyForActivation();
+
+				// 扣除理智值
+				if (bIsReduceSanity)
+				{
+					if (URL_SanitySubsystem* SanitySystem = GetWorld()->GetGameInstance()->GetSubsystem<URL_SanitySubsystem>())
+						SanitySystem->ReduceSanity(ReduceValue);
+				}
 			}
 		}
 

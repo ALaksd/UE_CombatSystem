@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "UE_RougelikeDemo/InventorySystem/Definition/RLItemDefinition_Skill.h"
 #include "Structs.generated.h"
 
 /**
@@ -11,13 +12,17 @@
  */
 
 class UGameplayAbility;
+class URLInventoryItemDefinition;
 
 USTRUCT(BlueprintType,Blueprintable)
-struct FSkillList : public FTableRowBase
+struct FRL_Skill : public FTableRowBase
 {
 	GENERATED_BODY()
 
 public:
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	// URLItemDefinition_Skill* Skill;
+	
 	// 技能名字
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName SkillName;
@@ -33,7 +38,7 @@ public:
 	FString Description;
 	// 技能GA
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TSubclassOf<UGameplayAbility>> GA;
+	TObjectPtr<URLInventoryItemDefinition> SkillDefinition;
 	
 };
 

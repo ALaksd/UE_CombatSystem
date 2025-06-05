@@ -43,7 +43,7 @@ public:
 	virtual void AddSpellPoints_Implementation(int32 InSpellPoints) override;
 	virtual int32 GetLevelRequirement_Implementation(int32 InLevel) const override;
 	virtual UAS_Player* GetPlayerAS_Implementation() const override;
-	
+	virtual float GetHitThreshold_Implementation() const override { return HitThreshold; }
 	/** End PlayerInterfece  */
 
 	/** CombatInterface */
@@ -97,22 +97,26 @@ protected:
 	UPROPERTY(EditDefaultsOnly,Category = "RLCharacter|Input")
 	TObjectPtr<URLInputConfig> InputConfig;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
+	//玩家受击阈值
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|Hit")
+	float HitThreshold = 200.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|Hit|AnimMontage")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|Hit|AnimMontage")
 	TObjectPtr<UAnimMontage> HitReactFrontMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|Hit|AnimMontage")
 	TObjectPtr<UAnimMontage> HitReactBackMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|Hit|AnimMontage")
 	TObjectPtr<UAnimMontage> HitReactRightMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|Hit|AnimMontage")
 	TObjectPtr<UAnimMontage> HitReactFLeftMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
+	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|Hit|AnimMontage")
 	TObjectPtr<UAnimMontage> HitReactHeavyFrontMontage;
 
 	UPROPERTY(BlueprintReadWrite)

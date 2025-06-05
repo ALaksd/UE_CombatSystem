@@ -1,5 +1,6 @@
 #include "Weapon/Projectile/RL_ProjectileBase.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Interface/RL_DamageInterface.h"
@@ -28,7 +29,8 @@ void ARL_ProjectileBase::FireProjectile()
 {
 	// 移除附加关系
 	this->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	ProjectileCom->Velocity = GetActorForwardVector()*MoveSpeed;
+	if (WeaponOwner)
+		ProjectileCom->Velocity = WeaponOwner->GetActorForwardVector()*MoveSpeed;
 
 	this->SetLifeSpan(LifeTime);
 }
@@ -80,13 +82,26 @@ void ARL_ProjectileBase::OnComponentBeginOverlap(UPrimitiveComponent* Overlapped
 	if (!OtherActor->ActorHasTag(AttackActorTag))
 		return;
 
-	if (IRL_DamageInterface* DamageInterface = Cast<IRL_DamageInterface>(OtherActor))
+	// if (IRL_DamageInterface* DamageInterface = Cast<IRL_DamageInterface>(OtherActor))
+	// {
+	// 	DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffect,WeaponLevel,WeaponASC->MakeEffectContext());
+	// 	DamageInterface->TakeDamage(DamageSpecHandle);
+	//
+	// 	Destroy();
+	// }
+
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
+	UAbilitySystemComponent* SourceASC = WeaponASC;
+
+	if (TargetASC && SourceASC)
 	{
-		DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffect,WeaponLevel,WeaponASC->MakeEffectContext());
-		DamageInterface->TakeDamage(DamageSpecHandle);
+		FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
+		TSubclassOf<UGameplayEffect> DamageEffectClass = DamageEffect;
+		FGameplayTag DamageTag_T = DamageTag;
+		float Damage_T = Damage;
+	
+		URL_AbilitySystemLibrary::ApplyDamageByMagnitude(SourceASC,TargetASC,Context,DamageEffectClass,DamageTag,Damage);
 
 		Destroy();
 	}
-	//URL_AbilitySystemLibrary::ApplyDamageByMagnitude(WeaponASC,OtherActor->FindComponentByClass<UAbilitySystemComponent>(),DamageSpecHandle);
-	
 }

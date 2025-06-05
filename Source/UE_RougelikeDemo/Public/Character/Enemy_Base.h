@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "Data/Enums.h"
 #include "Interface/RL_CombatInterface.h"
 #include "Interface/RL_EnemyInterface.h"
 #include "UI/WidgetController/RL_OverlayWidgetController.h"
@@ -39,7 +40,7 @@ public:
 private:
 	
 	//属性
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
 
 	// 存储状态相关的标签(暂时只放破防与蹒跚状态)
@@ -82,7 +83,6 @@ public:
 	/** EnemyInterface */
 	virtual AActor* GetCombatTarget_Implementation()const override;
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
-	virtual UNiagaraComponent* GetRedAttackNiagaraComponent_Implementation() const override;
 	virtual void SetHealthBarVisible_Implementation(bool bVisible) const override;
 	virtual void SetLockTarget_Implementation(bool bInLock) override;
 	virtual void SetLockUIRed_Implementation(bool bInRedLock) override;
@@ -109,7 +109,6 @@ public:
 	/*-------------------------破防状态相关-------------------------*/
 	
 	FORCEINLINE UStaticMeshComponent* GetWeaponStaticComponnent() { return WeaponStaticMeshComponent; }
-	FORCEINLINE UNiagaraComponent* GetNiagaraComponent() { return RedAttackNiagaraComponent; }
 
 	/** Spawner */
 
@@ -165,7 +164,7 @@ protected:
 	
 	/** AI*/
 
-	UPROPERTY(EditAnywhere, Category = "AI")
+	UPROPERTY(EditAnywhere, Category = "Enemy|AI")
 	TObjectPtr<UBehaviorTree> BeahabviorTree;
 
 	UPROPERTY()
@@ -176,9 +175,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<UStaticMeshComponent> WeaponStaticMeshComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
-	TObjectPtr<UNiagaraComponent> RedAttackNiagaraComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<URL_EnemyMovementComponent> EnemyMovementComponent;
@@ -208,19 +204,21 @@ protected:
 
 	float BaseWalkSpeed = 500.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "RLCharacter|AnimMontage")
-	TObjectPtr<UAnimMontage> HitReactMontage;
-
 	UPROPERTY(BlueprintReadWrite)
 	bool bDead;
 
 	/** Ability */
-	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy")
 	TArray<TSubclassOf<UGameplayAbility>> Abilites;
 
 	void AddCharacterAbilities();
 
 private:
+	// 理智变化回调,处理清醒与混沌状态敌人属性变化
+	UFUNCTION()
+	void PlayerSanityChangeCallBack(E_SanityState ESanityState,float CurrentSanity);
+	E_SanityState CurrentSanityState = E_SanityState::Sane;
+	
 	void InitAbilityActorInfo();
 
 	void InitializeAttribute();

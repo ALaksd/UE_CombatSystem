@@ -13,8 +13,10 @@
 #include "Player/RL_PlayerState.h"
 #include "UI/Widget/RL_SkillSlotWidget.h"
 #include "Styling/CoreStyle.h"
+#include "UE_RougelikeDemo/InventorySystem/RLInventorySubsystem.h"
+#include "UE_RougelikeDemo/InventorySystem/RLInventoryComponent.h"
 
-void URL_SkillUnlockWidget::AddSkillSlot(const FSkillList&  SkillInfor)
+void URL_SkillUnlockWidget::AddSkillSlot(const FRL_Skill&  SkillInfor)
 {
 	SkillCount++;
 	if (SkillCount%4==1)
@@ -38,14 +40,19 @@ void URL_SkillUnlockWidget::AddSkillSlot(const FSkillList&  SkillInfor)
 	}
 	
 	SkillSlot->SetVisible(SkillCount);
+	// UButton* Button = SkillSlot->SetButtonBrushMy(SkillInfor.Skill->FindFragmentByClass<URLItemFragment_Skill>(URLItemFragment_Skill::StaticClass())->Icon);
 	UButton* Button = SkillSlot->SetButtonBrushMy(SkillInfor.Icon);
+
+	// 将按钮与技能绑定
+	if (Button)
+		SkillMap.Add(Button,SkillInfor);
+
+	// 初始化解锁界面技能图标
 	if (!bInit)
 	{
 		bInit=true;
 		Button->OnClicked;
 	}
-	if (Button)
-		SkillMap.Add(Button,SkillInfor);
 	
 }
 
@@ -79,13 +86,14 @@ void URL_SkillUnlockWidget::SetButtonNormalStyleImage(UButton* Button, UTexture2
 
 void URL_SkillUnlockWidget::OnSkillButtonClicked(UButton* ButtonClicked)
 {
-	if (FSkillList* Skill = SkillMap.Find(ButtonClicked))
+	if (FRL_Skill* Skill = SkillMap.Find(ButtonClicked))
 	{
+		//CurrentSkill = Skill->Skill->FindFragmentByClass<URLItemFragment_Skill>(URLItemFragment_Skill::StaticClass());
 		CurrentSkill = Skill;
 		
-		SkillName->SetText(FText::FromString(Skill->SkillName.ToString()));
-		SkillStats->SetText(FText::FromString(Skill->SkillAttribute));
-		SkillDescription->SetText(FText::FromString(Skill->Description));
+		SkillName->SetText(FText::FromString(CurrentSkill->SkillName.ToString()));
+		SkillStats->SetText(FText::FromString(CurrentSkill->SkillAttribute));
+		SkillDescription->SetText(FText::FromString(CurrentSkill->Description));
 	}
 }
 
@@ -93,14 +101,14 @@ void URL_SkillUnlockWidget::OnLearnClicked()
 {
 	if (!CurrentSkill) return ;
 
-	for (TSubclassOf<UGameplayAbility> NewAbility : CurrentSkill->GA)
+	if (ARL_PlayerState* PlayerState = Cast<ARL_PlayerState>(UGameplayStatics::GetPlayerState(GetWorld(), 0)))
 	{
-		if (ARL_PlayerState* PlayerState = Cast<ARL_PlayerState>(UGameplayStatics::GetPlayerState(GetWorld(),0)))
+		URLInventoryComponent* InventoryComp = PlayerState->FindComponentByClass<URLInventoryComponent>();
+		URLInventorySubsystem* InventorySubSystem = GetWorld()->GetGameInstance()->GetSubsystem<URLInventorySubsystem>();
+		if (InventoryComp && InventorySubSystem && CurrentSkill->SkillDefinition)
 		{
-			if (UASC_Base* ASC = Cast<UASC_Base>(PlayerState->GetAbilitySystemComponent()))
-			{
-				ASC->AddCharacterAbility(NewAbility);
-			}
+			InventoryComp->LootItem(InventorySubSystem->GenerateItemInstance(CurrentSkill->SkillDefinition));
 		}
+		
 	}
 }

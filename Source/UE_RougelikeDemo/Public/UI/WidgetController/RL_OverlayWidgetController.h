@@ -37,18 +37,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
 	FOnAttributeChangedSignature OnMaxHealthChanged;
 
-	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnAttributeChangedSignature OnEnduranceChanged;
-
-	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnAttributeChangedSignature OnMaxEnduranceChanged;
-
-	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnAttributeChangedSignature OnAttachResourceChanged;
-
-	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnAttributeChangedSignature OnMaxAttachResourceChanged;
-
 	UPROPERTY(BlueprintAssignable, Category = "LevelUpInfo")
 	FOnSoulChangedSignature OnSoulChanged;
 

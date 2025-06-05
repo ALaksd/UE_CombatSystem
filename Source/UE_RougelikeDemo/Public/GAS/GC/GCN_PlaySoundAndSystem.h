@@ -21,10 +21,10 @@ public:
 	TObjectPtr<class USoundBase> Sound;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<class UNiagaraSystem> Effect;
+	TObjectPtr<class UNiagaraSystem> DefaultRotEffect;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<class UNiagaraSystem> HitEffect;
+	TObjectPtr<class UNiagaraSystem> AlignToNormalEffect;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UCameraShakeBase> HitCameraShake;
@@ -33,7 +33,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetPauseEffect(AActor* Instigator);
 
-	//可以新增任意在弹反期间做的逻辑
+	//可以在蓝图新增任意在弹反期间做的逻辑
 	UFUNCTION(BlueprintImplementableEvent)
 	void ExecuteOtherst(AActor* Enemy,AActor* Character);
 };

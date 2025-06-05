@@ -192,6 +192,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	virtual URLInventoryItemInstance* GetItemInstanceInSlot(const FRLInventoryItemSlotHandle& Handle);
 
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -221,7 +222,7 @@ protected:
 	/** 判断指定的插槽Item Instance指针是否为空，如果为空则返回true，说明可以放入新的物品 */
 	bool AcceptsItem(URLInventoryItemInstance* Item, const FRLInventoryItemSlotHandle& ItemHandle);
 
-	/** 判断是否可堆叠*/
+	/** 判断是否可堆叠,物品一样且勾选已堆叠*/
 	bool CanStackItem(const FRLInventoryItemSlot& Slot, URLInventoryItemInstance* NewItem) const;
 
 	/** 尝试进行堆叠，返回剩余的数量 */

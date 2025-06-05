@@ -92,6 +92,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Attributes")
 	TSubclassOf<UGameplayEffect> PrimariAttribute;
 
+	// 混沌状态下韧性变化
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Attributes")
+	float ResilienceMultiplicitive;
+
+	//受击阈值,大于该值播放大受击动画以及弹反反馈动画
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage|Hurt")
+	float HitThreshold = 200.f;
 
 	// 受击动画
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage|Hurt")
@@ -142,4 +149,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")
 	int32 EnemyLevel = 1;
+
+	// 敌人骨骼网格体
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
+	TObjectPtr<USkeletalMesh> EnemySkeletalMesh;
+
+	// 敌人动画蓝图
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
+	TSubclassOf<UAnimInstance> EnemyAnimInstanceClass;
 };
