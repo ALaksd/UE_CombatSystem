@@ -164,12 +164,14 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 	bool bCanParry = false;
 
 	const FGameplayTag ParryTag = FGameplayTag::RequestGameplayTag("State.BounceBack");
+	const FGameplayTag ParryAttackTag = FGameplayTag::RequestGameplayTag("State.BounceBack.Attack");
 	const FGameplayTag ParryContinuousTag = FGameplayTag::RequestGameplayTag("State.BounceBack.Continuous");
 	const FGameplayTag RedDamageTag = FGameplayTag::RequestGameplayTag("damage.Red");
 
 	// 检查玩家是否有弹反Tag
 	bool bPlayerHasParry = TargetASC->HasMatchingGameplayTag(ParryTag);
 	bool bPlayerHasContinuous = TargetASC->HasMatchingGameplayTag(ParryContinuousTag);
+	bool bPlayerHasParryAttackTag = TargetASC->HasMatchingGameplayTag(ParryAttackTag);
 
 	// 检查敌人是否有红光攻击Tag
 	bool bEnemyRedAttack = SourceASC->HasMatchingGameplayTag(RedDamageTag);
@@ -179,17 +181,23 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 
 	if (bCanParry)
 	{
+		
+
+		
 		// 弹反成功处理 -----------------------------------------------
 		// 获取敌人AI相关组件
 		AAIController* AIController = Cast<AAIController>(OwnerActor->GetInstigatorController());
 		UBehaviorTreeComponent* BTComponent = AIController ? AIController->FindComponentByClass<UBehaviorTreeComponent>() : nullptr;
 
 		// 1. 播放弹反Cue
-		FGameplayCueParameters ParryCueParams;
-		ParryCueParams.Instigator = OwnerActor; //击中者，敌人
-		ParryCueParams.Location = HitLoction; //击中位置
-		ParryCueParams.Normal = HitNormal;  //击中法向
-		TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Parry"), ParryCueParams);
+		if (!bPlayerHasParryAttackTag)
+		{
+			FGameplayCueParameters ParryCueParams;
+			ParryCueParams.Instigator = OwnerActor; //击中者，敌人
+			ParryCueParams.Location = HitLoction; //击中位置
+			ParryCueParams.Normal = HitNormal;  //击中法向
+			TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Parry"), ParryCueParams);
+		}
 
 		// 2. 减少属性
 		UAS_Enemy* AS;
@@ -242,6 +250,18 @@ bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC,
 		if (URL_SanitySubsystem* SanitySystem = OwnerActor->GetWorld()->GetGameInstance()->GetSubsystem<URL_SanitySubsystem>())
 			SanitySystem->RestoreSanity(RestoreSanity);
 
+		// 弹反回击
+		if (bPlayerHasParryAttackTag)
+		{
+			USkeletalMeshComponent* TargetActorMesh = TargetActor->FindComponentByClass<USkeletalMeshComponent>();
+			if (!TargetActorMesh) return true;
+
+			UAnimMontage* TargetMontag = TargetActorMesh->GetAnimInstance()->GetCurrentActiveMontage();
+			TargetActorMesh->GetAnimInstance()->Montage_Play(TargetMontag);
+			TargetActorMesh->GetAnimInstance()->Montage_JumpToSection(FName("Attack"),TargetMontag);
+			
+		}
+		
 		// 弹反成功直接返回，不执行后续伤害逻辑
 		return true;
 	}

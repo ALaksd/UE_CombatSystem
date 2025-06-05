@@ -47,6 +47,7 @@ void AEnemy_Base::Execute(bool bIsForward)
 	AddTag(FName("EnemyState.Execute"));
 	RemoveTag(FName("EnemyState.GuardBroken"));
 
+	// 处决时退出破防状态
 	GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
 
 	float Time;

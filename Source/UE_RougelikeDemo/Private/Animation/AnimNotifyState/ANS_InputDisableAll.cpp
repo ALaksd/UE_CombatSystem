@@ -5,6 +5,8 @@
 #include <EnhancedInputSubsystems.h>
 #include <Component/RL_MovementComponent.h>
 
+#include "GameplayTagsManager.h"
+
 
 void UANS_InputDisableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
@@ -16,16 +18,19 @@ void UANS_InputDisableAll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSe
 	URL_MovementComponent* MovementComp = Owner->FindComponentByClass<URL_MovementComponent>();
 	if (MovementComp)
 	{
-		//如果TagsToBlock为空，则禁用全部输入，否则禁用指定的输入
-		if (TagsToBlock.IsEmpty())
-		{
-			MovementComp->SetbAcceptInput(false);
-		}
-		else
-		{
-			MovementComp->BlockInputTag(TagsToBlock);
-		}
+
+		// 默认禁用所有输入,如果TagsUnBlock不为空则排除这部分Tag
+		// 获取根标签 InputTag
+		FGameplayTag RootTag = UGameplayTagsManager::Get().RequestGameplayTag(FName("InputTag"), false);
+		FGameplayTagContainer InputTags = UGameplayTagsManager::Get().RequestGameplayTagChildren(RootTag);
 		
+		if (!TagsUnBlock.IsEmpty())
+		{
+			InputTags.RemoveTags(TagsUnBlock);
+			
+		}
+		MovementComp->BlockInputTag(InputTags);
+
 	}
 }
 
