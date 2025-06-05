@@ -7,16 +7,11 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "GAS/RL_AbilitySystemLibrary.h"
-#include <System/RL_SanitySubsystem.h>
 #include <AIController.h>
 #include <BehaviorTree/BehaviorTreeComponent.h>
 #include "GAS/RL_AbilitySystemLibrary.h"
 #include <AbilitySystemInterface.h>
-#include <Interface/RL_EnemyInterface.h>
-#include "GAS/AS/AS_Enemy.h"
 #include "Engine/OverlapResult.h"
-#include <Interface/RL_CombatInterface.h>
-#include "GameFramework/Character.h"
 #include <Kismet/GameplayStatics.h>
 
 UANS_EnemyAttackDecision::UANS_EnemyAttackDecision()
@@ -39,6 +34,7 @@ void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAn
 		SourceASC->SetTagMapCount(DamageTypeTag, 1);
 	}
 
+	//攻击音效
 	if (AttackSound && OwnerActor)
 	{
 		UGameplayStatics::PlaySoundAtLocation(OwnerActor, AttackSound, OwnerActor->GetActorLocation());
@@ -107,163 +103,27 @@ void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* Mesh
 	}
 }
 
-void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor, FVector HitLoction, FVector HitNormal)
+void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor, FVector HitLocation, FVector HitNormal)
 {
-	if (!DamageEffectClass || !OwnerActor) return;
+	if (!OwnerActor) return;
 
-	// 获取双方的ASC
-	UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OwnerActor);
-	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
-	if (!SourceASC || !TargetASC) return;
+	// 准备伤害参数
+	FDamageParams DamageParams;
+	DamageParams.DamageEffectClass = DamageEffectClass;
+	DamageParams.DamageTypeTag = DamageTypeTag;
+	DamageParams.Damage = Damage;
+	DamageParams.KnockDistance = KnockDistance;
+	DamageParams.ReduceSanity = ReduceSantiy;
+	DamageParams.BreakingValue = Breakingvalue;
+	DamageParams.RestoreSanity = RestoreSanity;
 
-	// 弹反判断条件 ---------------------------------------------------
-	if (ParryDecision(TargetASC, SourceASC, HitLoction, HitNormal, TargetActor))
-		return;
-
-	// 无敌条件判断 ---------------------------------------------------
-	const FGameplayTag InvincibleTag = FGameplayTag::RequestGameplayTag("State.Invincible");
-	if (TargetASC->HasMatchingGameplayTag(InvincibleTag))
-	{
-		return;
-	}
-
-	// 正常伤害处理 ---------------------------------------------------
-	FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
-	Context.AddSourceObject(OwnerActor);
-
-	//传入击退参数
-	FVector KonckBackVector = (OwnerActor->GetActorLocation() - TargetActor->GetActorLocation()).GetSafeNormal();
-	URL_AbilitySystemLibrary::SetKonckBackImpulse(Context, KonckBackVector * KnockDistance);
-
-	const float IntensityMultiplier = FMath::GetMappedRangeValueClamped(
-		FVector2D(100.f, 300.f),
-		FVector2D(1.0f, 2.0f),
-		KnockDistance
+	// 使用工具函数处理伤害
+	URL_AbilitySystemLibrary::ApplyEnemyDamage(
+		OwnerActor,
+		TargetActor,
+		HitLocation,
+		HitNormal,
+		DamageParams
 	);
-
-	//执行GameplayCue, 受击反馈
-	
-	FGameplayCueParameters CueParams;
-	CueParams.Instigator = TargetActor; //击中者，就是玩家
-	CueParams.Location = HitLoction; //击中位置
-	CueParams.Normal = HitNormal;  //击中法向
-	CueParams.NormalizedMagnitude = IntensityMultiplier;
-	TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Enemy.MeeleHit"), CueParams);
-
-	URL_AbilitySystemLibrary::ApplyDamageByMagnitude(SourceASC, TargetASC, Context,DamageEffectClass, DamageTypeTag, Damage);
-
-	// 减少理智值
-	if (URL_SanitySubsystem* SanitySubsystem = UGameInstance::GetSubsystem<URL_SanitySubsystem>(TargetActor->GetWorld()->GetGameInstance()))
-	{
-		SanitySubsystem->ReduceSanity(Damage * ReduceSantiyFactor);
-	}
 }
 
-bool UANS_EnemyAttackDecision::ParryDecision(UAbilitySystemComponent* TargetASC, UAbilitySystemComponent* SourceASC, FVector& HitLoction, FVector& HitNormal, AActor* TargetActor)
-{
-	bool bCanParry = false;
-
-	const FGameplayTag ParryTag = FGameplayTag::RequestGameplayTag("State.BounceBack");
-	const FGameplayTag ParryAttackTag = FGameplayTag::RequestGameplayTag("State.BounceBack.Attack");
-	const FGameplayTag ParryContinuousTag = FGameplayTag::RequestGameplayTag("State.BounceBack.Continuous");
-	const FGameplayTag RedDamageTag = FGameplayTag::RequestGameplayTag("damage.Red");
-
-	// 检查玩家是否有弹反Tag
-	bool bPlayerHasParry = TargetASC->HasMatchingGameplayTag(ParryTag);
-	bool bPlayerHasContinuous = TargetASC->HasMatchingGameplayTag(ParryContinuousTag);
-	bool bPlayerHasParryAttackTag = TargetASC->HasMatchingGameplayTag(ParryAttackTag);
-
-	// 检查敌人是否有红光攻击Tag
-	bool bEnemyRedAttack = SourceASC->HasMatchingGameplayTag(RedDamageTag);
-
-
-	bCanParry = (bPlayerHasParry || bPlayerHasContinuous) && bEnemyRedAttack;
-
-	if (bCanParry)
-	{
-		
-
-		
-		// 弹反成功处理 -----------------------------------------------
-		// 获取敌人AI相关组件
-		AAIController* AIController = Cast<AAIController>(OwnerActor->GetInstigatorController());
-		UBehaviorTreeComponent* BTComponent = AIController ? AIController->FindComponentByClass<UBehaviorTreeComponent>() : nullptr;
-
-		// 1. 播放弹反Cue
-		if (!bPlayerHasParryAttackTag)
-		{
-			FGameplayCueParameters ParryCueParams;
-			ParryCueParams.Instigator = OwnerActor; //击中者，敌人
-			ParryCueParams.Location = HitLoction; //击中位置
-			ParryCueParams.Normal = HitNormal;  //击中法向
-			TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Parry"), ParryCueParams);
-		}
-
-		// 2. 减少属性
-		UAS_Enemy* AS;
-		if (OwnerActor->Implements<URL_EnemyInterface>())
-		{
-			AS = IRL_EnemyInterface::Execute_GetEnemyAttributeSet(OwnerActor);
-			if (AS)
-			{
-				URL_AbilitySystemLibrary::ApplyChangeAttributeEffect(SourceASC, AS->GetStaminaAttribute(), -Breakingvalue);
-			}
-		}
-
-		//弹反奖励
-		//URL_AbilitySystemLibrary::ApplyTemporaryTag(TargetASC, FGameplayTag::RequestGameplayTag("State.BounceBack.Continuous"), 1.f);
-
-		//3.敌人播放弹反受击动画（KonckDistance >= 200.f）,并且敌人后退
-		if (KnockDistance >= URL_AbilitySystemLibrary::GetEnemyConfig(OwnerActor)->HitThreshold)
-		{
-			UAnimInstance* AnimInstance = Cast<ACharacter>(OwnerActor)->GetMesh()->GetAnimInstance();
-			if (AnimInstance)
-			{
-				UAnimMontage* ParryHitMontage = URL_AbilitySystemLibrary::GetEnemyConfig(OwnerActor)->ParryHitMontage;
-
-				if (ParryHitMontage)
-				{
-					AnimInstance->StopAllMontages(0.1f);
-					AnimInstance->Montage_Play(ParryHitMontage);
-				}
-				
-			}
-
-			FGameplayTag EnemyGuardBrokenTag = FGameplayTag::RequestGameplayTag("EnemyState.ParryHit");
-			SourceASC->AddLooseGameplayTag(EnemyGuardBrokenTag);
-
-			FTimerHandle TimerHandle;
-			OwnerActor->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [SourceASC,EnemyGuardBrokenTag]()
-				{
-					SourceASC->RemoveLooseGameplayTag(EnemyGuardBrokenTag);
-				}
-			, 1.0f, false);
-
-		}
-		//4.玩家后退(测试)
-		if (TargetActor->Implements<URL_CombatInterface>())
-		{
-			IRL_CombatInterface::Execute_KnockBack(TargetActor, (OwnerActor->GetActorForwardVector()).GetSafeNormal() * KnockDistance);
-		}
-
-		// 回复理智
-		if (URL_SanitySubsystem* SanitySystem = OwnerActor->GetWorld()->GetGameInstance()->GetSubsystem<URL_SanitySubsystem>())
-			SanitySystem->RestoreSanity(RestoreSanity);
-
-		// 弹反回击
-		if (bPlayerHasParryAttackTag)
-		{
-			USkeletalMeshComponent* TargetActorMesh = TargetActor->FindComponentByClass<USkeletalMeshComponent>();
-			if (!TargetActorMesh) return true;
-
-			UAnimMontage* TargetMontag = TargetActorMesh->GetAnimInstance()->GetCurrentActiveMontage();
-			TargetActorMesh->GetAnimInstance()->Montage_Play(TargetMontag);
-			TargetActorMesh->GetAnimInstance()->Montage_JumpToSection(FName("Attack"),TargetMontag);
-			
-		}
-		
-		// 弹反成功直接返回，不执行后续伤害逻辑
-		return true;
-	}
-	return false;
-}

@@ -69,10 +69,30 @@ void UASC_Base::AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayA
 	}
 }
 
+void UASC_Base::AbilityPressTagInput(const FGameplayTag& InputTag)
+{
+	// 判断输入的标签是否有效
+	if (!InputTag.IsValid())   return;
+
+	FScopedAbilityListLock ActiveScopeLoc(*this);
+	for (FGameplayAbilitySpec AbilitySpec : GetActivatableAbilities())  // 遍历所有可以激活的能力
+	{
+		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))  // 检查该能力是否与输入标签匹配
+		{
+			AbilitySpecInputPressed(AbilitySpec);  // 表示按下了与该能力相关的输入
+			if (!AbilitySpec.IsActive())  // 如果该能力当前未激活
+			{
+				InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, AbilitySpec.Handle, AbilitySpec.ActivationInfo.GetActivationPredictionKey());
+			}
+		}
+	}
+}
+
 void UASC_Base::AbilityInputTagHeld(const FGameplayTag& InputTag)
 {
 	if (!InputTag.IsValid()) return ;
 
+	FScopedAbilityListLock ActiveScopeLoc(*this);
 	//检查是否有启动键与当前输入键相同的Ability，并且此能力现在没有启用则启动它
 	for (FGameplayAbilitySpec AbilitySpec : GetActivatableAbilities())
 	{
@@ -91,11 +111,14 @@ void UASC_Base::AbilityInputTagReleased(const FGameplayTag& InputTag)
 {
 	if (!InputTag.IsValid()) return ;
 
+	FScopedAbilityListLock ActiveScopeLoc(*this);
+
 	for(auto AbilitySpec : GetActivatableAbilities())
 	{
 		if(AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
 		{
 			AbilitySpecInputReleased(AbilitySpec);
+			InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, AbilitySpec.Handle, AbilitySpec.ActivationInfo.GetActivationPredictionKey());
 		}
 	}
 }

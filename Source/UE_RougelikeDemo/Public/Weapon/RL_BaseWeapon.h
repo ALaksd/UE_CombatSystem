@@ -30,6 +30,8 @@ public:
   	FORCEINLINE AActor* GetWeaponOwner() const { return WeaponOwner; }
 	FORCEINLINE void SetWeaponOwner(AActor* InOwner) { WeaponOwner = InOwner; }
 	void SetWeaponLevel(int32 NewLevel);
+	UAbilitySystemComponent* GetWeaponASC() { return WeaponASC; }
+	UAS_Weapon* GetWeaponAS() { return WeaponAttribute; }
 
 	//武器种类
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")

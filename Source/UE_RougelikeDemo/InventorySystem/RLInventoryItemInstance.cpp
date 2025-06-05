@@ -29,7 +29,7 @@ const URLInventoryItemFragment* URLInventoryItemInstance::FindFragmentByClass(
 	TArray<URLInventoryItemFragment*> LocalDynamicFragments = DynamicFragments;
 	for (URLInventoryItemFragment* Fragment : LocalDynamicFragments)
 	{
-		if (IsValid(Fragment) && Fragment->IsA(FragmentClass))
+		if (IsValid(Fragment))
 		{
 			return Fragment;
 		}

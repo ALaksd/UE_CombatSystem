@@ -413,12 +413,23 @@ void URL_MovementComponent::EnableAllInput()
 
 void URL_MovementComponent::LMBInputPressedTest(FGameplayTag InputTag)
 {
-	//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Pressed")));
+	GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Red, FString::Printf(TEXT("Pressed")));
+	if (BlockedInputTags.HasTagExact(InputTag)) return;
+
+	if (bAccecptInput)
+	{
+		CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityPressTagInput(InputTag);
+	}
+
+	if (ownerCharacter->FindComponentByClass<URL_InputBufferComponent>()->GetbAcceptingBufferedInput())
+	{
+		ownerCharacter->FindComponentByClass<URL_InputBufferComponent>()->BufferInput(InputTag);
+	}
 }
 
 void URL_MovementComponent::LMBInputHeldTest(FGameplayTag InputTag)
 {
-	//GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf(TEXT("Held")));
+	GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf(TEXT("Held")));
 	if (BlockedInputTags.HasTagExact(InputTag)) return;
 
 	if (bAccecptInput)
@@ -426,16 +437,11 @@ void URL_MovementComponent::LMBInputHeldTest(FGameplayTag InputTag)
 		CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityInputTagHeld(InputTag);
 	}
 
-	if (ownerCharacter->FindComponentByClass<URL_InputBufferComponent>()->GetbAcceptingBufferedInput())
-	{
-		ownerCharacter->FindComponentByClass<URL_InputBufferComponent>()->BufferInput(InputTag);
-	}
-
 }
 
 void URL_MovementComponent::LMBInputReleasedTest(FGameplayTag InputTag)
 {
-	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, FString::Printf(TEXT("Released")));
+	GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, FString::Printf(TEXT("Released")));
 	CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityInputTagReleased(InputTag);
 }
 
