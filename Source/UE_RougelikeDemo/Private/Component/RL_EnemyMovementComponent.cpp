@@ -19,12 +19,12 @@ void URL_EnemyMovementComponent::InitializeComponent()
 	if (GetOwner())
 	{
 		PatrolSpline = GetOwner()->FindComponentByClass<USplineComponent>();
+		AActor* OwnerActor = GetOwner();
+		USkeletalMeshComponent* CharacterMesh = OwnerActor->FindComponentByClass<USkeletalMeshComponent>();
 
 		const UStaticMesh* WeaponMeshAsset = GetEnemyConfig() ? GetEnemyConfig()->WeaponSeletakMesh : nullptr;
 		if (WeaponMeshAsset)
 		{
-			AActor* OwnerActor = GetOwner();
-
 			// 创建静态网格体组件
 			WeaponMeshComponent = Cast<AEnemy_Base>(GetOwner())->GetWeaponStaticComponnent();
 		
@@ -34,13 +34,18 @@ void URL_EnemyMovementComponent::InitializeComponent()
 				WeaponMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 				// 附加到角色的骨骼网格体上
-				USkeletalMeshComponent* CharacterMesh = OwnerActor->FindComponentByClass<USkeletalMeshComponent>();
 				if (CharacterMesh)
 				{
 					const FName SocketName = GetEnemyConfig()->WeaponAttachSocket;
 					WeaponMeshComponent->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
 				}
 			}
+		}
+		//设置骨骼网格体和动画蓝图
+		if (EnemyConfig && EnemyConfig->EnemySkeletalMesh && EnemyConfig->EnemyAnimInstanceClass)
+		{
+			CharacterMesh->SetSkeletalMesh(EnemyConfig->EnemySkeletalMesh);
+			CharacterMesh->SetAnimInstanceClass(EnemyConfig->EnemyAnimInstanceClass);
 		}
 	}
 }

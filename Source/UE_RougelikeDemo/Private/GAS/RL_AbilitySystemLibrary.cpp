@@ -139,11 +139,9 @@ void URL_AbilitySystemLibrary::GetLivePlayerWithRadius(const UObject* WorldConte
 	}
 }
 
-void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldContextObject, TArray<FHitResult>& OutHitResults, const TArray<AActor*>& ActorsToIgnore, const FVector& CenterLocation, const FVector EllipseRadii, FRotator Orientation, bool bDrawDebug, float DebugDuration, FColor DebugColor)
+void URL_AbilitySystemLibrary::GetLivePlayersInArea(const UObject* WorldContextObject,TArray<FHitResult>& OutHitResults,const TArray<AActor*>& ActorsToIgnore,const FVector& CenterLocation,const FVector BoxExtent,float SphereRadius,FRotator Orientation,EDetectionShapeType ShapeType,bool bDrawDebug,float DebugDuration,FColor DebugColor)
 {
 	OutHitResults.Reset();
-
-	if (EllipseRadii.X <= 0 || EllipseRadii.Y <= 0 || EllipseRadii.Z <= 0) return;
 
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActors(ActorsToIgnore);
@@ -152,16 +150,26 @@ void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldConte
 	const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 	if (!World) return;
 
-	// Sweep 检测：中心不动，但因为是 Box，会返回每个接触点的 FHitResult
-	FCollisionShape CollisionShape = FCollisionShape::MakeBox(EllipseRadii);
-	const FQuat Rotation = Orientation.Quaternion();
+	FCollisionShape CollisionShape;
+	if (ShapeType == EDetectionShapeType::Rectangle)
+	{
+		if (BoxExtent.IsNearlyZero()) return;
+		CollisionShape = FCollisionShape::MakeBox(BoxExtent);
+	}
+	else if (ShapeType == EDetectionShapeType::Sphere)
+	{
+		if (SphereRadius <= 0.f) return;
+		CollisionShape = FCollisionShape::MakeSphere(SphereRadius);
+	}
 
+	const FQuat RotationQuat = Orientation.Quaternion();
 	TArray<FHitResult> HitResults;
-	bool bHasHit = World->SweepMultiByObjectType(
+
+	World->SweepMultiByObjectType(
 		HitResults,
 		CenterLocation,
-		CenterLocation, // start == end，等于 overlap
-		Rotation,
+		CenterLocation, // static overlap
+		RotationQuat,
 		FCollisionObjectQueryParams(FCollisionObjectQueryParams::AllDynamicObjects),
 		CollisionShape,
 		QueryParams
@@ -169,20 +177,16 @@ void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldConte
 
 	if (bDrawDebug)
 	{
-		DrawDebugBox(
-			World,
-			CenterLocation,
-			EllipseRadii,
-			Rotation,
-			DebugColor,
-			false,
-			DebugDuration,
-			0.f,
-			2.0f
-		);
+		if (ShapeType == EDetectionShapeType::Rectangle)
+		{
+			DrawDebugBox(World, CenterLocation, BoxExtent, RotationQuat, DebugColor, false, DebugDuration, 0, 2.0f);
+		}
+		else
+		{
+			DrawDebugSphere(World, CenterLocation, SphereRadius, 16, DebugColor, false, DebugDuration, 0, 2.0f);
+		}
 	}
 
-	// 过滤有效命中
 	for (const FHitResult& Hit : HitResults)
 	{
 		AActor* HitActor = Hit.GetActor();
@@ -191,10 +195,11 @@ void URL_AbilitySystemLibrary::GetLivePlayersInEllipse(const UObject* WorldConte
 		if (HitActor->Implements<URL_CombatInterface>() &&
 			!IRL_CombatInterface::Execute_isDead(HitActor))
 		{
-			OutHitResults.Add(Hit); // 保留完整的 FHitResult
+			OutHitResults.Add(Hit);
 		}
 	}
 }
+
 
 URL_EnemyConfig* URL_AbilitySystemLibrary::GetEnemyConfig(AActor* Enemy)
 {
@@ -257,24 +262,25 @@ void URL_AbilitySystemLibrary::ApplyTemporaryTag(UAbilitySystemComponent* ASC, c
 		}, Duration, false);
 }
 
-void URL_AbilitySystemLibrary::ApplyChangeAttributeEffect(UAbilitySystemComponent* SourceASC, FGameplayAttribute bChangedAttribute, float InMagnitude)
+FActiveGameplayEffectHandle URL_AbilitySystemLibrary::ApplyChangeAttributeEffect(UAbilitySystemComponent* SourceASC, FGameplayAttribute bChangedAttribute, float InMagnitude, EGameplayEffectDurationType EffectDurationType)
 {
 	// 动态创建GE实例（使用SourceASC作为Outer防止GC回收）
 	UGameplayEffect* DynamicParryGE = NewObject<UGameplayEffect>(SourceASC, FName(TEXT("DynamicParryGE")));
-	DynamicParryGE->DurationPolicy = EGameplayEffectDurationType::Instant; // 即时生效
+	DynamicParryGE->DurationPolicy = EffectDurationType;
 
 	// 添加属性修饰符（这里减少体力）
 	FGameplayModifierInfo& Modifier = DynamicParryGE->Modifiers.AddDefaulted_GetRef();
 
 	Modifier.Attribute = bChangedAttribute;
-	Modifier.ModifierOp = EGameplayModOp::Additive; // 修改类型：叠加
+	Modifier.ModifierOp = EGameplayModOp::Additive; 
 	FScalableFloat Magnitude;
-	Magnitude.Value = InMagnitude; // 暂时造成敌人伤害两倍的属性削减
+	Magnitude.Value = InMagnitude;
 	Modifier.ModifierMagnitude = Magnitude;
 
 	// 创建效果规格并应用
 	FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
-	SourceASC->ApplyGameplayEffectToSelf(DynamicParryGE, 1.f, Context);
+	FActiveGameplayEffectHandle ActiveGameplayEffectHandle = SourceASC->ApplyGameplayEffectToSelf(DynamicParryGE, 1.f, Context);
+	return ActiveGameplayEffectHandle;
 }
 
 

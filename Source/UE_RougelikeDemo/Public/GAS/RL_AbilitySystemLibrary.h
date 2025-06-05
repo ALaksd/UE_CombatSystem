@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AutomationBlueprintFunctionLibrary.h"
 #include "Data/RL_EnemyConfig.h"
+#include <Data/Enums.h>
 #include "RL_AbilitySystemLibrary.generated.h"
 
 class URL_OverlayWidgetController;
@@ -40,17 +41,7 @@ public:
 	static void GetLivePlayerWithRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin);
 
 	UFUNCTION(BlueprintCallable, Category = "Ability|Library", meta = (WorldContext = "WorldContextObject", AutoCreateRefTerm = "ActorsToIgnore"))
-	static void GetLivePlayersInEllipse(
-		const UObject* WorldContextObject,
-		TArray<FHitResult>& OutHitResults,
-		const TArray<AActor*>& ActorsToIgnore,
-		const FVector& CenterLocation,
-		const FVector EllipseRadii,  // X=前向半径，Y=横向半径，Z=垂直半径（可选）
-		FRotator Orientation = FRotator::ZeroRotator,
-		bool bDrawDebug = false,
-		float DebugDuration = 2.0f,
-		FColor DebugColor = FColor::Green
-	);
+	static void GetLivePlayersInArea(const UObject* WorldContextObject, TArray<FHitResult>& OutHitResults, const TArray<AActor*>& ActorsToIgnore, const FVector& CenterLocation, const FVector BoxExtent, float SphereRadius, FRotator Orientation, EDetectionShapeType ShapeType, bool bDrawDebug, float DebugDuration, FColor DebugColor);
 
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	static URL_EnemyConfig* GetEnemyConfig(AActor* Enemy);
@@ -76,7 +67,7 @@ public:
 
 	//添加修改属性的GE
 	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
-	static void ApplyChangeAttributeEffect(UAbilitySystemComponent* SourceASC, FGameplayAttribute bChangedAttribute, float InMagnitude);
+	static FActiveGameplayEffectHandle ApplyChangeAttributeEffect(UAbilitySystemComponent* SourceASC, FGameplayAttribute bChangedAttribute, float InMagnitude, EGameplayEffectDurationType EffectDurationType = EGameplayEffectDurationType::Instant);
 
 	//应用伤害（根据调用者设置）
 	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")

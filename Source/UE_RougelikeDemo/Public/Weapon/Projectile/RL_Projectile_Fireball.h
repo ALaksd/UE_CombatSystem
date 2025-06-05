@@ -15,6 +15,9 @@ class UE_ROUGELIKEDEMO_API ARL_Projectile_Fireball : public ARL_ProjectileBase
 	GENERATED_BODY()
 
 public:
+	ARL_Projectile_Fireball();
+
+	
 	// 方向更新频率
 	UPROPERTY(EditDefaultsOnly, Category = "Update")
 	float TimeSinceLastTrackingUpdate;
@@ -30,7 +33,6 @@ public:
 	// 要攻击的对象
 	UPROPERTY()
 	AActor* Target;
-	
 private:
 	virtual void Tick(float DeltaSeconds) override;
 

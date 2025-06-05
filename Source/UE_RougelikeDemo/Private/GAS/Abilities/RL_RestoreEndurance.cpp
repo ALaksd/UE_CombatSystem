@@ -27,19 +27,19 @@ void URL_RestoreEndurance::StartRestore()
 
 void URL_RestoreEndurance::RestorerTick()
 {
-	if (ASC && RestoreEnduranceEffectClass)
-	{
-		// 只在耐力未满时执行
-		if (PlayerAS->GetEndurance() < PlayerAS->GetMaxEndurance())
-		{
-			FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(RestoreEnduranceEffectClass, 1.f, ASC->MakeEffectContext());
-
-			if (SpecHandle.IsValid())
-			{
-				ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-			}
-		}
-	}
+	// if (ASC && RestoreEnduranceEffectClass)
+	// {
+	// 	// 只在耐力未满时执行
+	// 	if (PlayerAS->GetEndurance() < PlayerAS->GetMaxEndurance())
+	// 	{
+	// 		FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(RestoreEnduranceEffectClass, 1.f, ASC->MakeEffectContext());
+	//
+	// 		if (SpecHandle.IsValid())
+	// 		{
+	// 			ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	// 		}
+	// 	}
+	// }
 }
 
 
@@ -48,12 +48,14 @@ void URL_RestoreEndurance::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	ASC = GetAbilitySystemComponentFromActorInfo();
 	PlayerAS = Cast<UAS_Player>(ASC->GetAttributeSet(UAS_Player::StaticClass()));
 
+	//
+	// // 获取初始值
+	// LastEndurance = PlayerAS->GetEndurance();
+	//
+	// // 绑定属性变化
+	// ASC->GetGameplayAttributeValueChangeDelegate(UAS_Player::GetEnduranceAttribute()).AddUObject(this, &URL_RestoreEndurance::OnEnduranceChanged);
 
-	// 获取初始值
-	LastEndurance = PlayerAS->GetEndurance();
 
-	// 绑定属性变化
-	ASC->GetGameplayAttributeValueChangeDelegate(UAS_Player::GetEnduranceAttribute()).AddUObject(this, &URL_RestoreEndurance::OnEnduranceChanged);
 }
 
 void URL_RestoreEndurance::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

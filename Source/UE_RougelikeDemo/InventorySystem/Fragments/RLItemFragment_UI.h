@@ -15,8 +15,14 @@ class UE_ROUGELIKEDEMO_API URLItemFragment_UI : public URLInventoryItemFragment
 	GENERATED_BODY()
 	
 public:
+
+	//仓库显示UI
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory")
-	TObjectPtr<UTexture2D> Icon;
+	TObjectPtr<UTexture2D> InventoryIcon;
+
+	//装备界面显示UI
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory")
+	TObjectPtr<UTexture2D> EquipIcon;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory")
 	FName Name;

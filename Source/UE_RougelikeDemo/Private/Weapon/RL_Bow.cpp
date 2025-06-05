@@ -8,6 +8,9 @@
 #include "Sound/SoundCue.h"
 #include "Weapon/RL_BaseWeapon.h"
 #include "Weapon/Projectile/RL_ProjectileBase.h"
+#include "Data/Structs.h"
+
+
 
 ARL_Bow::ARL_Bow()
 {
@@ -35,6 +38,10 @@ void ARL_Bow::FireProjectile()
 	}
 }
 
+void ARL_Bow::FireProjectile(bool bIsOneFire)
+{
+}
+
 void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag)
 {
 	FVector SocketLocation = SkeletalMeshComponent->GetSocketLocation(SpawnSocke);
@@ -44,14 +51,14 @@ void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag)
 	// 生成箭矢
 	Arrow = GetWorld()->SpawnActor<ARL_ProjectileBase>(ArrowClass,SpawnTransform);
 
+	Arrow->SetWeaponOwner(WeaponOwner);
 	// 将箭矢绑到弓弦上
 	FAttachmentTransformRules Rules = FAttachmentTransformRules::SnapToTargetIncludingScale;
 	Arrow->AttachToComponent(GetMesh(),Rules,SpawnSocke);
 	
 }
 
-void ARL_Bow::SpawnArrow(float Damage, FGameplayTag DamageTag, float Count, FVector CenterOffset, float Radius,
-	float Angle)
+void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag,TArray<FFirebalLocation> Locations ,AActor* Target)
 {
 }
 

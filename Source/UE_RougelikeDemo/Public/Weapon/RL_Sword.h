@@ -6,6 +6,9 @@
 #include "Weapon/RL_BaseWeapon.h"
 #include "RL_Sword.generated.h"
 
+class UNiagaraSystem;
+class UNiagaraComponent;
+
 /**
  * 
  */
@@ -17,11 +20,22 @@ class UE_ROUGELIKEDEMO_API ARL_Sword : public ARL_BaseWeapon
 public:
 	ARL_Sword();
 
-	void StartCombat();
+	void StartCombat(float StaminaReduce_T,float ResilienceReduce_T);
 	void EndCombat();
+
+	//刀光特效
+	UFUNCTION()
+	void StartTrailEffect();
+
+	UFUNCTION()
+	void StopTrailEffect();
+
 
 protected:
 	void RestoreAttachResourceAndSanity(float DamageMultiplier);
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	UNiagaraComponent* TrailComponent;
 
 private:
 	void GetCurrentPointsLocation();
@@ -29,6 +43,14 @@ private:
 	void SetLastPointsLocation();
 
 	virtual void Tick(float DeltaTime) override;
+
+	// 体力削减
+	float StaminaReduce;
+
+	// 韧性削减
+	float ResilienceReduce;
+
+	UGameplayEffect* CreateReduceGE(float Stamina,float Resilience);
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon|Mesh")
@@ -46,6 +68,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Attack")
 	float RestoreSanity = 5.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Sound")
+	USoundBase* AttackSound;
 	
 private:
 	bool bCombat = false;	

@@ -47,14 +47,16 @@ void UCloseCombatComponent::BeginPlay()
 
 }
 
-void UCloseCombatComponent::StartCombat() const
+void UCloseCombatComponent::StartCombat(float StaminaReduce,float ResilienceReduce) const
 {
-	CurrentWeapon->StartCombat();
+	CurrentWeapon->StartCombat(StaminaReduce, ResilienceReduce);
+	CurrentWeapon->StartTrailEffect();
 }
 
 void UCloseCombatComponent::EndCombat() const
 {
 	CurrentWeapon->EndCombat();
+	CurrentWeapon->StopTrailEffect();
 }
 
 void UCloseCombatComponent::SwitchWeapon(URLInventoryItemInstance* NewWeapon)

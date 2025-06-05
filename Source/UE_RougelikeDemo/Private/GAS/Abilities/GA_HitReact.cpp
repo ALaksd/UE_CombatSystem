@@ -38,12 +38,23 @@ void UGA_HitReact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 
 		//获取击中骨骼名
 		const FName HitBoneName = URL_AbilitySystemLibrary::GetHitBoneName(TriggerEventData->ContextHandle);
+		
+		//获取受击阈值
+		float HitThreshold = 200.f;
+		if (ActorInfo->AvatarActor->Implements<URL_PlayerInterface>())
+		{
+			HitThreshold = IRL_PlayerInterface::Execute_GetHitThreshold(ActorInfo->AvatarActor.Get());
+		}
 
 		// 根据大小和方向选择适当的受击动画
 		UAnimMontage* HitMontage = nullptr;
 
+		if (KnockbackMagnitude <= 0.f)
+		{
+			return;
+		}
 		// 小击退，轻微受击：基于方向划分四个方向
-		if (KnockbackMagnitude < 200.f)
+		else if (KnockbackMagnitude < HitThreshold)
 		{
 			FVector Forward = ActorInfo->AvatarActor->GetActorForwardVector();
 			FVector Right = ActorInfo->AvatarActor->GetActorRightVector();

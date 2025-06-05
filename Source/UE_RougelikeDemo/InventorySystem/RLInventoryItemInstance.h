@@ -22,8 +22,9 @@ public:
 	/** 设置和获取Definition */
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	FORCEINLINE URLInventoryItemDefinition* GetItemDefinition() const { return ItemDefinition; }
-	FORCEINLINE void SetItemDefinition(URLInventoryItemDefinition* InDefinition) { ItemDefinition = InDefinition; }
+	FORCEINLINE void SetItemDefinition(URLInventoryItemDefinition* InDefinition);
 	FORCEINLINE void AddDynamicFragments(URLInventoryItemFragment* NewFragments) { DynamicFragments.Add(NewFragments); }
+	FORCEINLINE int32 GetInitialStack();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE bool GetbEquiped() { return bEquipped; }
@@ -43,6 +44,8 @@ public:
 	int32 AddStack(int32 Quantity);
 
 	void SetStack(int32 InitialQuantity = 1);
+
+	void ResetStack();
 
 	/** 物品实例同样也需要GameplayTags去判断类别和属性,没有用到 */
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;

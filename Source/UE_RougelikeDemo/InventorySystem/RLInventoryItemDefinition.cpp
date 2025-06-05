@@ -22,6 +22,22 @@ const URLInventoryItemFragment* URLInventoryItemDefinition::FindFragmentByClass(
 	return nullptr;
 }
 
+template <typename T>
+const T* URLInventoryItemDefinition::FindFragmentByClass(TSubclassOf<T> FragmentClass) const
+{
+	if (FragmentClass != nullptr)
+	{
+		for (URLInventoryItemFragment* Fragment : Fragments)
+		{
+			if (Fragment && Fragment->IsA(FragmentClass))
+			{
+				return Fragment;
+			}
+		}
+	}
+	return nullptr;
+}
+
 void URLInventoryItemDefinition::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
 {
 	TagContainer.AppendTags(ItemTags.CombinedTags);

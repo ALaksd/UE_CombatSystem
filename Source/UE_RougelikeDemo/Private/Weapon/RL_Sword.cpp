@@ -8,17 +8,21 @@
 #include "GAS/AS/AS_Player.h"
 #include "Interface/RL_DamageInterface.h"
 #include "Interface/RL_EnemyInterface.h"
-#include "Interface/RL_PlayerInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "System/RL_SanitySubsystem.h"
+#include "NiagaraComponent.h"
+#include <RL_CharacterSelectionWidget.cpp>
 
-
+#include "GAS/AS/AS_Enemy.h"
 
 
 ARL_Sword::ARL_Sword()
 {
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>("SwordMesh");
 	Mesh->SetupAttachment(GetRootComponent());
+
+	TrailComponent = CreateDefaultSubobject<UNiagaraComponent>("TrailComponent");
+	TrailComponent->SetupAttachment(Mesh);
 }
 
 void ARL_Sword::Tick(float DeltaTime)
@@ -30,7 +34,7 @@ void ARL_Sword::Tick(float DeltaTime)
 		GetCurrentPointsLocation();
 		 
 		//碰撞检测参数
-		EDrawDebugTrace::Type DrawDebugType = EDrawDebugTrace::ForDuration;
+		EDrawDebugTrace::Type DrawDebugType = EDrawDebugTrace::None;
 		FLinearColor TraceColor = FLinearColor::Red;
 		FLinearColor TraceHitColor = FLinearColor::Green;
 		float DrawTime = 0.5;
@@ -86,6 +90,9 @@ void ARL_Sword::Tick(float DeltaTime)
 								{
 									UAbilitySystemComponent* TargetASC = TargetAbilityStystemInterface->GetAbilitySystemComponent();
 									TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.MeeleHit"), CueParams);
+									// 削减体力与精力
+									UGameplayEffect* ReduceGE = CreateReduceGE(StaminaReduce,ResilienceReduce);
+									TargetASC->ApplyGameplayEffectToSelf(ReduceGE,1,Context);
 								}
 
 								RestoreAttachResourceAndSanity(DamageMultiplier);
@@ -107,36 +114,28 @@ void ARL_Sword::Tick(float DeltaTime)
 	}
 }
 
+UGameplayEffect* ARL_Sword::CreateReduceGE(float Stamina,float Resilience)
+{
+	UGameplayEffect* GE = NewObject<UGameplayEffect>();
+	GE->DurationPolicy = EGameplayEffectDurationType::Instant;
+
+	FGameplayModifierInfo DamageMod;
+	DamageMod.Attribute = UAS_Enemy::GetStaminaAttribute();
+	DamageMod.ModifierOp = EGameplayModOp::Additive;
+	DamageMod.ModifierMagnitude = FScalableFloat(-Stamina);
+	GE->Modifiers.Add(DamageMod);
+
+	DamageMod.Attribute = UAS_Enemy::GetResilienceAttribute();
+	DamageMod.ModifierOp = EGameplayModOp::Additive;
+	DamageMod.ModifierMagnitude = FScalableFloat(-Resilience);
+	GE->Modifiers.Add(DamageMod);
+
+	return GE;
+}
+
 
 void ARL_Sword::RestoreAttachResourceAndSanity(float DamageMultiplier)
 {
-	// 创建动态GE增加玩家的气势值
-	IAbilitySystemInterface* SourceAbilityStystemInterface = Cast<IAbilitySystemInterface>(WeaponOwner);
-	if (SourceAbilityStystemInterface)
-	{
-		UAbilitySystemComponent* SourceASC = SourceAbilityStystemInterface->GetAbilitySystemComponent();
-		UGameplayEffect* DynamicParryGE = NewObject<UGameplayEffect>(SourceASC, FName(TEXT("DynamicParryGE")));
-		DynamicParryGE->DurationPolicy = EGameplayEffectDurationType::Instant; // 即时生效
-
-		FGameplayModifierInfo& Modifier = DynamicParryGE->Modifiers.AddDefaulted_GetRef();
-		if (WeaponOwner->Implements<URL_PlayerInterface>())
-		{
-			UAS_Player* AS = IRL_PlayerInterface::Execute_GetPlayerAS(WeaponOwner);
-			if (AS)
-			{
-				Modifier.Attribute = FGameplayAttribute(AS->GetAttachResourceAttribute());
-				Modifier.ModifierOp = EGameplayModOp::Additive; // 修改类型：叠加
-				FScalableFloat Magnitude;
-				Magnitude.Value = 1.f * DamageMultiplier; // 暂时10 * 武器倍率
-				Modifier.ModifierMagnitude = Magnitude;
-
-				// 创建效果规格并应用
-				FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
-				SourceASC->ApplyGameplayEffectToSelf(DynamicParryGE, 1.f, Context);
-			}
-		}
-	}
-
 	//恢复理智
 	URL_SanitySubsystem* SanitySubsystem = GetGameInstance()->GetSubsystem<URL_SanitySubsystem>();
 	if (SanitySubsystem)
@@ -147,9 +146,11 @@ void ARL_Sword::RestoreAttachResourceAndSanity(float DamageMultiplier)
 }
 
 
-void ARL_Sword::StartCombat()
+void ARL_Sword::StartCombat(float StaminaReduce_T,float ResilienceReduce_T)
 {
 	bCombat = true;
+	StaminaReduce=StaminaReduce_T;
+	ResilienceReduce=ResilienceReduce_T;
 	
 	//创建GameplayEffect
 	DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffect,WeaponLevel,WeaponASC->MakeEffectContext());
@@ -158,9 +159,31 @@ void ARL_Sword::StartCombat()
 
 void ARL_Sword::EndCombat()
 {
+	StaminaReduce=0;
+	ResilienceReduce=0;
 	bCombat = false;
 	LastPoints.Empty();
 	HitActors.Empty();
+}
+
+void ARL_Sword::StartTrailEffect()
+{
+	if (TrailComponent)
+	{
+		TrailComponent->Activate(true);
+	}
+	if (AttackSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(WeaponOwner, AttackSound, WeaponOwner->GetActorLocation());
+	}
+}
+
+void ARL_Sword::StopTrailEffect()
+{
+	if (TrailComponent)
+	{
+		TrailComponent->Deactivate();
+	}
 }
 
 void ARL_Sword::GetCurrentPointsLocation()
