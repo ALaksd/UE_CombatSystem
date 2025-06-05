@@ -25,7 +25,8 @@ public:
 	void AddEnemyAbilities(const TArray<FEnemySkills>& AllSkills);
 
 	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbilities);
-	
+
+	void AbilityPressTagInput(const FGameplayTag& InputTag);
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 

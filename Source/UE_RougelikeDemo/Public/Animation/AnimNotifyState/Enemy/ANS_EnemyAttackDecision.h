@@ -43,9 +43,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Damage")
 	float RestoreSanity = 40.0f;
 
-	//减少理智的量 = Damage * ReduceSantiyFactor
+	//减少理智的量
 	UPROPERTY(EditAnywhere, Category = "Damage")
-	float ReduceSantiyFactor = 0.5f;
+	float ReduceSantiy = 10.f;
 
 	//击退距离，击退的力 = 敌人当时的朝向 * 击退距离
 	UPROPERTY(EditAnywhere, Category = "Damage")
@@ -83,9 +83,7 @@ private:
 
 	UPROPERTY()
 	AActor* OwnerActor; // 攻击者
-
-	void CauseDamage(AActor* TargetActor,FVector HitLoction,FVector HitNormal);
-	bool ParryDecision(UAbilitySystemComponent* TargetASC, UAbilitySystemComponent* SourceASC, FVector& HitLoction, FVector& HitNormal, AActor* TargetActor);
+	void CauseDamage(AActor* TargetActor, FVector HitLocation, FVector HitNormal);
 	void DetectAndApplyDamage(USkeletalMeshComponent* MeshComp, FVector& Center, FRotator& Rotation);
 
 	// 攻击检测范围

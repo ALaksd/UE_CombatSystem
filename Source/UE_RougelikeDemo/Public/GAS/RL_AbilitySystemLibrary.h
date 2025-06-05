@@ -12,7 +12,45 @@ class URL_OverlayWidgetController;
 class URL_AttributeWidgetController;
 class URL_InventoryWidgetController;
 class URL_EquipWidgetController;
+class UAbilitySystemComponent;
+class AActor;
+class UAnimInstance;
+class URL_EnemyConfig;
+class URL_SanitySubsystem;
 
+USTRUCT(BlueprintType)
+struct FDamageParams
+{
+	GENERATED_BODY()
+
+	//伤害GE
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UGameplayEffect> DamageEffectClass;
+
+	//伤害类型Tag,damage.XXX
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTag DamageTypeTag;
+
+	//伤害值
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Damage;
+
+	//击退距离
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float KnockDistance;
+
+	//减少理智值
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ReduceSanity;
+
+	//弹反成功敌人减少的体力条
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BreakingValue;
+
+	//弹反成功恢复理智值
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float RestoreSanity;
+};
 /**
  * 
  */
@@ -73,5 +111,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
 	static void ApplyDamageByMagnitude(UAbilitySystemComponent* SourceASC, UAbilitySystemComponent* TargetASC, FGameplayEffectContextHandle& Context,TSubclassOf<UGameplayEffect> DamageEffectClass, FGameplayTag DamageTag,float Damage);
 
-	
+	// 处理敌人造成的伤害
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	static void ApplyEnemyDamage(AActor* OwnerActor,AActor* TargetActor,const FVector& HitLocation,const FVector& HitNormal,const FDamageParams& DamageParams);
+
+private:
+	// 弹反判断逻辑
+	static bool HandleParry(
+		AActor* OwnerActor,
+		AActor* TargetActor,
+		const FVector& HitLocation,
+		const FVector& HitNormal,
+		const FDamageParams& DamageParams
+	);
 };

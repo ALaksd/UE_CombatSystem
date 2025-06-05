@@ -14,6 +14,12 @@
 #include <Component/RL_EnemyMovementComponent.h>
 #include "GAS\RL_CustomGameplayEffectContext.h"
 #include <AbilitySystemBlueprintLibrary.h>
+#include <System/RL_SanitySubsystem.h>
+#include <Interface/RL_EnemyInterface.h>
+#include "GAS/AS/AS_Enemy.h"
+#include <Interface/RL_CombatInterface.h>
+#include "GameFramework/Character.h"
+#include <Kismet/GameplayStatics.h>
 
 URL_OverlayWidgetController* URL_AbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
 {
@@ -297,4 +303,149 @@ void URL_AbilitySystemLibrary::ApplyDamageByMagnitude(UAbilitySystemComponent* S
 
 	// 应用伤害
 	SourceASC->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(), TargetASC);
+}
+
+void URL_AbilitySystemLibrary::ApplyEnemyDamage(AActor* OwnerActor, AActor* TargetActor, const FVector& HitLocation, const FVector& HitNormal, const FDamageParams& DamageParams)
+{
+	if (!OwnerActor || !TargetActor || !DamageParams.DamageEffectClass) return;
+
+	// 获取双方的ASC
+	UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OwnerActor);
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	if (!SourceASC || !TargetASC) return;
+
+	// 弹反判断条件 ---------------------------------------------------
+	if (HandleParry(OwnerActor, TargetActor, HitLocation, HitNormal, DamageParams))
+		return;
+
+	// 无敌条件判断 ---------------------------------------------------
+	const FGameplayTag InvincibleTag = FGameplayTag::RequestGameplayTag("State.Invincible");
+	if (TargetASC->HasMatchingGameplayTag(InvincibleTag))
+	{
+		return;
+	}
+
+	// 正常伤害处理 ---------------------------------------------------
+	FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
+	Context.AddSourceObject(OwnerActor);
+
+	// 传入击退参数
+	FVector KnockBackVector = (OwnerActor->GetActorLocation() - TargetActor->GetActorLocation()).GetSafeNormal();
+	URL_AbilitySystemLibrary::SetKonckBackImpulse(Context, KnockBackVector * DamageParams.KnockDistance);
+
+	const float IntensityMultiplier = FMath::GetMappedRangeValueClamped(
+		FVector2D(100.f, 300.f),
+		FVector2D(1.0f, 2.0f),
+		DamageParams.KnockDistance
+	);
+
+	// 执行GameplayCue, 受击反馈
+	FGameplayCueParameters CueParams;
+	CueParams.Instigator = TargetActor; // 击中者，就是玩家
+	CueParams.Location = HitLocation; // 击中位置
+	CueParams.Normal = HitNormal;  // 击中法向
+	CueParams.NormalizedMagnitude = IntensityMultiplier;
+	TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Enemy.MeeleHit"), CueParams);
+
+	URL_AbilitySystemLibrary::ApplyDamageByMagnitude(
+		SourceASC,
+		TargetASC,
+		Context,
+		DamageParams.DamageEffectClass,
+		DamageParams.DamageTypeTag,
+		DamageParams.Damage
+	);
+
+	// 减少理智值
+	if (URL_SanitySubsystem* SanitySubsystem = UGameInstance::GetSubsystem<URL_SanitySubsystem>(TargetActor->GetWorld()->GetGameInstance()))
+	{
+		SanitySubsystem->ReduceSanity(DamageParams.ReduceSanity);
+	}
+}
+
+bool URL_AbilitySystemLibrary::HandleParry(AActor* OwnerActor, AActor* TargetActor, const FVector& HitLocation, const FVector& HitNormal, const FDamageParams& DamageParams)
+{
+	// 获取双方的ASC
+	UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OwnerActor);
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	if (!SourceASC || !TargetASC) return false;
+
+	const FGameplayTag ParryTag = FGameplayTag::RequestGameplayTag("State.BounceBack");
+	const FGameplayTag ParryContinuousTag = FGameplayTag::RequestGameplayTag("State.BounceBack.Continuous");
+	const FGameplayTag RedDamageTag = FGameplayTag::RequestGameplayTag("damage.Red");
+
+	// 检查玩家是否有弹反Tag
+	bool bPlayerHasParry = TargetASC->HasMatchingGameplayTag(ParryTag);
+	bool bPlayerHasContinuous = TargetASC->HasMatchingGameplayTag(ParryContinuousTag);
+
+	// 检查敌人是否有红光攻击Tag
+	bool bEnemyRedAttack = SourceASC->HasMatchingGameplayTag(RedDamageTag);
+
+	bool bCanParry = (bPlayerHasParry || bPlayerHasContinuous) && bEnemyRedAttack;
+
+	if (bCanParry)
+	{
+		// 弹反成功处理 -----------------------------------------------
+		// 1. 播放弹反Cue
+		FGameplayCueParameters ParryCueParams;
+		ParryCueParams.Instigator = OwnerActor; // 击中者，敌人
+		ParryCueParams.Location = HitLocation; // 击中位置
+		ParryCueParams.Normal = HitNormal;  // 击中法向
+		TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Parry"), ParryCueParams);
+
+		// 2. 减少属性
+		UAS_Enemy* AS;
+		if (OwnerActor->Implements<URL_EnemyInterface>())
+		{
+			AS = IRL_EnemyInterface::Execute_GetEnemyAttributeSet(OwnerActor);
+			if (AS)
+			{
+				ApplyChangeAttributeEffect(
+					SourceASC,
+					AS->GetStaminaAttribute(),
+					-DamageParams.BreakingValue
+				);
+			}
+		}
+
+		// 3. 敌人播放弹反受击动画
+		if (DamageParams.KnockDistance >= GetEnemyConfig(OwnerActor)->HitThreshold)
+		{
+			if (ACharacter* EnemyCharacter = Cast<ACharacter>(OwnerActor))
+			{
+				UAnimInstance* AnimInstance = EnemyCharacter->GetMesh()->GetAnimInstance();
+				UAnimMontage* ParryHitMontage = GetEnemyConfig(OwnerActor)->ParryHitMontage;
+				if (AnimInstance && ParryHitMontage)
+				{
+					AnimInstance->StopAllMontages(0.1f);
+					AnimInstance->Montage_Play(ParryHitMontage);
+				}
+			}
+
+			FGameplayTag EnemyGuardBrokenTag = FGameplayTag::RequestGameplayTag("EnemyState.ParryHit");
+			SourceASC->AddLooseGameplayTag(EnemyGuardBrokenTag);
+
+			FTimerHandle TimerHandle;
+			OwnerActor->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [SourceASC, EnemyGuardBrokenTag]()
+				{
+					SourceASC->RemoveLooseGameplayTag(EnemyGuardBrokenTag);
+				}, 1.0f, false);
+		}
+
+		// 4. 玩家后退
+		if (TargetActor->Implements<URL_CombatInterface>())
+		{
+			IRL_CombatInterface::Execute_KnockBack(
+				TargetActor,
+				(OwnerActor->GetActorForwardVector()).GetSafeNormal() * DamageParams.KnockDistance
+			);
+		}
+
+		// 回复理智
+		if (URL_SanitySubsystem* SanitySystem = OwnerActor->GetWorld()->GetGameInstance()->GetSubsystem<URL_SanitySubsystem>())
+			SanitySystem->RestoreSanity(DamageParams.RestoreSanity);
+
+		return true;
+	}
+	return false;
 }
