@@ -57,6 +57,7 @@ void UAS_Enemy::HandleSpecialDamage(float& Damage)
 		if (Enemy->GetbIsExectute())
 		{
 			Damage = Damage * 10;
+			Enemy->SetbIsExecute(false);
 		}
 	}	
 }

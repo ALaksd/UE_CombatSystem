@@ -56,6 +56,8 @@ public:
 
 	bool GetbIsExectute() { return bIsExecuting; }
 
+	void SetbIsExecute(bool newbool) { bIsExecuting = newbool; }
+
 	//骨骼抖动,因为涉及到时间轴，所以在蓝图实现
 	UFUNCTION(BlueprintImplementableEvent)
 	void PlayBoneShake(FName BoneName, FVector ShakeDirection, float Magnitude);
