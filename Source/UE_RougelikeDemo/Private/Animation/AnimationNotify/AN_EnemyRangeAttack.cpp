@@ -5,6 +5,7 @@
 #include <Weapon/Projectile/RL_EnemyRangeAttack.h>
 #include <Kismet/GameplayStatics.h>
 
+
 void UAN_EnemyRangeAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	if (!MeshComp || !AttackActorClass) return;

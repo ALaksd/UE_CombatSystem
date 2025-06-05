@@ -6,6 +6,8 @@
 #include "Components/SphereComponent.h"
 #include "GAS/RL_AbilitySystemLibrary.h"
 #include <Interface/RL_PlayerInterface.h>
+#include "AbilitySystemComponent.h"
+#include <AbilitySystemBlueprintLibrary.h>
 
 // Sets default values
 ARL_EnemyRangeAttack::ARL_EnemyRangeAttack()
@@ -20,7 +22,7 @@ void ARL_EnemyRangeAttack::BeginPlay()
 	StartAttack();
 
 	FTimerHandle Timer;
-	GetWorld()->GetTimerManager().SetTimer(Timer, this, &AActor::K2_DestroyActor, LifeTime, false);
+	GetWorld()->GetTimerManager().SetTimer(Timer, this, &ARL_EnemyRangeAttack::EndAttack, LifeTime, false);
 }
 
 void ARL_EnemyRangeAttack::InitAttack(FVector InLocation, UNiagaraSystem* InNiagaraEffect, float InSphereRadius, FDamageParams& InDamageParams, AActor* InIngisitor)
@@ -34,6 +36,13 @@ void ARL_EnemyRangeAttack::InitAttack(FVector InLocation, UNiagaraSystem* InNiag
 
 void ARL_EnemyRangeAttack::StartAttack()
 {
+	//添加Tag
+	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Ingisitor);
+	if(ASC)
+	{
+		ASC->AddLooseGameplayTag(DamageParams.DamageTypeTag, 1);
+	}
+
 	//生成特效
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 		GetWorld(),
@@ -46,7 +55,7 @@ void ARL_EnemyRangeAttack::StartAttack()
 		ENCPoolMethod::None,
 		true    // PreCullCheck
 	);
-
+	
 	//造成伤害
 	TArray<FHitResult> Hits;
 	TArray<AActor*> ActorsToIgnore;
@@ -85,5 +94,16 @@ void ARL_EnemyRangeAttack::StartAttack()
 	}
 
 
+}
+
+void ARL_EnemyRangeAttack::EndAttack()
+{
+	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Ingisitor);
+	if (ASC)
+	{
+		ASC->RemoveLooseGameplayTag(DamageParams.DamageTypeTag, 1);
+	}
+
+	Destroy();
 }
 

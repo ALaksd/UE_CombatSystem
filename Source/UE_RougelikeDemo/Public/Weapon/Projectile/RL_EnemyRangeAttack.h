@@ -40,6 +40,7 @@ public:
 
 	void InitAttack(FVector InLocation, UNiagaraSystem* InNiagaraEffect,float InSphereRadius,FDamageParams& InDamageParams,AActor* InIngisitor);
 	void StartAttack();
+	void EndAttack();
 
 private:
 	TArray<AActor*> AlreadyHitActors; // 已命中的目标
