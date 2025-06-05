@@ -11,6 +11,8 @@
 #include <UE_RougelikeDemo/InventorySystem/RLItemFragment_EquipDynamicData.h>
 
 #include "Weapon/RL_Sword.h"
+#include <Interface/RL_CombatInterface.h>
+#include <AbilitySystemBlueprintLibrary.h>
 
 
 UCloseCombatComponent::UCloseCombatComponent()
@@ -80,6 +82,19 @@ void UCloseCombatComponent::SwitchWeapon(URLInventoryItemInstance* NewWeapon)
 			NewWeapon_T->SetWeaponLevel(EquipDynamicData->CurrentLevel);
 
 			CurrentWeapon = NewWeapon_T;
+
+			//通知拥有者切换武器类型
+			if (GetOwner()->Implements<URL_CombatInterface>())
+			{
+				IRL_CombatInterface::Execute_SwitchWeaponTypeForAnim(GetOwner(), CurrentWeapon->WeaponType);
+			}
+			//激活能力
+			UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner());
+			if (ASC)
+			{
+				FGameplayTagContainer AbilityTag = FGameplayTag::RequestGameplayTag("InputTag.Switch").GetSingleTagContainer();
+				ASC->TryActivateAbilitiesByTag(AbilityTag);
+			}
 		}
 	}
 	

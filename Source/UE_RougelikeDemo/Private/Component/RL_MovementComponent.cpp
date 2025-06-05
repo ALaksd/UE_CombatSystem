@@ -103,7 +103,7 @@ void URL_MovementComponent::BeginPlay()
 
 void URL_MovementComponent::Move(const FInputActionValue& Value)
 {
-	if (!ownerCharacter || !playerController || !bAccecptInput) return;
+	if (!ownerCharacter && !playerController && !bAccecptInput) return;
 	
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	
@@ -119,7 +119,7 @@ void URL_MovementComponent::Move(const FInputActionValue& Value)
 
 void URL_MovementComponent::Look(const FInputActionValue& Value)
 {
-	if (!playerController) return;
+	if (!playerController && !bAccecptInput) return;
 
 	FVector2D LookAxis = Value.Get<FVector2D>();
 	playerController->AddYawInput(LookAxis.X);
@@ -419,6 +419,8 @@ void URL_MovementComponent::LMBInputPressedTest(FGameplayTag InputTag)
 void URL_MovementComponent::LMBInputHeldTest(FGameplayTag InputTag)
 {
 	//GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Blue, FString::Printf(TEXT("Held")));
+	if (BlockedInputTags.HasTagExact(InputTag)) return;
+
 	if (bAccecptInput)
 	{
 		CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityInputTagHeld(InputTag);
@@ -426,7 +428,6 @@ void URL_MovementComponent::LMBInputHeldTest(FGameplayTag InputTag)
 
 	if (ownerCharacter->FindComponentByClass<URL_InputBufferComponent>()->GetbAcceptingBufferedInput())
 	{
-		//缓存预输入
 		ownerCharacter->FindComponentByClass<URL_InputBufferComponent>()->BufferInput(InputTag);
 	}
 
@@ -436,6 +437,16 @@ void URL_MovementComponent::LMBInputReleasedTest(FGameplayTag InputTag)
 {
 	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Green, FString::Printf(TEXT("Released")));
 	CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityInputTagReleased(InputTag);
+}
+
+void URL_MovementComponent::BlockInputTag(FGameplayTagContainer InputTags)
+{
+	BlockedInputTags.AppendTags(InputTags);
+}
+
+void URL_MovementComponent::UnblockInputTag()
+{
+	BlockedInputTags.Reset();
 }
 
 void URL_MovementComponent::ToggleLockOn()

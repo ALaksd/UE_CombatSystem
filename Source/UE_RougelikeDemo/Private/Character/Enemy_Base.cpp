@@ -48,6 +48,7 @@ void AEnemy_Base::Execute(bool bIsForward)
 	if (bIsExecuting) return;
 	bIsExecuting = true;
 	AddTag(FName("EnemyState.Execute"));
+	RemoveTag(FName("EnemyState.GuardBroken"));
 
 	GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
 
@@ -65,7 +66,6 @@ void AEnemy_Base::Execute(bool bIsForward)
 	GetWorldTimerManager().SetTimer(TimerHandle, [this]()
 		{
 			bIsGuardBroken = false;
-			RemoveTag(FName("EnemyState.GuardBroken"));
 			RemoveTag(FName("EnemyState.Execute"));
 
 			// 回复体力
@@ -145,6 +145,7 @@ void AEnemy_Base::Die_Implementation()
 
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -176,7 +177,7 @@ void AEnemy_Base::Die_Implementation()
 
 void AEnemy_Base::KnockBack_Implementation(const FVector& KonckBackImpulse)
 {
-	if (bIsGuardBroken || bIsStaggered)
+	if (AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("EnemyState.GuardBroken")))
 	{
 		FHitResult Hit;
 		GetCharacterMovement()->SafeMoveUpdatedComponent(KonckBackImpulse, GetActorRotation(), true, Hit);

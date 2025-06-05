@@ -59,4 +59,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 
 	void ShowDamageText(float Damage);
+
+
+	//切换武器类型，与动画蓝图通信
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+
+	void SwitchWeaponTypeForAnim(E_WeaponType InWeaponType);
 };

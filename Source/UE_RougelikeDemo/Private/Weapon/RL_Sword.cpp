@@ -17,7 +17,8 @@
 
 ARL_Sword::ARL_Sword()
 {
-	
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>("SwordMesh");
+	Mesh->SetupAttachment(GetRootComponent());
 }
 
 void ARL_Sword::Tick(float DeltaTime)
@@ -57,43 +58,45 @@ void ARL_Sword::Tick(float DeltaTime)
 						//执行伤害逻辑
 						if (IRL_DamageInterface* DamageInterface = Cast<IRL_DamageInterface>(HitActor))
 						{
-							//传入自定义的参数
-							FGameplayEffectContextHandle Context = WeaponASC->MakeEffectContext();
-							//FVector KonckBackVector = (WeaponOwner->GetActorLocation() - HitActor->GetActorLocation()).GetSafeNormal();
-							FVector KonckBackVector = OutHits[j].ImpactNormal;
-							float DamageMultiplier = WeaponAttribute->GetDamageMultiplier();
-							FVector KonckImpulse = KonckBackVector * DamageMultiplier * KnockDistance;
-
-							//传入击退参数
-							URL_AbilitySystemLibrary::SetKonckBackImpulse(Context, KonckImpulse);
-							//传入击中骨骼名字参数
-							URL_AbilitySystemLibrary::SetHitBoneName(Context, OutHits[j].BoneName);
-
-
-							//执行GameplayCue
-							FGameplayCueParameters CueParams;
-							CueParams.Instigator = WeaponOwner; //造成伤害者
-							CueParams.Location = OutHits[j].ImpactPoint; //击中位置
-							CueParams.Normal = OutHits[j].ImpactNormal;  //击中法向
-							CueParams.PhysicalMaterial = OutHits[j].PhysMaterial;  //击中物理材质
-							CueParams.NormalizedMagnitude = DamageMultiplier;  //击中强度,根据武器的倍率来计算
-
-							IAbilitySystemInterface* TargetAbilityStystemInterface = Cast<IAbilitySystemInterface>(HitActor);
-							if (TargetAbilityStystemInterface)
+							if (WeaponAttribute)
 							{
-								UAbilitySystemComponent* TargetASC = TargetAbilityStystemInterface->GetAbilitySystemComponent();
-								TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.MeeleHit"), CueParams);
+								//传入自定义的参数
+								FGameplayEffectContextHandle Context = WeaponASC->MakeEffectContext();
+								//FVector KonckBackVector = (WeaponOwner->GetActorLocation() - HitActor->GetActorLocation()).GetSafeNormal();
+								FVector KonckBackVector = OutHits[j].ImpactNormal;
+								float DamageMultiplier = WeaponAttribute->GetDamageMultiplier();
+								FVector KonckImpulse = KonckBackVector * DamageMultiplier * KnockDistance;
+
+								//传入击退参数
+								URL_AbilitySystemLibrary::SetKonckBackImpulse(Context, KonckImpulse);
+								//传入击中骨骼名字参数
+								URL_AbilitySystemLibrary::SetHitBoneName(Context, OutHits[j].BoneName);
+
+
+								//执行GameplayCue
+								FGameplayCueParameters CueParams;
+								CueParams.Instigator = WeaponOwner; //造成伤害者
+								CueParams.Location = OutHits[j].ImpactPoint; //击中位置
+								CueParams.Normal = OutHits[j].ImpactNormal;  //击中法向
+								CueParams.PhysicalMaterial = OutHits[j].PhysMaterial;  //击中物理材质
+								CueParams.NormalizedMagnitude = DamageMultiplier;  //击中强度,根据武器的倍率来计算
+
+								IAbilitySystemInterface* TargetAbilityStystemInterface = Cast<IAbilitySystemInterface>(HitActor);
+								if (TargetAbilityStystemInterface)
+								{
+									UAbilitySystemComponent* TargetASC = TargetAbilityStystemInterface->GetAbilitySystemComponent();
+									TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.MeeleHit"), CueParams);
+								}
+
+								RestoreAttachResourceAndSanity(DamageMultiplier);
+
+
+								DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffect, WeaponLevel, Context);
+								IRL_EnemyInterface::Execute_SetHitShake(HitActor, OutHits[j].BoneName, KonckBackVector, DamageMultiplier * KnockDistance);
+
 							}
-						
-							RestoreAttachResourceAndSanity(DamageMultiplier);
-					
-
-
-							DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet, WeaponLevel, Context);
 
 							DamageInterface->TakeDamage(DamageSpecHandle);
-
-							IRL_EnemyInterface::Execute_SetHitShake(HitActor, OutHits[j].BoneName, KonckBackVector, DamageMultiplier * KnockDistance);
 						}
 					}
 				}
@@ -149,7 +152,7 @@ void ARL_Sword::StartCombat()
 	bCombat = true;
 	
 	//创建GameplayEffect
-	DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffet,WeaponLevel,WeaponASC->MakeEffectContext());
+	DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffect,WeaponLevel,WeaponASC->MakeEffectContext());
 
 }
 

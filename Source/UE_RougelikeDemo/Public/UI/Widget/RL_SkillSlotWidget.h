@@ -7,9 +7,11 @@
 #include "RL_SkillSlotWidget.generated.h"
 
 
+class URL_SkillUnlockWidget;
+class UOverlay;
 class UButton;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnSkillButtonCliced,UButton*)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillButtonCliced,UButton*,Button);
 
 /**
  * 
@@ -20,25 +22,16 @@ class UE_ROUGELIKEDEMO_API URL_SkillSlotWidget : public URL_UserWidget
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,meta=(BindWidget),Category="Components")
-	TObjectPtr<UButton> SkillSlot_1;
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,meta=(BindWidget),Category="Components")
-	TObjectPtr<UButton> SkillSlot_2;
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,meta=(BindWidget),Category="Components")
-	TObjectPtr<UButton> SkillSlot_3;
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,meta=(BindWidget),Category="Components")
-	TObjectPtr<UButton> SkillSlot_4;
+	UPROPERTY(BlueprintReadOnly)
+	URL_SkillUnlockWidget* Parent;
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetVisible(int32 Num);
 
-	FOnSkillButtonCliced OnSkillButtonClicked;
+	UFUNCTION(BlueprintImplementableEvent)
+	UButton* SetButtonBrushMy(UTexture2D* Icon);
+	
+	UPROPERTY(BlueprintCallable,BlueprintAssignable)
+	FOnSkillButtonCliced OnSkillButtonCliced;
 
-private:
-	virtual bool Initialize() override;
-	UFUNCTION()
-	void OnButton_1Clicked();
-	UFUNCTION()
-	void OnButton_2Clicked();
-	UFUNCTION()
-	void OnButton_3Clicked();
-	UFUNCTION()
-	void OnButton_4Clicked();
 };

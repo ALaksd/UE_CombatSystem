@@ -20,7 +20,13 @@ bool UBTDecorator_bInMeeleAttackRange::CalculateRawConditionValue(UBehaviorTreeC
 
 	const FEnemySkills& SelectedSkill = URL_AbilitySystemLibrary::GetEnemyConfig(ControlledActor)->FindSkillsByTag(FGameplayTag::RequestGameplayTag("Enemy.Ability.MeeleAttack"));
 
+	//强力技能转好返回false
+	const FName PowerSelectedSkill = OwnerComp.GetBlackboardComponent()->GetValueAsName(FName("PowerSelectedSkill"));
+	if (!PowerSelectedSkill.IsNone()) return false;
+
+	//距离太小返回fasle
 	float CurrentDistance = OwnerComp.GetBlackboardComponent()->GetValueAsFloat(TargetDistanceKey.SelectedKeyName);
+	if (CurrentDistance <= 10.f) return false;
 
 	const bool bCanAttack = CurrentDistance <= SelectedSkill.SkillRangeMax;
 

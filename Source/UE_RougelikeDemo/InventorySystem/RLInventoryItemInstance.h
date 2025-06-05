@@ -30,6 +30,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetbEquiped(bool bInEquipped) { bEquipped = bInEquipped; }
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FGameplayTagContainer GetOwnedGameplayTag() const;
+
 	/** 堆叠 */
 
 	int32 GetCurrentStack() const { return CurrentStack; }
@@ -41,7 +44,7 @@ public:
 
 	void SetStack(int32 InitialQuantity = 1);
 
-	/** 物品实例同样也需要GameplayTags去判断类别和属性 */
+	/** 物品实例同样也需要GameplayTags去判断类别和属性,没有用到 */
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
 	/** 根据fragment类获取对应的属性 */

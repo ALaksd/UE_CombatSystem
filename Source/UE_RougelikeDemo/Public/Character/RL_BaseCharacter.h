@@ -58,6 +58,7 @@ public:
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual void Die_Implementation() override;
 	virtual void KnockBack_Implementation(const FVector& KonckBackImpulse) override;
+	virtual void SwitchWeaponTypeForAnim_Implementation(E_WeaponType InWeaponType) override;
 	/** End CombatInterface */
 
 public:
@@ -119,6 +120,10 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnDead();
+
+	UFUNCTION(BlueprintImplementableEvent)
+
+	void OnSwitchWeapon(E_WeaponType InWeaponType);
 private:
 	//角色状态UI
 	TObjectPtr<URL_PlayerStateWidget> PlayerStateUI;

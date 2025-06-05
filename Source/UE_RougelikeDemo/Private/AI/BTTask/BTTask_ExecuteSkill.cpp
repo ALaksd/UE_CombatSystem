@@ -33,14 +33,21 @@ EBTNodeResult::Type UBTTask_ExecuteSkill::ExecuteTask(UBehaviorTreeComponent& Ow
 		{
 			if (Spec.Ability && Spec.Ability->AbilityTags.HasTag(SkillTag))
 			{
-				// 修正问题1：绑定正确的委托类型
 				AbilityEndedDelegateHandle = ASC->AbilityEndedCallbacks.AddUObject(this, &UBTTask_ExecuteSkill::OnAbilityEnded);
 
+				// 尝试激活技能
 				const bool bSuccess = ASC->TryActivateAbility(Spec.Handle);
+				//ASC->TryActivateAbilitiesByTag()
+				if (!bSuccess)
+				{
+					// 技能激活失败
+					UE_LOG(LogTemp, Warning, TEXT("ExecuteSkill Failed: Ability activation failed (Tag: %s)"), *SkillTag.ToString());
+				}
 				return bSuccess ? EBTNodeResult::InProgress : EBTNodeResult::Failed;
 			}
 		}
 	}
+
 	return EBTNodeResult::Failed;
 }
 
@@ -50,6 +57,8 @@ void UBTTask_ExecuteSkill::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uin
 	// 清理资源
 	CachedOwnerComp = nullptr;
 	AbilityEndedDelegateHandle.Reset();
+	OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedSkillKey.SelectedKeyName, FName("None"));
+
 
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 }
