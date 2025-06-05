@@ -18,7 +18,7 @@ class UE_ROUGELIKEDEMO_API UANS_ParryAttack : public UAnimNotifyState
 	
 public:
 	UPROPERTY(EditAnywhere,Category="Settings")
-	FGameplayTag ParryTag;
+	FGameplayTagContainer ParryTag;
 
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;

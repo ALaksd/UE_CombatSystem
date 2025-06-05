@@ -18,7 +18,7 @@ void UANS_ParryAttack::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequen
 	
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Owner);
 	if (!TargetASC) return;
-	TargetASC->AddLooseGameplayTag(ParryTag);
+	TargetASC->AddLooseGameplayTags(ParryTag);
 
 	
 }
@@ -35,5 +35,5 @@ void UANS_ParryAttack::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequence
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Owner);
 	if (!TargetASC) return;
 	
-	TargetASC->RemoveLooseGameplayTag(ParryTag);
+	TargetASC->RemoveLooseGameplayTags(ParryTag);
 }
