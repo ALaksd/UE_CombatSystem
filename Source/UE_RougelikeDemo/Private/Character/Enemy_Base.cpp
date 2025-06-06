@@ -47,6 +47,7 @@ void AEnemy_Base::Execute(bool bIsForward)
 	AddTag(FName("EnemyState.Execute"));
 	RemoveTag(FName("EnemyState.GuardBroken"));
 
+	// 处决时退出破防状态
 	GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
 
 	float Time;
@@ -275,22 +276,22 @@ void AEnemy_Base::GuardBroken()
 
 void AEnemy_Base::Staggered()
 {
-	AddTag(FName("EnemyState.Staggered"));
-	bIsStaggered=true;
+	//AddTag(FName("EnemyState.Staggered"));
+	//bIsStaggered=true;
 
-	GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
+	//GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
 
-	GetWorldTimerManager().ClearTimer(StaggeredTimer);
-	GetWorldTimerManager().SetTimer(StaggeredTimer,[this]()
-	{
-		bIsStaggered=false;
+	//GetWorldTimerManager().ClearTimer(StaggeredTimer);
+	//GetWorldTimerManager().SetTimer(StaggeredTimer,[this]()
+	//{
+	//	bIsStaggered=false;
 
-		// 回复韧性
-		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreResilience,1,AbilitySystemComponent->MakeEffectContext());
-		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+	//	// 回复韧性
+	//	FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreResilience,1,AbilitySystemComponent->MakeEffectContext());
+	//	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
 
-		RemoveTag(FName("EnemyState.Staggered"));
-	},StaggeredTime,false);
+	//	RemoveTag(FName("EnemyState.Staggered"));
+	//},StaggeredTime,false);
 }
 
 
