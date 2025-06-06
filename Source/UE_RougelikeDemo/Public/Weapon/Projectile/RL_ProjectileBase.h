@@ -22,6 +22,9 @@ public:
 	/// @param Damage_T 伤害数值
 	/// @param DamageTag_T 是否红光攻击
 	void InitProjectile(float Damage_T,FGameplayTag DamageTag_T);
+
+	UPROPERTY()
+	AActor* TargetActor;
 	
 protected:
 	/*---------------------组件---------------------*/

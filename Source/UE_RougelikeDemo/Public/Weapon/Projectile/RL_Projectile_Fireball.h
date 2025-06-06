@@ -42,5 +42,7 @@ private:
 	// 更新速度方向
 	void UpdateTracking(float DeltaSeconds);
 	void ApplyDir(FVector Direction);
-	
+
+	// 是否已到达过关闭追踪距离,避免反复激活追踪
+	bool bIsInDistance = false;
 };

@@ -15,27 +15,26 @@ void UANS_SpawnProjectile::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSe
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 
-	if (AActor* Owner = MeshComp->GetOwner())
+	AActor* Owner = MeshComp->GetOwner();
+	if (!Owner)	return;
+	URL_ProjectileComponent* Com = Owner->FindComponentByClass<URL_ProjectileComponent>();
+	if (!Com) return;
+
+	ACharacter* Character = Cast<ACharacter>(Owner);
+	if (!Character) return;
+	AAIController* AIController = Cast<AAIController>(Character->GetController());
+	if (!AIController) return;
+	UBlackboardComponent* Blackboard = AIController->GetBlackboardComponent();
+	if (!Blackboard) return;
+
+	AActor* Target = Cast<AActor>(Blackboard->GetValueAsObject(FName("TargetToFollow")));
+	if (!Target) return;
+	
+	if (!bIsFireBall)
+		Com->PullBow(Damage,Tag,Target);
+	else
 	{
-		if (URL_ProjectileComponent* Com = Owner->FindComponentByClass<URL_ProjectileComponent>())
-		{
-			if (!bIsFireBall)
-				Com->PullBow(Damage,Tag);
-			else
-			{
-				if (ACharacter* Character = Cast<ACharacter>(Owner))
-				{
-					if (AAIController* AIController = Cast<AAIController>(Character->GetController()))
-					{
-						if (UBlackboardComponent* Blackboard = AIController->GetBlackboardComponent())
-						{
-							AActor* Target = Cast<AActor>(Blackboard->GetValueAsObject(FName("TargetToFollow")));
-							Com->PullBow(Damage,Tag,Locations,Target);
-						}
-					}
-				}
-			}
-		}
+		Com->PullBow(Damage,Tag,Locations,Target);
 	}
 }
 
