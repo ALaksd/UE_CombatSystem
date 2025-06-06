@@ -43,5 +43,5 @@ protected:
 
 
 	UFUNCTION(BlueprintCallable)
-	void UpgradeAttribute(const FGameplayTag& AttributeTag);
+	void UpgradeAttribute();
 };

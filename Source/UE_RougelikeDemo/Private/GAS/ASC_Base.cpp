@@ -6,6 +6,7 @@
 #include "GAS/Abilities/GA_Base.h"
 #include <AbilitySystemBlueprintLibrary.h>
 #include "GAS/Abilities/GA_EnemyAbilityBase.h"
+#include <GameplayTagsManager.h>
 
 void UASC_Base::AbilityActorInfoSet()
 {
@@ -123,14 +124,20 @@ void UASC_Base::AbilityInputTagReleased(const FGameplayTag& InputTag)
 	}
 }
 
-void UASC_Base::UpgradeAttribute(const FGameplayTag& AttributeTag)
+void UASC_Base::UpgradeAttribute()
 {
-	//发送事件
-	FGameplayEventData PayLoad;
-	PayLoad.EventTag = AttributeTag;
-	PayLoad.EventMagnitude = 1.f;
+	//这里升一级增加所有主属性1点
+	FGameplayTagContainer AttributeTags = UGameplayTagsManager::Get().RequestGameplayTagChildren(FGameplayTag::RequestGameplayTag("Attributes.Primary"));
+	for (FGameplayTag Tag : AttributeTags)
+	{
+		//发送事件
+		FGameplayEventData PayLoad;
+		PayLoad.EventTag = Tag;
+		PayLoad.EventMagnitude = 1.f;
 
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(), AttributeTag, PayLoad);
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(), Tag, PayLoad);
+	}
+
 }
 
 void UASC_Base::EffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GamePlayEffectSpec,
