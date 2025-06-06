@@ -13,7 +13,7 @@ void URL_AttributeWidgetController::BroadcastInitialValue()
 
 	check(AttributeInfo);
 
-	//Ñ­»·±éÀúËùÓÐµÄ±êÇ©ºÍ¶ÔÓ¦ÊôÐÔ£¬ÕâÑù¿ÉÒÔ²»ÓÃÃ¿¸öÊôÐÔ¶¼¹ã²¥Ò»´Î
+	//å¾ªçŽ¯éåŽ†æ‰€æœ‰çš„æ ‡ç­¾å’Œå¯¹åº”å±žæ€§ï¼Œè¿™æ ·å¯ä»¥ä¸ç”¨æ¯ä¸ªå±žæ€§éƒ½å¹¿æ’­ä¸€æ¬¡
 	for (auto& Pair : AS->TagsToAttribute)
 	{
 		FGameplayAttribute Attr = Pair.Value.Execute();
@@ -68,7 +68,7 @@ void URL_AttributeWidgetController::UnbindAllDelegate()
 	OnSoulChanged.Clear();
 }
 
-void URL_AttributeWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
+void URL_AttributeWidgetController::UpgradeAttribute()
 {
 	UASC_Base* ASC = CastChecked<UASC_Base>(AbilitySystemComponent);
 	int32 CurrentLevel = GetPlayerState()->GetLevel();
@@ -77,7 +77,7 @@ void URL_AttributeWidgetController::UpgradeAttribute(const FGameplayTag& Attribu
 	if (CurrentSoul > Need)
 	{
 		GetPlayerState()->AddSoul(-Need);
-		ASC->UpgradeAttribute(AttributeTag);
+		ASC->UpgradeAttribute();
 	}
 	
 }

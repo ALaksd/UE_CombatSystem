@@ -437,6 +437,11 @@ void URL_MovementComponent::LMBInputHeldTest(FGameplayTag InputTag)
 		CastChecked<UASC_Base>(ownerCharacter->GetPlayerState()->FindComponentByClass<UAbilitySystemComponent>())->AbilityInputTagHeld(InputTag);
 	}
 
+	if (ownerCharacter->FindComponentByClass<URL_InputBufferComponent>()->GetbAcceptingBufferedInput())
+	{
+		ownerCharacter->FindComponentByClass<URL_InputBufferComponent>()->BufferInput(InputTag);
+	}
+
 }
 
 void URL_MovementComponent::LMBInputReleasedTest(FGameplayTag InputTag)
