@@ -29,8 +29,16 @@ void ARL_ProjectileBase::FireProjectile()
 {
 	// 移除附加关系
 	this->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	if (WeaponOwner)
-		ProjectileCom->Velocity = WeaponOwner->GetActorForwardVector()*MoveSpeed;
+	// 以目标actor与箭矢自身连线为速度方向
+	if (TargetActor)
+		ProjectileCom->Velocity = (TargetActor->GetActorLocation()-GetActorLocation()).GetSafeNormal()*MoveSpeed;
+	else
+	{
+		if (WeaponOwner)
+			ProjectileCom->Velocity = WeaponOwner->GetActorForwardVector()*MoveSpeed;
+		else
+			ProjectileCom->Velocity = GetActorForwardVector()*MoveSpeed;
+	}
 
 	this->SetLifeSpan(LifeTime);
 }
