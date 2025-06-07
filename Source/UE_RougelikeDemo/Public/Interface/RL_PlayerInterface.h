@@ -32,6 +32,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
 	void SetSoul(int32 NewSoul);
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
+	void AddSoul(int32 NewSoul);
+
 	// 获取当前等级
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Player")
 	int32 GetLevel() const;

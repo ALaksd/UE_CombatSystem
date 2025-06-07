@@ -158,6 +158,11 @@ void ARL_BaseCharacter::SetSoul_Implementation(int32 NewSoul)
 	PlayerState->SetSoul(NewSoul);
 }
 
+void ARL_BaseCharacter::AddSoul_Implementation(int32 NewSoul)
+{
+	PlayerState->AddSoul(NewSoul);
+}
+
 int32 ARL_BaseCharacter::GetLevel_Implementation() const
 {
 	return PlayerState->GetLevel();

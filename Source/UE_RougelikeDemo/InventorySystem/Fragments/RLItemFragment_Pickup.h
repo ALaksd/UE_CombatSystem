@@ -6,6 +6,7 @@
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryItemFragment.h"
 #include "RLItemFragment_Pickup.generated.h"
 
+class AItem_Pickup;
 /**
  * 
  */
@@ -17,5 +18,8 @@ class UE_ROUGELIKEDEMO_API URLItemFragment_Pickup : public URLInventoryItemFragm
 public:
 	// 物品生成出来所使用的Actor类
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item")
-	TSubclassOf<AActor> ItemActorClass;
+	TSubclassOf<AItem_Pickup> ItemActorClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UParticleSystem* IdleEffect;
 };

@@ -94,7 +94,7 @@ public:
 
 	// 混沌状态下韧性变化
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Attributes")
-	float ResilienceMultiplicitive;
+	float ResilienceMultiplicitive = 1.0f;
 
 	//受击阈值,大于该值播放大受击动画以及弹反反馈动画
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage|Hurt")
@@ -157,4 +157,8 @@ public:
 	// 敌人动画蓝图
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
 	TSubclassOf<UAnimInstance> EnemyAnimInstanceClass;
+
+	//敌人死后掉落的魂量
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
+	int32 SoulCount;
 };

@@ -18,7 +18,7 @@ public:
 	URL_ProjectileComponent();
 
 	// 拉弓
-	void PullBow(float Damage,FGameplayTag DamageTag);
+	void PullBow(float Damage,FGameplayTag DamageTag,AActor* Target);
 
 	// 生成火球
 	UFUNCTION(BlueprintCallable)

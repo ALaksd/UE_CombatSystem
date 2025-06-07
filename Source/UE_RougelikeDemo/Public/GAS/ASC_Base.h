@@ -31,7 +31,7 @@ public:
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
 	//加属性
-	void UpgradeAttribute(const FGameplayTag& AttributeTag);
+	void UpgradeAttribute();
 	FEffectAssetTags EffecctTags;
 		
 	

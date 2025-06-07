@@ -14,8 +14,8 @@ AItem_Pickup::AItem_Pickup()
 	SphereCom = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	this->SetRootComponent(SphereCom);
 
-	NiagaraCom = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
-	NiagaraCom->SetupAttachment(SphereCom);
+	IdleEffectComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("IdleEffectComponent"));
+	IdleEffectComponent->SetupAttachment(RootComponent);
 	
 }
 
@@ -25,6 +25,13 @@ void AItem_Pickup::BeginPlay()
 
 	SphereCom->OnComponentBeginOverlap.AddDynamic(this,&AItem_Pickup::OnCollision);
 	SphereCom->OnComponentEndOverlap.AddDynamic(this,&AItem_Pickup::EndCollision);
+
+	if (IdleEffect && IdleEffectComponent)
+	{
+		IdleEffectComponent->SetTemplate(IdleEffect);
+		IdleEffectComponent->ActivateSystem();
+	}
+
 }
 
 void AItem_Pickup::OnCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

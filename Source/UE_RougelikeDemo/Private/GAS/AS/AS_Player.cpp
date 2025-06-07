@@ -28,13 +28,13 @@ UAS_Player::UAS_Player()
 	MaxHealthDelegate.BindStatic(GetMaxHealthAttribute);
 	TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxHealth, MaxHealthDelegate);
 
-	// FAttributeSignature MaxEnduranceDelegate;
-	// MaxEnduranceDelegate.BindStatic(GetMaxEnduranceAttribute);
-	// TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxEndurance, MaxEnduranceDelegate);
+	FAttributeSignature MaxEnduranceDelegate;
+	MaxEnduranceDelegate.BindStatic(GetMaxEnduranceAttribute);
+	TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxEndurance, MaxEnduranceDelegate);
 
-	// FAttributeSignature MaxAttachResourceDelegate;
-	// MaxAttachResourceDelegate.BindStatic(GetMaxAttachResourceAttribute);
-	// TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxAttachResource, MaxAttachResourceDelegate);
+	 FAttributeSignature MaxAttachResourceDelegate;
+	 MaxAttachResourceDelegate.BindStatic(GetMaxAttachResourceAttribute);
+	 TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxAttachResource, MaxAttachResourceDelegate);
 
 	FAttributeSignature DefensePowerDelegate;
 	DefensePowerDelegate.BindStatic(GetDefensePowerAttribute);
@@ -107,8 +107,8 @@ void UAS_Player::PostGameplayEffectExecute(const FGameplayEffectModCallbackData&
 
 	if (SourceCharacter && SourceCharacter->Implements<URL_PlayerInterface>())
 	{
-		IRL_PlayerInterface::Execute_AddLevel(SourceCharacter);
-		IRL_PlayerInterface::Execute_AddSpellPoints(SourceCharacter, 1);
+	/*	IRL_PlayerInterface::Execute_AddLevel(SourceCharacter);
+		IRL_PlayerInterface::Execute_AddSpellPoints(SourceCharacter, 1);*/
 
 		//加满Vital属性
 		bLevelHealth = true;

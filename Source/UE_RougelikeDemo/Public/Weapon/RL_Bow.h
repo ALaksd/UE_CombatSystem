@@ -37,7 +37,7 @@ public:
 	virtual void FireProjectile(bool bIsOneFire);
 	
 	// 生成箭矢,绑到弓弦上
-	virtual void SpawnArrow(float Damage,FGameplayTag DamageTag);
+	virtual void SpawnArrow(float Damage,FGameplayTag DamageTag,AActor* Target);
 	virtual void SpawnArrow(float Damage,FGameplayTag DamageTag,TArray<FFirebalLocation> Locations ,AActor* Target);
 
 	UFUNCTION(BlueprintCallable)
@@ -64,8 +64,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetMesh(){return SkeletalMeshComponent;}
 protected:
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Components")
-	TObjectPtr<UCapsuleComponent> CapsuleComponent;
+	// UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Components")
+	// TObjectPtr<UCapsuleComponent> CapsuleComponent;
 	
 
 

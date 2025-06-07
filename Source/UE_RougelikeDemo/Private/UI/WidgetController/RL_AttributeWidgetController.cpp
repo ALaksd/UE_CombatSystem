@@ -13,7 +13,7 @@ void URL_AttributeWidgetController::BroadcastInitialValue()
 
 	check(AttributeInfo);
 
-	//Ñ­»·±éÀúËùÓÐµÄ±êÇ©ºÍ¶ÔÓ¦ÊôÐÔ£¬ÕâÑù¿ÉÒÔ²»ÓÃÃ¿¸öÊôÐÔ¶¼¹ã²¥Ò»´Î
+	//å¾ªçŽ¯éåŽ†æ‰€æœ‰çš„æ ‡ç­¾å’Œå¯¹åº”å±žæ€§ï¼Œè¿™æ ·å¯ä»¥ä¸ç”¨æ¯ä¸ªå±žæ€§éƒ½å¹¿æ’­ä¸€æ¬¡
 	for (auto& Pair : AS->TagsToAttribute)
 	{
 		FGameplayAttribute Attr = Pair.Value.Execute();
@@ -25,8 +25,8 @@ void URL_AttributeWidgetController::BroadcastInitialValue()
 
 	}
 
-	OnLevelChanged.Broadcast(GetPlayerState()->GetLevel());
 	OnSoulChanged.Broadcast(GetPlayerState()->GetSoul());
+	OnLevelChanged.Broadcast(GetPlayerState()->GetLevel());
 }
 
 void URL_AttributeWidgetController::BindCallbacksToDependencies()
@@ -40,6 +40,24 @@ void URL_AttributeWidgetController::BindCallbacksToDependencies()
 			{
 				FRLAttributeInfo Info = AttributeInfo->FindAttributeInfoFromTag(Tag);
 				Info.AttributeValue = Data.NewValue;
+
+				if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag("Attributes.Secondary.MaxHealth")))
+				{
+					Info.NextAttributeValue = Data.NewValue + HealthUpgrade;
+				}
+				else if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag("Attributes.Secondary.MaxEndurance")))
+				{
+					Info.NextAttributeValue = Data.NewValue + EnduranceUpgrade;
+				}
+				else if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag("Attributes.Secondary.MaxAttachResource")))
+				{
+					Info.NextAttributeValue = Data.NewValue + AttachResourceUpgrade;
+				}
+				else
+				{
+					Info.NextAttributeValue = Data.NewValue + 1.f;
+				}
+				
 				AttributeInfoDelegate.Broadcast(Info);
 			}
 		);
@@ -68,7 +86,7 @@ void URL_AttributeWidgetController::UnbindAllDelegate()
 	OnSoulChanged.Clear();
 }
 
-void URL_AttributeWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
+void URL_AttributeWidgetController::UpgradeAttribute()
 {
 	UASC_Base* ASC = CastChecked<UASC_Base>(AbilitySystemComponent);
 	int32 CurrentLevel = GetPlayerState()->GetLevel();
@@ -77,7 +95,8 @@ void URL_AttributeWidgetController::UpgradeAttribute(const FGameplayTag& Attribu
 	if (CurrentSoul > Need)
 	{
 		GetPlayerState()->AddSoul(-Need);
-		ASC->UpgradeAttribute(AttributeTag);
+		GetPlayerState()->AddLevel();
+		ASC->UpgradeAttribute();
 	}
 	
 }

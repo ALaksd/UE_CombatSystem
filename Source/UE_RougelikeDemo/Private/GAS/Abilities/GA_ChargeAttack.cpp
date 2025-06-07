@@ -43,8 +43,6 @@ void UGA_ChargeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 			);
 
 			ChargeMontageTask->OnCompleted.AddDynamic(this, &UGA_ChargeAttack::OnMontageCompleted);
-			ChargeMontageTask->OnInterrupted.AddDynamic(this, &UGA_ChargeAttack::OnMontageCompleted);
-			ChargeMontageTask->OnCancelled.AddDynamic(this, &UGA_ChargeAttack::OnMontageCompleted);
 			ChargeMontageTask->ReadyForActivation();
 		}
 	}
