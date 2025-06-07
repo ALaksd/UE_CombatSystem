@@ -41,6 +41,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<URL_AttributeData> AttributeInfo;
 
+	//每升一级生命增加的量
+	UPROPERTY(EditDefaultsOnly)
+	float HealthUpgrade = 50.f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float EnduranceUpgrade = 2.f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float AttachResourceUpgrade = 2.f;
 
 	UFUNCTION(BlueprintCallable)
 	void UpgradeAttribute();

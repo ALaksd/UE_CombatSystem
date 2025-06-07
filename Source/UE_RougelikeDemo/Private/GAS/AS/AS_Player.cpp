@@ -107,8 +107,8 @@ void UAS_Player::PostGameplayEffectExecute(const FGameplayEffectModCallbackData&
 
 	if (SourceCharacter && SourceCharacter->Implements<URL_PlayerInterface>())
 	{
-		IRL_PlayerInterface::Execute_AddLevel(SourceCharacter);
-		IRL_PlayerInterface::Execute_AddSpellPoints(SourceCharacter, 1);
+	/*	IRL_PlayerInterface::Execute_AddLevel(SourceCharacter);
+		IRL_PlayerInterface::Execute_AddSpellPoints(SourceCharacter, 1);*/
 
 		//加满Vital属性
 		bLevelHealth = true;

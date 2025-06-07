@@ -27,6 +27,9 @@ struct FRLAttributeInfo
 
 	UPROPERTY(BlueprintReadOnly)
 	float AttributeValue = 0.f;
+
+	UPROPERTY(BlueprintReadOnly)
+	float NextAttributeValue = 0.f;
 };
 
 /**
