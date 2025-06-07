@@ -215,6 +215,10 @@ protected:
 
 	void AddCharacterAbilities();
 
+	/** 掉落魂，敌人基类蓝图实现 */
+	UFUNCTION(BlueprintImplementableEvent)
+	void DropSouls();
+
 private:
 	// 理智变化回调,处理清醒与混沌状态敌人属性变化
 	UFUNCTION()

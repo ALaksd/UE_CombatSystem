@@ -37,6 +37,7 @@ public:
 	/** PlayerInterfece */
 	virtual int32 GetSoul_Implementation() const override;
 	virtual void SetSoul_Implementation(int32 NewSoul) override;
+	virtual void AddSoul_Implementation(int32 NewSoul) override;
 	virtual int32 GetLevel_Implementation() const override;
 	virtual void AddLevel_Implementation() override;
 	virtual int32 GetSpellPoints_Implementation() const override;

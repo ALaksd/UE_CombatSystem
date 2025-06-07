@@ -157,4 +157,8 @@ public:
 	// 敌人动画蓝图
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
 	TSubclassOf<UAnimInstance> EnemyAnimInstanceClass;
+
+	//敌人死后掉落的魂量
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
+	int32 SoulCount;
 };

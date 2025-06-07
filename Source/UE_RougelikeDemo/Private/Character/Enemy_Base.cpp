@@ -171,6 +171,10 @@ void AEnemy_Base::Die_Implementation()
 	HealthBar->DestroyComponent();
 	
 	SetLifeSpan(5.f);
+
+	//掉魂
+	DropSouls();
+
 }
 
 void AEnemy_Base::KnockBack_Implementation(const FVector& KonckBackImpulse)
@@ -260,18 +264,22 @@ void AEnemy_Base::GuardBroken()
 	//并能被处决							1
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
 
-	GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
-	GetWorldTimerManager().SetTimer(GuardBrokenTimer,[this]()
+	if (AbilitySystemComponent)
 	{
-		bIsGuardBroken=false;
+		GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
+		GetWorldTimerManager().SetTimer(GuardBrokenTimer, [this]()
+			{
+				bIsGuardBroken = false;
 
-		// 回复体力
-		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina,1,AbilitySystemComponent->MakeEffectContext());
-		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+				// 回复体力
+				FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina, 1, AbilitySystemComponent->MakeEffectContext());
+				AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
 
-		//移除Tag
-		RemoveTag(FName("EnemyState.GuardBroken"));
-	},GuardBrokenTime,false);
+				//移除Tag
+				RemoveTag(FName("EnemyState.GuardBroken"));
+			}, GuardBrokenTime, false);
+	}
+	
 }
 
 void AEnemy_Base::Staggered()
