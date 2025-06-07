@@ -57,11 +57,22 @@ AItem_Pickup* URLInventorySubsystem::SpawnItemActorFromInstance(URLInventoryItem
 	UWorld* World = GetWorld();
 	if (!World) return nullptr;
 
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	FTransform SpawnTransform(FRotator::ZeroRotator, Location);
 
-	AItem_Pickup* SpawnedActor = World->SpawnActor<AItem_Pickup>(Fragment->ItemActorClass, Location, FRotator::ZeroRotator, SpawnParams);
-	SpawnedActor->ItemInstance = ItemInstance;
+	AItem_Pickup* SpawnedActor = World->SpawnActorDeferred<AItem_Pickup>(
+		Fragment->ItemActorClass,
+		SpawnTransform
+	);
+
+	if (SpawnedActor)
+	{
+		// 设置属性
+		SpawnedActor->ItemInstance = ItemInstance;
+		SpawnedActor->SetIdldEffect(Fragment->IdleEffect);
+		// 完成生成
+		UGameplayStatics::FinishSpawningActor(SpawnedActor, SpawnTransform);
+	}
+
 	return SpawnedActor;
 }
 

@@ -20,15 +20,19 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category="Components")
 	TObjectPtr<USphereComponent> SphereCom;
-	UPROPERTY(EditDefaultsOnly,Category="Components")
-	TObjectPtr<UNiagaraComponent> NiagaraCom;
 
 	//背包需要的数据
 	URLInventoryItemInstance* ItemInstance;
 	
+	void SetIdldEffect(UParticleSystem* InEffect) { IdleEffect = InEffect;}
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+	UParticleSystem* IdleEffect;
+
+	UPROPERTY()
+	UParticleSystemComponent* IdleEffectComponent;
 private:
 	UFUNCTION()
 	void OnCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
