@@ -18,14 +18,14 @@ void URL_ProjectileComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void URL_ProjectileComponent::PullBow(float Damage,FGameplayTag DamageTag)
+void URL_ProjectileComponent::PullBow(float Damage,FGameplayTag DamageTag,AActor* Target)
 {
 	// 将弓弦与手部骨骼绑定
 	if (Bow)
 	{
 		Bow->bIsPull=true;
 		// 生成箭矢,绑定到弦上
-		Bow->SpawnArrow(Damage,DamageTag);
+		Bow->SpawnArrow(Damage,DamageTag,Target);
 	}
 }
 

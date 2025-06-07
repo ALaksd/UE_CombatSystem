@@ -14,16 +14,16 @@
 
 ARL_Bow::ARL_Bow()
 {
-	CapsuleComponent=CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
-	SetRootComponent(CapsuleComponent);
-
-	USceneComponent* ParentRoot = Cast<USceneComponent>(GetDefaultSubobjectByName(TEXT("RootComponent")));
-	if (ParentRoot)
-		ParentRoot->DestroyComponent(); // 销毁父类根组件
+	// CapsuleComponent=CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
+	// SetRootComponent(CapsuleComponent);
+	//
+	// USceneComponent* ParentRoot = Cast<USceneComponent>(GetDefaultSubobjectByName(TEXT("RootComponent")));
+	// if (ParentRoot)
+	// 	ParentRoot->DestroyComponent(); // 销毁父类根组件
 
 	
 	SkeletalMeshComponent=CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
-	SkeletalMeshComponent->SetupAttachment(CapsuleComponent);
+	SkeletalMeshComponent->SetupAttachment(RootComponent);
 
 	WeaponType = E_WeaponType::Bow;
 	
@@ -42,18 +42,27 @@ void ARL_Bow::FireProjectile(bool bIsOneFire)
 {
 }
 
-void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag)
-{
+void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag,AActor* Target)
+ {
 	FVector SocketLocation = SkeletalMeshComponent->GetSocketLocation(SpawnSocke);
 	FRotator SocketRotation = SkeletalMeshComponent->GetSocketRotation(SpawnSocke);
-	FTransform SpawnTransform = FTransform(SocketRotation,SocketLocation);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s"), *SocketRotation.ToString()));
+	
+	SocketRotation.Yaw += 90;
+	FTransform SpawnTransform =FTransform(); //FTransform(SocketRotation,SocketLocation,FVector(1,1,1));
 
 	// 生成箭矢
 	Arrow = GetWorld()->SpawnActor<ARL_ProjectileBase>(ArrowClass,SpawnTransform);
-
+	Arrow->TargetActor=Target;
 	Arrow->SetWeaponOwner(WeaponOwner);
+
+	//Arrow->SetActorRotation(SocketRotation);
+	
 	// 将箭矢绑到弓弦上
-	FAttachmentTransformRules Rules = FAttachmentTransformRules::SnapToTargetIncludingScale;
+	EAttachmentRule LocationRules = EAttachmentRule::KeepRelative;
+	EAttachmentRule RotationRules = EAttachmentRule::KeepWorld;
+	EAttachmentRule ScaleRules = EAttachmentRule::KeepWorld;
+	FAttachmentTransformRules Rules = FAttachmentTransformRules(LocationRules,RotationRules,ScaleRules,false);
 	Arrow->AttachToComponent(GetMesh(),Rules,SpawnSocke);
 	
 }

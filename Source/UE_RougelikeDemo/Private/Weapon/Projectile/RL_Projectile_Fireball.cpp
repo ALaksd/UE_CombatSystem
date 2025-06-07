@@ -14,7 +14,8 @@ void ARL_Projectile_Fireball::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	UpdateTracking(DeltaSeconds);
+	if (!bIsInDistance)
+		UpdateTracking(DeltaSeconds);
 }
 
 void ARL_Projectile_Fireball::UpdateTracking(float DeltaSeconds)
@@ -28,7 +29,11 @@ void ARL_Projectile_Fireball::UpdateTracking(float DeltaSeconds)
 		FVector NewDir = (Target->GetActorLocation()-this->GetActorLocation());
 
 		// 如果两者距离太短,取消追踪能力
-		if (NewDir.Length() <= MaxTrackingDistance) return ;
+		if (NewDir.Length() <= MaxTrackingDistance)
+		{
+			bIsInDistance = true;
+			return ;
+		}
 
 		
 		// 应用

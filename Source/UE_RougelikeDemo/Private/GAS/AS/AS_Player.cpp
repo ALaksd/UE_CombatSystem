@@ -28,13 +28,13 @@ UAS_Player::UAS_Player()
 	MaxHealthDelegate.BindStatic(GetMaxHealthAttribute);
 	TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxHealth, MaxHealthDelegate);
 
-	// FAttributeSignature MaxEnduranceDelegate;
-	// MaxEnduranceDelegate.BindStatic(GetMaxEnduranceAttribute);
-	// TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxEndurance, MaxEnduranceDelegate);
+	FAttributeSignature MaxEnduranceDelegate;
+	MaxEnduranceDelegate.BindStatic(GetMaxEnduranceAttribute);
+	TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxEndurance, MaxEnduranceDelegate);
 
-	// FAttributeSignature MaxAttachResourceDelegate;
-	// MaxAttachResourceDelegate.BindStatic(GetMaxAttachResourceAttribute);
-	// TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxAttachResource, MaxAttachResourceDelegate);
+	 FAttributeSignature MaxAttachResourceDelegate;
+	 MaxAttachResourceDelegate.BindStatic(GetMaxAttachResourceAttribute);
+	 TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxAttachResource, MaxAttachResourceDelegate);
 
 	FAttributeSignature DefensePowerDelegate;
 	DefensePowerDelegate.BindStatic(GetDefensePowerAttribute);
