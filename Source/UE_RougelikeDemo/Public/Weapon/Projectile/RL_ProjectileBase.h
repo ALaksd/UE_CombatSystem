@@ -75,6 +75,9 @@ protected:
 	UFUNCTION()
 	virtual void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
+	//抛射物击中后产生的物理效果
+	UFUNCTION()
+	virtual void OnProjectileHit(UPrimitiveComponent* HitComponent, const FHitResult& HitResult);
 	
 private:
 	virtual void BeginPlay() override;

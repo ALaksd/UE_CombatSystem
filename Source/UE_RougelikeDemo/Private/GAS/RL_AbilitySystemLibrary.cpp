@@ -237,6 +237,19 @@ FName URL_AbilitySystemLibrary::GetHitBoneName(const FGameplayEffectContextHandl
 	return FName();
 }
 
+FGameplayTag URL_AbilitySystemLibrary::GetDamageTypeTag(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FRLGameplayEffectContext* RPGEffectContext = static_cast<const FRLGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		if (RPGEffectContext->GetDamageType().IsValid())
+		{
+			return *RPGEffectContext->GetDamageType();
+		}
+
+	}
+	return FGameplayTag();
+}
+
 void URL_AbilitySystemLibrary::SetKonckBackImpulse(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FVector InKonckBackImpulse)
 {
 	if (FRLGameplayEffectContext* RPGEffectContext = static_cast<FRLGameplayEffectContext*>(EffectContextHandle.Get()))
@@ -250,6 +263,15 @@ void URL_AbilitySystemLibrary::SetHitBoneName(UPARAM(ref)FGameplayEffectContextH
 	if (FRLGameplayEffectContext* RPGEffectContext = static_cast<FRLGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
 		RPGEffectContext->SetHitBoneName(InHitBoneName);
+	}
+}
+
+void URL_AbilitySystemLibrary::SetDamageTypeTag(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FGameplayTag DamageTypeTag)
+{
+	if (FRLGameplayEffectContext* RPGEffectContext = static_cast<FRLGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		const TSharedPtr<FGameplayTag> DamageType = MakeShared<FGameplayTag>(DamageTypeTag);
+		RPGEffectContext->SetDamageType(DamageType);
 	}
 }
 
@@ -379,7 +401,8 @@ bool URL_AbilitySystemLibrary::HandleParry(AActor* OwnerActor, AActor* TargetAct
 	bool bPlayerHasContinuous = TargetASC->HasMatchingGameplayTag(ParryContinuousTag);
 
 	// 检查敌人是否有红光攻击Tag
-	bool bEnemyRedAttack = SourceASC->HasMatchingGameplayTag(RedDamageTag);
+	//bool bEnemyRedAttack = SourceASC->HasMatchingGameplayTag(RedDamageTag);
+	bool bEnemyRedAttack = DamageParams.DamageTypeTag.MatchesTagExact(RedDamageTag);
 
 	bool bCanParry = (bPlayerHasParry || bPlayerHasContinuous) && bEnemyRedAttack;
 
