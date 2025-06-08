@@ -7,6 +7,9 @@
 #include "GAS/RL_AbilitySystemLibrary.h"
 #include "RL_EnemyRangeAttack.generated.h"
 
+/**
+ * 敌人范围攻击
+ */
 class UNiagaraSystem;
 
 UCLASS()

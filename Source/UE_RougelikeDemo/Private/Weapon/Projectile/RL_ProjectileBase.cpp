@@ -90,14 +90,6 @@ void ARL_ProjectileBase::OnComponentBeginOverlap(UPrimitiveComponent* Overlapped
 	if (!OtherActor->ActorHasTag(AttackActorTag))
 		return;
 
-	// if (IRL_DamageInterface* DamageInterface = Cast<IRL_DamageInterface>(OtherActor))
-	// {
-	// 	DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffect,WeaponLevel,WeaponASC->MakeEffectContext());
-	// 	DamageInterface->TakeDamage(DamageSpecHandle);
-	//
-	// 	Destroy();
-	// }
-
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
 	UAbilitySystemComponent* SourceASC = WeaponASC;
 
@@ -107,9 +99,23 @@ void ARL_ProjectileBase::OnComponentBeginOverlap(UPrimitiveComponent* Overlapped
 		TSubclassOf<UGameplayEffect> DamageEffectClass = DamageEffect;
 		FGameplayTag DamageTag_T = DamageTag;
 		float Damage_T = Damage;
-	
-		URL_AbilitySystemLibrary::ApplyDamageByMagnitude(SourceASC,TargetASC,Context,DamageEffectClass,DamageTag,Damage);
 
-		Destroy();
+		FDamageParams DamageParams;
+		DamageParams.DamageEffectClass = DamageEffectClass;
+		DamageParams.DamageTypeTag = DamageTag;
+		DamageParams.Damage = Damage;
+		DamageParams.KnockDistance = 100.f;
+		DamageParams.RestoreSanity = 10.f;
+	
+		//URL_AbilitySystemLibrary::ApplyDamageByMagnitude(SourceASC,TargetASC,Context,DamageEffectClass,DamageTag,Damage);
+		URL_AbilitySystemLibrary::ApplyEnemyDamage(WeaponOwner, OtherActor, SweepResult.Location, SweepResult.Normal, DamageParams);
+
+		OnProjectileHit(OtherComp, SweepResult);
+		//Destroy();
 	}
+}
+
+void ARL_ProjectileBase::OnProjectileHit(UPrimitiveComponent* HitComponent, const FHitResult& HitResult)
+{
+	Destroy();
 }
