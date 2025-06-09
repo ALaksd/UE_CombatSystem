@@ -15,6 +15,7 @@
 #include "Components/CapsuleComponent.h"
 #include <Blueprint/AIBlueprintHelperLibrary.h>
 #include <System/RL_SanitySubsystem.h>
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 AEnemy_Base::AEnemy_Base()
@@ -258,7 +259,10 @@ void AEnemy_Base::GuardBroken()
 {
 	AddTag(FName("EnemyState.GuardBroken"));
 	bIsGuardBroken=true;
-	
+	if (GuardBrokenSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(),GuardBrokenSound,GetActorLocation());
+	}
 	//该状态下敌人无法攻击
 	//受到的伤害增加（受到的伤害*1.2)		1
 	//并能被处决							1

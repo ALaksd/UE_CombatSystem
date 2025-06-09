@@ -48,7 +48,7 @@ void ARL_Bow::SpawnArrow(float Damage, FGameplayTag DamageTag, AActor* Target)
 	FVector SocketLocation = SkeletalMeshComponent->GetSocketLocation(SpawnSocke);
 
 	// 获取插槽的旋转信息
-	FRotator SocketRotation = SkeletalMeshComponent->GetSocketRotation(SpawnSocke);
+	FRotator SocketRotation;
 
 	// 如果有目标，计算箭矢的方向
 	FVector Direction = FVector::ZeroVector;

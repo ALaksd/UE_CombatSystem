@@ -228,7 +228,7 @@ void ARL_BaseCharacter::KnockBack_Implementation(const FVector& KonckBackImpulse
 {
 	// 移动（带碰撞）
 	FHitResult Hit;
-	GetCharacterMovement()->SafeMoveUpdatedComponent(KonckBackImpulse, GetActorRotation(), true, Hit);
+	GetCharacterMovement()->SafeMoveUpdatedComponent(FVector(KonckBackImpulse.X,KonckBackImpulse.Y,0.f), GetActorRotation(), true, Hit);
 }
 
 void ARL_BaseCharacter::SwitchWeaponTypeForAnim_Implementation(E_WeaponType InWeaponType)
