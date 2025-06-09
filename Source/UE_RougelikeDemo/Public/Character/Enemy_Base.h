@@ -137,6 +137,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
 	float GuardBrokenTime;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Attribute | State")
+	USoundBase* GuardBrokenSound;
+
 	// 体力减少回复时间
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
 	float StaminaReduceTime;
