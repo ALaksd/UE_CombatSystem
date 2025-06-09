@@ -48,5 +48,5 @@ public:
 
 private:
 	UFUNCTION()
-	void SwitchWeapon(URLInventoryItemInstance* NewWeapon);
+	void SwitchWeapon(URLInventoryItemInstance* NewWeapo,FInheritedTagContainer Tags);
 };

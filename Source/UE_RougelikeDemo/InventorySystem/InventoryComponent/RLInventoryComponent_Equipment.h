@@ -63,7 +63,7 @@ struct FEquipWeapon
  */
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipUpdate,URLInventoryItemInstance*, NewItem,URLInventoryItemInstance*, OldItem);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquipUpdate,URLInventoryItemInstance*, NewItem);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipUpdate,URLInventoryItemInstance*, NewItem,FInheritedTagContainer, NewWeaponTag);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnArmorUpdate,URLInventoryItemInstance*, NewItem, const FRLInventoryItemSlotHandle&, SlotHandle);
 /** 是否装备 */
 DECLARE_DELEGATE_TwoParams(FbOnEquip, bool, FGameplayTagContainer);

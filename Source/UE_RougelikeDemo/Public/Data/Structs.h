@@ -57,3 +57,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FRotator Rotation;
 };
+
+USTRUCT(BlueprintType,Blueprintable)
+struct FSkillIcon : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	// 武器Tag
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTag WeaponTag;
+	// 技能1Icon
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UTexture2D> Skill_1;
+	// 技能2Icon
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UTexture2D> Skill_2;
+	
+	
+};

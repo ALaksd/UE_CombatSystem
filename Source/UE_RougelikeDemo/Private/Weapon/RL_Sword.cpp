@@ -183,10 +183,10 @@ void ARL_Sword::StartTrailEffect()
 	{
 		TrailComponent->Activate(true);
 	}
-	if (AttackSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(WeaponOwner, AttackSound, WeaponOwner->GetActorLocation());
-	}
+	//if (AttackSound)
+	//{
+	//	UGameplayStatics::PlaySoundAtLocation(WeaponOwner, AttackSound, WeaponOwner->GetActorLocation());
+	//}
 }
 
 void ARL_Sword::StopTrailEffect()

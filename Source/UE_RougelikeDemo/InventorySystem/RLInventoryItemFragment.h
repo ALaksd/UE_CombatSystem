@@ -66,6 +66,7 @@ struct UE_ROUGELIKEDEMO_API FRL_ItemDefinition_AbilitySet
 {
 	GENERATED_BODY()
 
+public:
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly,Category = "Inventory")
 	TArray<FRLAbilitySet_GameplayAbility> GrantAbilities;
 
