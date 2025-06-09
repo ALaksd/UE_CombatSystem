@@ -188,17 +188,28 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> HealthBar;
 
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> LockUIWidgetComponnet;
+
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnHealthChanged;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnMaxHealthChanged;
 
+	//体力条，破防
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnMaxStaminaChanged;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnStaminaChanged;
+
+	//韧性条，蹒跚
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxResilienceChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnResilienceChanged;
 
 	/** Hit */
 

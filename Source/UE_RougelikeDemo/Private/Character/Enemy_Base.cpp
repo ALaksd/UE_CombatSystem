@@ -29,6 +29,10 @@ AEnemy_Base::AEnemy_Base()
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
 	HealthBar->SetVisibility(false);
+
+	LockUIWidgetComponnet = CreateDefaultSubobject<UWidgetComponent>("LockUI");
+	LockUIWidgetComponnet->SetupAttachment(GetRootComponent());
+	LockUIWidgetComponnet->SetVisibility(false);
 	
 	EnemyMovementComponent = CreateDefaultSubobject<URL_EnemyMovementComponent>("EnemyMovementComponent");
 
@@ -288,22 +292,22 @@ void AEnemy_Base::GuardBroken()
 
 void AEnemy_Base::Staggered()
 {
-	//AddTag(FName("EnemyState.Staggered"));
-	//bIsStaggered=true;
+	AddTag(FName("EnemyState.Staggered"));
+	bIsStaggered=true;
 
-	//GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
+	GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
 
-	//GetWorldTimerManager().ClearTimer(StaggeredTimer);
-	//GetWorldTimerManager().SetTimer(StaggeredTimer,[this]()
-	//{
-	//	bIsStaggered=false;
+	GetWorldTimerManager().ClearTimer(StaggeredTimer);
+	GetWorldTimerManager().SetTimer(StaggeredTimer,[this]()
+	{
+		bIsStaggered=false;
 
-	//	// 回复韧性
-	//	FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreResilience,1,AbilitySystemComponent->MakeEffectContext());
-	//	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+		// 回复韧性
+		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreResilience,1,AbilitySystemComponent->MakeEffectContext());
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
 
-	//	RemoveTag(FName("EnemyState.Staggered"));
-	//},StaggeredTime,false);
+		RemoveTag(FName("EnemyState.Staggered"));
+	},StaggeredTime,false);
 }
 
 
@@ -326,6 +330,11 @@ void AEnemy_Base::BeginPlay()
 	{
 		RL_UserWidget->SetWidgetController(this);
 	}
+	if (URL_UserWidget* LockUI_Widget = Cast<URL_UserWidget>(LockUIWidgetComponnet->GetUserWidgetObject()))
+	{
+		LockUI_Widget->SetWidgetController(this);
+	}
+
 	//绑定回调函数
 	if (const UAS_Enemy* EnemyAttributeSet = Cast<UAS_Enemy>(AttributeSet))
 	{
@@ -357,10 +366,26 @@ void AEnemy_Base::BeginPlay()
 			}
 		);
 
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetMaxResilienceAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxResilienceChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetResilienceAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnResilienceChanged.Broadcast(Data.NewValue);
+			}
+		);
+
 		OnHealthChanged.Broadcast(EnemyAttributeSet->GetHealth());
 		OnMaxHealthChanged.Broadcast(EnemyAttributeSet->GetMaxHealth());
 		OnStaminaChanged.Broadcast(EnemyAttributeSet->GetStamina());
 		OnMaxStaminaChanged.Broadcast(EnemyAttributeSet->GetMaxStamina());
+		OnResilienceChanged.Broadcast(EnemyAttributeSet->GetStamina());
+		OnMaxResilienceChanged.Broadcast(EnemyAttributeSet->GetMaxStamina());
 
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetStaminaAttribute()).AddUObject<AEnemy_Base>(this,&AEnemy_Base::StaminaAttributeChangeCallback);
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetResilienceAttribute()).AddUObject<AEnemy_Base>(this,&AEnemy_Base::ResilienceAttributeChangeCallback);
