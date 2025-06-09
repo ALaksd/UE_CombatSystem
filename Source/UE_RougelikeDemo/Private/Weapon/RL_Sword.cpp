@@ -14,6 +14,7 @@
 #include <RL_CharacterSelectionWidget.cpp>
 
 #include "GAS/AS/AS_Enemy.h"
+#include <AbilitySystemBlueprintLibrary.h>
 
 
 ARL_Sword::ARL_Sword()
@@ -84,6 +85,16 @@ void ARL_Sword::Tick(float DeltaTime)
 								CueParams.Normal = OutHits[j].ImpactNormal;  //击中法向
 								CueParams.PhysicalMaterial = OutHits[j].PhysMaterial;  //击中物理材质
 								CueParams.NormalizedMagnitude = DamageMultiplier;  //击中强度,根据武器的倍率来计算
+
+								//如果是处决，强度*5倍
+								if (UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor))
+								{
+									if (ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("EnemyState.Execute")))
+									{
+										CueParams.NormalizedMagnitude *= 5.f;
+									}
+								}
+								
 
 								IAbilitySystemInterface* TargetAbilityStystemInterface = Cast<IAbilitySystemInterface>(HitActor);
 								if (TargetAbilityStystemInterface)
