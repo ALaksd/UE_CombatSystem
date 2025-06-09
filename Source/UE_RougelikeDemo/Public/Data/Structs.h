@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Enums.h"
 #include "Engine/DataTable.h"
 #include "UE_RougelikeDemo/InventorySystem/Definition/RLItemDefinition_Skill.h"
 #include "Structs.generated.h"
@@ -56,4 +57,38 @@ public:
 	// 火球生成旋转
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FRotator Rotation;
+};
+
+USTRUCT(BlueprintType,Blueprintable)
+struct FSkillIcon : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	// 武器Tag
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTag WeaponTag;
+	// 技能1Icon
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UTexture2D> Skill_1;
+	// 技能2Icon
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UTexture2D> Skill_2;
+};
+
+USTRUCT(BlueprintType,Blueprintable)
+struct F_CameraLocation : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	//  位置类型
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	E_CameraLocation CameraLocation;
+	// 偏移
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector Offset;
+	// 弹簧臂长度
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BomLength;
 };

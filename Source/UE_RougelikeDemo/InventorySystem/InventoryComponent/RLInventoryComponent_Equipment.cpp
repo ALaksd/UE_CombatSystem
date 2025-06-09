@@ -108,7 +108,8 @@ void URLInventoryComponent_Equipment::SwitchWeapon(const FInputActionValue& Valu
 			}
 
 			// 通知ClosecombatComponent
-			OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance);
+			FInheritedTagContainer WeaponTag = CurrentWeapon.ItemInstance->GetItemDefinition()->ItemTags;
+			OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance,WeaponTag);
 		}
 	}
 
@@ -248,8 +249,8 @@ void URLInventoryComponent_Equipment::EquipWeapon(const FRLInventoryItemSlotHand
 			GiveAbilityToPlayer(Weapon2);
 			CurrentWeapon=Weapon2;
 		}
-		
-		OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance);
+		FInheritedTagContainer WeaponTag = CurrentWeapon.ItemInstance->GetItemDefinition()->ItemTags;
+		OnEquipUpdate.Broadcast(CurrentWeapon.ItemInstance,WeaponTag);
 	}
 	FRLInventoryItemInfoEntry Entry(SlotHandle);
 	EquipmentInfos.Add(Entry);
@@ -286,7 +287,7 @@ void URLInventoryComponent_Equipment::UnEquipWeapon(const FRLInventoryItemSlotHa
 		EAllowShrinking::No);
 
 	// 更新物品实例的装备状态
-	OnEquipUpdate.Broadcast(nullptr);
+	OnEquipUpdate.Broadcast(nullptr,FInheritedTagContainer());
 	ItemInstance->SetbEquiped(false);
 	bOnEquip.ExecuteIfBound(false,ItemInstance->GetOwnedGameplayTag());
 }

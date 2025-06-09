@@ -24,6 +24,7 @@ class UE_ROUGELIKEDEMO_API URLInventoryItemDefinition : public UPrimaryDataAsset
 public:
 	URLInventoryItemDefinition(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	UFUNCTION(BlueprintCallable)
 	const URLInventoryItemFragment* FindFragmentByClass(TSubclassOf<URLInventoryItemFragment> FragmentClass) const;
 
 	template <typename T>
