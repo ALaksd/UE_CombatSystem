@@ -8,6 +8,8 @@
 #include "RL_EnemyConfig.generated.h"
 
 
+class UNiagaraSystem;
+
 USTRUCT(BlueprintType)
 struct FEnemySkillAnimation
 {
@@ -161,4 +163,12 @@ public:
 	//敌人死后掉落的魂量
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
 	int32 SoulCount;
+
+	//敌人击中特效
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|HitFX")
+	UNiagaraSystem* HitFX;
+
+	//敌人击中音效
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|HitFX")
+	USoundBase* HitSound;
 };
