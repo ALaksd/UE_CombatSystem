@@ -20,6 +20,9 @@ void UAN_EnemyRangeAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 	AActor* OwnerActor = MeshComp->GetOwner();
 	UWorld* World = MeshComp->GetWorld();
 
+	RangeDamageParams.SpawnLocation = SpawnLoc;
+	RangeDamageParams.Ingisitor = OwnerActor;
+
 	if (World)
 	{
 		// 延迟生成（用于初始化前设置参数）
@@ -34,7 +37,7 @@ void UAN_EnemyRangeAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 		if (AttackActor)
 		{
 			// 你可以在这里设置变量、传递数据等
-			AttackActor->InitAttack(SpawnLoc, NiagaraEffect,SphereRadius,DamageParams,OwnerActor);
+			AttackActor->InitAttack(RangeDamageParams);
 
 			// 正式完成生成
 			UGameplayStatics::FinishSpawningActor(AttackActor, SpawnTransform);

@@ -83,7 +83,7 @@ void UGCN_MeeleAttack::HandleGameplayCue(AActor* TargetActor, EGameplayCueEvent:
 		}
 
 		// 播放带强度控制的音效
-		if (ImpactSound)
+		if (OuterSound)
 		{
 			// 根据强度调整音量和音调
 			const float Volume = FMath::Clamp(0.5f + NormalizedMagnitude * 0.5f, 0.5f, 1.5f);
@@ -91,7 +91,7 @@ void UGCN_MeeleAttack::HandleGameplayCue(AActor* TargetActor, EGameplayCueEvent:
 
 			UGameplayStatics::PlaySoundAtLocation(
 				this,
-				ImpactSound,
+				OuterSound,
 				ImpactLocation,
 				FRotator::ZeroRotator,
 				Volume,     // 音量乘数

@@ -21,10 +21,7 @@ public:
 	TObjectPtr<class USoundBase> Sound;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<class UNiagaraSystem> DefaultRotEffect;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<class UNiagaraSystem> AlignToNormalEffect;
+	TObjectPtr<class UNiagaraSystem> ParryEffect;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UCameraShakeBase> HitCameraShake;

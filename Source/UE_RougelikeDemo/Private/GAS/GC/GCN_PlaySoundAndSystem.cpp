@@ -21,23 +21,12 @@ void UGCN_PlaySoundAndSystem::HandleGameplayCue(AActor* TargetActor, EGameplayCu
 		ParryThreshold = Parameters.NormalizedMagnitude;
 		CurrentKnockDistance = Parameters.RawMagnitude;
 
-		// 1. 播放保持默认旋转的特效（保持 Niagara 资产内的 Rotation 设置）
-		if (DefaultRotEffect)
+		
+		if (ParryEffect)
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 				this,
-				DefaultRotEffect,
-				ImpactLocation,
-				ImpactNormal.Rotation()
-			);
-		}
-
-		// 2. 播放根据法线调整方向的特效
-		if (AlignToNormalEffect)
-		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-				this,
-				AlignToNormalEffect,
+				ParryEffect,
 				ImpactLocation,
 				UKismetMathLibrary::MakeRotFromZ(ImpactNormal)
 			);
