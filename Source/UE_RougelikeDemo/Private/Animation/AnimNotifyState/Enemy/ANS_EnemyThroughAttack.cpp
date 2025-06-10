@@ -2,7 +2,7 @@
 
 
 #include "Animation/AnimNotifyState/Enemy/ANS_EnemyThroughAttack.h"
-#include <Runtime/Engine/Private/Components/CapsuleComponent.cpp>
+#include "Components/CapsuleComponent.h"
 
 void UANS_EnemyThroughAttack::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
