@@ -33,7 +33,7 @@ class UE_ROUGELIKEDEMO_API ARL_BaseCharacter : public ACharacter, public IAbilit
 
 	
 public:
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
 	void SetCameraLocation(E_CameraLocation CameraLocation);
 	
 	/** PlayerInterfece */
