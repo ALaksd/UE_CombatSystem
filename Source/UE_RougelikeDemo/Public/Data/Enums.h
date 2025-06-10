@@ -30,3 +30,14 @@ enum class EDetectionShapeType : uint8
 	Rectangle UMETA(DisplayName = "Box"),
 	Sphere    UMETA(DisplayName = "Sphere")
 };
+
+
+UENUM(BlueprintType)
+enum class E_CameraLocation : uint8
+{
+	Normal		UMETA(DisplayName = "正常"),
+	Excute		UMETA(DisplayName = "处决"),
+};
+
+
+
