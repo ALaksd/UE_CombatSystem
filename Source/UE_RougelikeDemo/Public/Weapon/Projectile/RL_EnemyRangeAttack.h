@@ -24,16 +24,35 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category = "Effect")
 	UNiagaraSystem* NiagaraEffect;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Effect")
 	float LifeTime = 1.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Effect")
+	float StartTime = 0.f;
+
+	// 生成数量
+	UPROPERTY(EditAnywhere, Category = "Effect")
+	int32 NumEffects = 3;      
+
+	// 环形的半径
+	UPROPERTY(EditAnywhere, Category = "Effect")
+	float CircleRadius = 100.f; 
+
+	UPROPERTY(EditAnywhere, Category = "Damage")
+	FDamageParams DamageParams;
+
+	//球形伤害检测范围
+	UPROPERTY(EditAnywhere, Category = "Damage")
 	float SphereRadius = 100.f;
 
-	UPROPERTY()
-	FDamageParams DamageParams;
+	UPROPERTY(EditAnywhere, Category = "Damage")
+	FVector RectangleParams = FVector(100.f);
+
+	UPROPERTY(EditAnywhere, Category = "Damage")
+	EDetectionShapeType DamageDetectionType = EDetectionShapeType::Sphere;
 
 	// 攻击者
 	UPROPERTY()
@@ -41,7 +60,7 @@ public:
 
 	FVector Location;
 
-	void InitAttack(FVector InLocation, UNiagaraSystem* InNiagaraEffect,float InSphereRadius,FDamageParams& InDamageParams,AActor* InIngisitor);
+	void InitAttack(FRangeDamageParams& InRangeDamageParams);
 	void StartAttack();
 	void EndAttack();
 

@@ -363,7 +363,7 @@ void URL_AbilitySystemLibrary::ApplyEnemyDamage(AActor* OwnerActor, AActor* Targ
 
 	// 执行GameplayCue, 受击反馈
 	FGameplayCueParameters CueParams;
-	CueParams.Instigator = TargetActor; // 击中者，就是玩家
+	CueParams.Instigator = OwnerActor; // 造成伤害的Actor
 	CueParams.Location = HitLocation; // 击中位置
 	CueParams.Normal = HitNormal;  // 击中法向
 	CueParams.NormalizedMagnitude = IntensityMultiplier;
@@ -416,6 +416,8 @@ bool URL_AbilitySystemLibrary::HandleParry(AActor* OwnerActor, AActor* TargetAct
 		ParryCueParams.Instigator = OwnerActor; // 击中者，敌人
 		ParryCueParams.Location = HitLocation; // 击中位置
 		ParryCueParams.Normal = HitNormal;  // 击中法向
+		ParryCueParams.NormalizedMagnitude = GetEnemyConfig(OwnerActor)->HitThreshold; //弹反阈值时间
+		ParryCueParams.RawMagnitude = DamageParams.KnockDistance; //当前击退值
 		TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Parry"), ParryCueParams);
 
 		//只有近战红光攻击才弹射

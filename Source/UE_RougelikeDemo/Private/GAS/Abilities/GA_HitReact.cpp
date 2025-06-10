@@ -21,7 +21,7 @@ UGA_HitReact::UGA_HitReact()
 
 	AbilityTriggers.Add(TriggerData);
 
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerExecution;
 }
 
 void UGA_HitReact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -131,7 +131,6 @@ void UGA_HitReact::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 
 void UGA_HitReact::OnMontageCompleted()
 {
-	BP_RemoveGameplayEffectFromOwnerWithHandle(ActiveHitReact);
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
 

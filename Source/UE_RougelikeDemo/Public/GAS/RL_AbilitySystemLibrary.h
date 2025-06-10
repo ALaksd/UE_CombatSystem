@@ -51,6 +51,55 @@ struct FDamageParams
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float RestoreSanity;
 };
+
+USTRUCT(BlueprintType)
+struct FRangeDamageParams
+{
+	GENERATED_BODY()
+
+	//生成特效
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Effect")
+	UNiagaraSystem* NiagaraEffect;
+
+	//等待StartTime生成
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Effect")
+	float StartTime = 0.f;
+	// 生成数量
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	int32 NumEffects = 1;
+
+	// 环形的半径
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	float CircleRadius = 0.f;
+
+	//球形伤害检测范围
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Damage")
+	float SphereRadius = 100.f;
+
+	//矩形伤害检测范围
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	FVector RectangleParams = FVector(100.f);
+
+	//检测类型
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	EDetectionShapeType DamageDetectionType = EDetectionShapeType::Sphere;
+
+	//伤害参数
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	FDamageParams DamageParams;
+
+	//伤害判定持续时间
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	float LifeTime = 1.0f;
+
+	UPROPERTY()
+	FVector SpawnLocation;
+
+	//伤害造成者
+	UPROPERTY()
+	AActor* Ingisitor;
+};
+
 /**
  * 
  */

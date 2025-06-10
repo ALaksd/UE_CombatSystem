@@ -31,7 +31,9 @@ void URL_EnemyMovementComponent::InitializeComponent()
 			if (WeaponMeshComponent)
 			{
 				WeaponMeshComponent->SetStaticMesh(const_cast<UStaticMesh*>(WeaponMeshAsset));
-				WeaponMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				WeaponMeshComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+				WeaponMeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+				WeaponMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
 				// 附加到角色的骨骼网格体上
 				if (CharacterMesh)
