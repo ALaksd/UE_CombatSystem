@@ -233,6 +233,16 @@ UAS_Enemy* AEnemy_Base::GetEnemyAttributeSet_Implementation() const
 	return Cast<UAS_Enemy>(AttributeSet);
 }
 
+UNiagaraSystem* AEnemy_Base::GetHitEffect_Implementation()
+{
+	return EnemyMovementComponent->GetEnemyConfig()->HitFX;
+}
+
+USoundBase* AEnemy_Base::GetHitSound_Implementation()
+{
+	return EnemyMovementComponent->GetEnemyConfig()->HitSound;;
+}
+
 void AEnemy_Base::StaminaReduceCallBack()
 {
 	GetWorldTimerManager().ClearTimer(StaminaReduceTimer);

@@ -80,6 +80,8 @@ public:
 	FORCEINLINE virtual bool isDead_Implementation() const override {return bDead;}
 	virtual void KnockBack_Implementation(const FVector& KonckBackImpulse) override;
 	virtual void ShowDamageText_Implementation(float Damage) override;
+	virtual UNiagaraSystem* GetHitEffect_Implementation() override;
+	virtual USoundBase* GetHitSound_Implementation() override;
 	/** End ComvatInterface */
 
 	/** EnemyInterface */

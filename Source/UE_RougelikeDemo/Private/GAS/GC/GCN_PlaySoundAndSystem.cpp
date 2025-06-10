@@ -18,6 +18,8 @@ void UGCN_PlaySoundAndSystem::HandleGameplayCue(AActor* TargetActor, EGameplayCu
 		const FVector ImpactLocation = Parameters.Location;
 		const FVector ImpactNormal = Parameters.Normal;
 
+		ParryThreshold = Parameters.NormalizedMagnitude;
+		CurrentKnockDistance = Parameters.RawMagnitude;
 
 		// 1. 播放保持默认旋转的特效（保持 Niagara 资产内的 Rotation 设置）
 		if (DefaultRotEffect)
@@ -67,7 +69,7 @@ void UGCN_PlaySoundAndSystem::HandleGameplayCue(AActor* TargetActor, EGameplayCu
 			}
 		}
 
-		SetPauseEffect(SourceActor);
+		SetPauseEffect(TargetActor);
 		ExecuteOtherst(SourceActor, TargetActor);
 	}
 }

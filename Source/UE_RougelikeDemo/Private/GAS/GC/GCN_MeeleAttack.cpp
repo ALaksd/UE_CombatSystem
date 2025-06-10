@@ -9,10 +9,28 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include <Kismet/KismetMathLibrary.h>
+#include <Interface/RL_CombatInterface.h>
 
 void UGCN_MeeleAttack::HandleGameplayCue(AActor* TargetActor, EGameplayCueEvent::Type EventType, const FGameplayCueParameters& Parameters)
 {
 	Super::HandleGameplayCue(TargetActor, EventType, Parameters);
+
+	//如果实现战斗接口且特效和音效不为空,用外部的特效，否则用默认的
+	UNiagaraSystem* OuterFX = nullptr;
+	USoundBase* OuterSound = nullptr;
+	//TSubclassOf<UCameraShakeBase> Shake = HitCameraShake;
+
+	// 查询 TargetActor 的自定义资源
+	if (Parameters.Instigator->Implements<URL_CombatInterface>())
+	{
+		OuterFX = IRL_CombatInterface::Execute_GetHitEffect(Parameters.Instigator.Get());
+		OuterSound = IRL_CombatInterface::Execute_GetHitSound(Parameters.Instigator.Get());
+	}
+
+	if (!OuterSound)
+	{
+		OuterSound = ImpactSound;
+	}
 
 	if (EventType == EGameplayCueEvent::Executed)
 	{
@@ -54,6 +72,16 @@ void UGCN_MeeleAttack::HandleGameplayCue(AActor* TargetActor, EGameplayCueEvent:
 			}
 		}
 
+		if (OuterFX)
+		{
+			UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				this,
+				OuterFX,
+				ImpactLocation,
+				UKismetMathLibrary::MakeRotFromZ(ImpactNormal) // 或 MakeRotFromX / MakeRotFromY
+			);
+		}
+
 		// 播放带强度控制的音效
 		if (ImpactSound)
 		{
@@ -75,7 +103,7 @@ void UGCN_MeeleAttack::HandleGameplayCue(AActor* TargetActor, EGameplayCueEvent:
 		}
 
 		// 增强屏幕震动效果（示例）
-		if (APawn* OwnerPawn = Cast<APawn>(Parameters.Instigator))
+		if (APawn* OwnerPawn = Cast<APawn>(TargetActor))
 		{
 			if (APlayerController* PC = Cast<APlayerController>(OwnerPawn->GetController()))
 			{
