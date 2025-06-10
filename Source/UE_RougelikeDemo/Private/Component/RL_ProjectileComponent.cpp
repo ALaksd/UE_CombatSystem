@@ -16,6 +16,8 @@ URL_ProjectileComponent::URL_ProjectileComponent()
 void URL_ProjectileComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 }
 
 void URL_ProjectileComponent::PullBow(float Damage,FGameplayTag DamageTag,AActor* Target)
@@ -65,9 +67,29 @@ void URL_ProjectileComponent::EquipWeapon()
 			// 重置弓的相对位置和旋转
 			Bow->GetRootComponent()->SetRelativeLocationAndRotation(FVector::ZeroVector, FRotator::ZeroRotator);
 			Bow->AttachToComponent(AttachCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
+
+			if (bUseStaticMesh)
+			{
+				Bow->SetActorHiddenInGame(true);
+				Bow->SetActorEnableCollision(false);
+			}
+
 		}
 	}
 	
+}
+
+void URL_ProjectileComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (Bow)
+	{
+		Bow->DetachAllSceneComponents(AttachCharacter->GetMesh(),FDetachmentTransformRules::KeepRelativeTransform);
+		FTimerHandle DestroyTimerHandle;
+		Bow->Destroy();
+		Bow = nullptr;
+	}
+	
+	Super::EndPlay(EndPlayReason);
 }
 
 template <typename T>
