@@ -13,6 +13,8 @@
 class UGameplayEffect;
 class UAbilitySystemComponent;
 class URL_EnemyMovementComponent;
+class UNiagaraComponent;
+class UNiagaraSystem;
 /**
  * 
  */
@@ -73,6 +75,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	TObjectPtr<USoundBase> AttackSound;
 
+	UPROPERTY(EditAnywhere, Category = "VFX")
+	FName FXAttachSocketName = FName("FX");
+
 protected:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
 	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference) override;
@@ -88,4 +93,9 @@ private:
 
 	// 攻击检测范围
 	FTransform SocketTrans;
+
+private:
+	UPROPERTY()
+	UNiagaraComponent* AttachedNiagaraComp = nullptr;
+
 };

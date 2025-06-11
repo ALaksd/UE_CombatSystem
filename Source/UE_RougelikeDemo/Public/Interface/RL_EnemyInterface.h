@@ -48,4 +48,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UAS_Enemy* GetEnemyAttributeSet() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetSpeicalWeaponEffect() const;
 };

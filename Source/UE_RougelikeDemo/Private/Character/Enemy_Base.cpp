@@ -37,6 +37,8 @@ AEnemy_Base::AEnemy_Base()
 	EnemyMovementComponent = CreateDefaultSubobject<URL_EnemyMovementComponent>("EnemyMovementComponent");
 
 	WeaponStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("WeaponStaticMeshComponent");
+	WeaponNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("WeaponNiagaraComponent");
+	WeaponNiagaraComponent->SetupAttachment(WeaponStaticMeshComponent);
 
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationPitch = false;
@@ -232,6 +234,15 @@ UAS_Enemy* AEnemy_Base::GetEnemyAttributeSet_Implementation() const
 {
 	return Cast<UAS_Enemy>(AttributeSet);
 }
+
+void AEnemy_Base::SetSpeicalWeaponEffect_Implementation() const
+{
+	if (EnemyMovementComponent)
+	{
+		WeaponNiagaraComponent->SetAsset(EnemyMovementComponent->GetEnemyConfig()->SpecialWeaponFX);
+	}
+}
+
 
 UNiagaraSystem* AEnemy_Base::GetHitEffect_Implementation()
 {

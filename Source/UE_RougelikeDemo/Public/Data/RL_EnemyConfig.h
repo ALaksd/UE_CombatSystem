@@ -9,6 +9,7 @@
 
 
 class UNiagaraSystem;
+class UGA_EnemyAbilityBase;
 
 USTRUCT(BlueprintType)
 struct FEnemySkillAnimation
@@ -22,6 +23,10 @@ struct FEnemySkillAnimation
 	/** 允许的状态（清醒/混沌） */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	FGameplayTagContainer AllowedStates;
+
+	/** 特定条件解锁技能 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTagContainer RequiredOwnerTags; 
 
 	/** 动画选中权重 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
@@ -60,6 +65,9 @@ struct FEnemySkills
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	bool bIsPowerfulAttack = false;
 
+	/** 特定条件解锁强力技能 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Skill", meta = (EditCondition = "bIsPowerfulAttack == true"))
+	FGameplayTagContainer RequiredOwnerTags;
 
 	/** 攻击范围 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
@@ -165,10 +173,22 @@ public:
 	int32 SoulCount;
 
 	//敌人击中特效
-	UPROPERTY(EditDefaultsOnly, Category = "Enemy|HitFX")
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
 	UNiagaraSystem* HitFX;
 
+	//默认攻击拖尾
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
+	UNiagaraSystem* DefaultWeaponTrail;
+
+	//特殊攻击拖尾，主要用于附魔攻击等
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
+	UNiagaraSystem* SpecialWeaponTrail;
+
+	//特殊攻击武器特效，主要用于附魔攻击等
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
+	UNiagaraSystem* SpecialWeaponFX;
+
 	//敌人击中音效
-	UPROPERTY(EditDefaultsOnly, Category = "Enemy|HitFX")
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
 	USoundBase* HitSound;
 };

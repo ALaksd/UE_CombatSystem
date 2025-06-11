@@ -32,6 +32,9 @@ protected:
 	FBlackboardKeySelector bBroken;
 
 	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector bHalfLife;
+
+	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector bParry;
 
 	UPROPERTY(EditAnywhere)
@@ -39,4 +42,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FGameplayTagContainer ParryTags;
+
+	UPROPERTY(EditAnywhere)
+	FGameplayTag HalfLifeTag;
 };

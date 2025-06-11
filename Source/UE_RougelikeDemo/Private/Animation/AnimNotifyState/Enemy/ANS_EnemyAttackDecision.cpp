@@ -13,6 +13,8 @@
 #include <AbilitySystemInterface.h>
 #include "Engine/OverlapResult.h"
 #include <Kismet/GameplayStatics.h>
+#include <NiagaraFunctionLibrary.h>
+#include "NiagaraComponent.h"
 
 UANS_EnemyAttackDecision::UANS_EnemyAttackDecision()
 {
@@ -38,8 +40,29 @@ void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAn
 	if (AttackSound && OwnerActor)
 	{
 		UGameplayStatics::PlaySoundAtLocation(OwnerActor, AttackSound, OwnerActor->GetActorLocation());
-
 	}
+
+	URL_EnemyConfig* EnemyConfig = URL_AbilitySystemLibrary::GetEnemyConfig(OwnerActor);
+	if (EnemyConfig)
+	{
+		UNiagaraSystem* NiagaraEffect = SourceASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("EnemyState.HalfLife")) ? EnemyConfig->SpecialWeaponTrail : EnemyConfig->DefaultWeaponTrail;
+		
+		//创建并附加 Niagara 特效到插槽
+		if (NiagaraEffect && MeshComp)
+		{
+			AttachedNiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(
+				NiagaraEffect,
+				MeshComp,
+				FXAttachSocketName,         // 插槽名，例如 "hand_r"
+				FVector::ZeroVector,      // 位置偏移
+				FRotator::ZeroRotator,    // 旋转偏移
+				EAttachLocation::SnapToTarget,
+				true,                     // bAutoDestroy
+				true                      // bAutoActivate
+			);
+		}
+	}
+	
 }
 
 void UANS_EnemyAttackDecision::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
@@ -66,6 +89,13 @@ void UANS_EnemyAttackDecision::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnim
 	{
 		SourceASC->RemoveLooseGameplayTag(DamageTypeTag);
 		SourceASC->SetTagMapCount(DamageTypeTag, 0);
+	}
+
+	if (AttachedNiagaraComp)
+	{
+		AttachedNiagaraComp->Deactivate();     // 优雅地停止
+		AttachedNiagaraComp->DestroyComponent(); // 硬性清理（可选）
+		AttachedNiagaraComp = nullptr;
 	}
 }
 

@@ -26,6 +26,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector SelectedSkillKey;
 
+	//默认执行Tag
+	UPROPERTY(EditAnywhere)
+	FGameplayTag DefaultSkillTag;
+
 private:
 	void OnAbilityEnded(UGameplayAbility* EndedAbility);
 
