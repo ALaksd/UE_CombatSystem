@@ -30,6 +30,8 @@ public:
 	UFUNCTION()
 	void StopTrailEffect();
 
+	UFUNCTION()
+	void EnableFireRant(float ActiveTime);
 
 protected:
 	void RestoreAttachResourceAndSanity(float DamageMultiplier);
@@ -37,6 +39,17 @@ protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	UNiagaraComponent* TrailComponent;
 
+	// 火焰附魔特效
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	UNiagaraComponent* FireRantComponent;
+
+	// 火焰附魔拖尾特效
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	UNiagaraComponent* FireTrailComponent;
+
+	// 是否启用火焰附魔
+	bool bIsFireRant;
+	
 private:
 	void GetCurrentPointsLocation();
 	//将当前帧位置给到下一帧

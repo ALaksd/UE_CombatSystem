@@ -59,6 +59,11 @@ void UCloseCombatComponent::EndCombat() const
 	CurrentWeapon->StopTrailEffect();
 }
 
+void UCloseCombatComponent::EnableFireRant(float ActiveTime) const
+{
+	CurrentWeapon->EnableFireRant(ActiveTime);
+}
+
 void UCloseCombatComponent::SwitchWeapon(URLInventoryItemInstance* NewWeapon,FInheritedTagContainer Tags)
 {
 	// 销毁之前的武器

@@ -10,7 +10,7 @@ void UANS_ComboWindow::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequen
 	AActor* Owner = MeshComp->GetOwner();
 	if (!Owner) return;
 
-	//ÊÖ¶¯Ìí¼Ó±êÇ©
+	//ï¿½Ö¶ï¿½ï¿½ï¿½ï¿½Ó±ï¿½Ç©
 	UAbilitySystemBlueprintLibrary::AddLooseGameplayTags(Owner, ComboTag);
 }
 
@@ -19,6 +19,6 @@ void UANS_ComboWindow::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequence
 	AActor* Owner = MeshComp->GetOwner();
 	if (!Owner) return;
 
-	//ÒÆ³ý±êÇ©
+	//ï¿½Æ³ï¿½ï¿½ï¿½Ç©
 	UAbilitySystemBlueprintLibrary::RemoveLooseGameplayTags(Owner, ComboTag);
 }

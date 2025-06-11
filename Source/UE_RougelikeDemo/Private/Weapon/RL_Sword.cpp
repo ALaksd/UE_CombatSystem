@@ -24,6 +24,12 @@ ARL_Sword::ARL_Sword()
 
 	TrailComponent = CreateDefaultSubobject<UNiagaraComponent>("TrailComponent");
 	TrailComponent->SetupAttachment(Mesh);
+	
+	FireTrailComponent = CreateDefaultSubobject<UNiagaraComponent>("FireTrailComponent");
+	FireTrailComponent->SetupAttachment(Mesh);
+	
+	FireRantComponent = CreateDefaultSubobject<UNiagaraComponent>("FireRantComponent");
+	FireRantComponent->SetupAttachment(Mesh);
 }
 
 void ARL_Sword::Tick(float DeltaTime)
@@ -183,6 +189,10 @@ void ARL_Sword::StartTrailEffect()
 	{
 		TrailComponent->Activate(true);
 	}
+	if (FireTrailComponent&&bIsFireRant)
+	{
+		FireTrailComponent->Activate(true);
+	}
 	//if (AttackSound)
 	//{
 	//	UGameplayStatics::PlaySoundAtLocation(WeaponOwner, AttackSound, WeaponOwner->GetActorLocation());
@@ -194,6 +204,28 @@ void ARL_Sword::StopTrailEffect()
 	if (TrailComponent)
 	{
 		TrailComponent->Deactivate();
+	}
+	if (FireTrailComponent&&bIsFireRant)
+	{
+		FireTrailComponent->Deactivate();
+	}
+}
+
+void ARL_Sword::EnableFireRant(float ActiveTime)
+{
+	if (FireRantComponent && !bIsFireRant)
+	{
+		bIsFireRant=true;
+		FireRantComponent->Activate(true);
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle,[this]()
+			{
+				if (FireRantComponent)
+				{
+					bIsFireRant=false;
+					FireRantComponent->Activate(false);
+				}
+			},ActiveTime,false);
 	}
 }
 
