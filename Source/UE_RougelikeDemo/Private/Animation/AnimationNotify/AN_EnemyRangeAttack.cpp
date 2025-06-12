@@ -12,15 +12,14 @@ void UAN_EnemyRangeAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 
 	if (!MeshComp || !AttackActorClass) return;
 
-	FVector SpawnLoc = MeshComp->GetSocketLocation(SocketName);
-	FRotator SpawnRot = MeshComp->GetSocketRotation(SocketName);
-
-	FTransform SpawnTransform(SpawnRot, SpawnLoc);
-
 	AActor* OwnerActor = MeshComp->GetOwner();
 	UWorld* World = MeshComp->GetWorld();
 
-	RangeDamageParams.SpawnLocation = SpawnLoc;
+	FVector SpawnLoc = MeshComp->GetSocketLocation(SocketName);
+	FRotator SpawnRot = OwnerActor->GetActorForwardVector().Rotation();
+
+	FTransform SpawnTransform(SpawnRot, SpawnLoc);
+
 	RangeDamageParams.Ingisitor = OwnerActor;
 
 	if (World)
@@ -31,7 +30,7 @@ void UAN_EnemyRangeAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 			SpawnTransform,
 			OwnerActor,
 			nullptr,
-			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+			ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
 		);
 
 		if (AttackActor)

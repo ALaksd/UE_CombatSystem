@@ -92,9 +92,6 @@ struct FRangeDamageParams
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	float LifeTime = 1.0f;
 
-	UPROPERTY()
-	FVector SpawnLocation;
-
 	//伤害造成者
 	UPROPERTY()
 	AActor* Ingisitor;

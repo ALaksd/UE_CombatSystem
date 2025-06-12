@@ -45,7 +45,6 @@ void ARL_EnemyRangeAttack::InitAttack(FRangeDamageParams& InRangeDamageParams)
 	RectangleParams = InRangeDamageParams.RectangleParams;
 	DamageDetectionType = InRangeDamageParams.DamageDetectionType;
 	Ingisitor = InRangeDamageParams.Ingisitor;
-	Location = InRangeDamageParams.SpawnLocation;
 }
 
 void ARL_EnemyRangeAttack::StartAttack()
@@ -57,28 +56,46 @@ void ARL_EnemyRangeAttack::StartAttack()
 		ASC->AddLooseGameplayTag(DamageParams.DamageTypeTag, 1);
 	}
 
-	const FVector Center = Location; // 中心点
+	const FVector Center = GetActorLocation(); // 中心点
 
-	for (int32 i = 0; i < NumEffects; ++i)
+	if (NumEffects > 1)
 	{
-		// 1️⃣ 计算角度
-		float AngleDeg = (360.f / NumEffects) * i;
-		float AngleRad = FMath::DegreesToRadians(AngleDeg);
+		for (int32 i = 0; i < NumEffects; ++i)
+		{
+			// 1️⃣ 计算角度
+			float AngleDeg = (360.f / NumEffects) * i;
+			float AngleRad = FMath::DegreesToRadians(AngleDeg);
 
-		// 2️⃣ 计算位置
-		FVector Offset = FVector(FMath::Cos(AngleRad), FMath::Sin(AngleRad), 0.f) * CircleRadius;
-		FVector EffectLocation = Center + Offset;
+			// 2️⃣ 计算位置
+			FVector Offset = FVector(FMath::Cos(AngleRad), FMath::Sin(AngleRad), 0.f) * CircleRadius;
+			FVector EffectLocation = Center + Offset;
 
-		// 3️⃣ 可选：根据偏移方向旋转特效
-		FVector Direction = Offset.GetSafeNormal();
-		FRotator EffectRotation = Direction.Rotation();
+			// 3️⃣ 可选：根据偏移方向旋转特效
+			FVector Direction = Offset.GetSafeNormal();
+			FRotator EffectRotation = Direction.Rotation();
 
+			// 4️⃣ 生成特效
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				GetWorld(),
+				NiagaraEffect,
+				EffectLocation,
+				EffectRotation,
+				FVector(1.f),
+				true,
+				true,
+				ENCPoolMethod::None,
+				true
+			);
+		}
+	}
+	else
+	{
 		// 4️⃣ 生成特效
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			GetWorld(),
 			NiagaraEffect,
-			EffectLocation,
-			EffectRotation,
+			GetActorLocation(),
+			GetActorRotation(),
 			FVector(1.f),
 			true,
 			true,
@@ -96,7 +113,7 @@ void ARL_EnemyRangeAttack::StartAttack()
 		Ingisitor,
 		Hits,
 		ActorsToIgnore,
-		Location,
+		GetActorLocation(),
 		RectangleParams,
 		SphereRadius,
 		FRotator::ZeroRotator,

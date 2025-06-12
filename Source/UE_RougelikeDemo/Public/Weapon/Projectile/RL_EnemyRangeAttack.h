@@ -58,8 +58,6 @@ public:
 	UPROPERTY()
 	AActor* Ingisitor = nullptr;
 
-	FVector Location;
-
 	void InitAttack(FRangeDamageParams& InRangeDamageParams);
 	void StartAttack();
 	void EndAttack();
