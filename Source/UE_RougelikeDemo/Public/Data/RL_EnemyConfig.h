@@ -5,10 +5,9 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include <Abilities/GameplayAbility.h>
+#include "NiagaraSystem.h"
 #include "RL_EnemyConfig.generated.h"
 
-
-class UNiagaraSystem;
 class UGA_EnemyAbilityBase;
 
 USTRUCT(BlueprintType)
@@ -141,10 +140,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
 	TObjectPtr<UAnimMontage> ParryHitMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Enemy|Weapon")
-	TObjectPtr<UStaticMesh> WeaponSeletakMesh;
-
-
 	//敌人手持武器插槽
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|Weapon")
 	FName WeaponAttachSocket = "WeaponSocket";
@@ -160,10 +155,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")
 	int32 EnemyLevel = 1;
 
-	// 敌人骨骼网格体
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
-	TObjectPtr<USkeletalMesh> EnemySkeletalMesh;
-
 	// 敌人动画蓝图
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
 	TSubclassOf<UAnimInstance> EnemyAnimInstanceClass;
@@ -172,23 +163,61 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
 	int32 SoulCount;
 
+	//敌人击中音效
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
+	TObjectPtr<USoundBase> HitSound;
+
+	UFUNCTION(BlueprintCallable)
+	UNiagaraSystem* LoadHitFX() const {
+		return HitFX.LoadSynchronous();
+	}
+
+	UFUNCTION(BlueprintCallable)
+	UNiagaraSystem* LoadDefaultWeaponTrail() const {
+		return DefaultWeaponTrail.LoadSynchronous();
+	}
+
+	UFUNCTION(BlueprintCallable)
+	UNiagaraSystem* LoadSpecialWeaponTrail() const {
+		return SpecialWeaponTrail.LoadSynchronous();
+	}
+
+	UFUNCTION(BlueprintCallable)
+	UNiagaraSystem* LoadSpecialWeaponFX() const {
+		return SpecialWeaponFX.LoadSynchronous();
+	}
+
+	UFUNCTION(BlueprintCallable)
+	UStaticMesh* LoadWeaponStaticMesh() const {
+		return WeaponStaticMesh.LoadSynchronous();
+	}
+
+	UFUNCTION(BlueprintCallable)
+	USkeletalMesh* LoadEnemySkeletalMesh() const {
+		return EnemySkeletalMesh.LoadSynchronous();
+	}
+
+protected:
 	//敌人击中特效
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
-	UNiagaraSystem* HitFX;
+	TSoftObjectPtr<UNiagaraSystem> HitFX;
 
 	//默认攻击拖尾
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
-	UNiagaraSystem* DefaultWeaponTrail;
+	TSoftObjectPtr<UNiagaraSystem> DefaultWeaponTrail;
 
 	//特殊攻击拖尾，主要用于附魔攻击等
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
-	UNiagaraSystem* SpecialWeaponTrail;
+	TSoftObjectPtr<UNiagaraSystem> SpecialWeaponTrail;
 
 	//特殊攻击武器特效，主要用于附魔攻击等
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
-	UNiagaraSystem* SpecialWeaponFX;
+	TSoftObjectPtr<UNiagaraSystem>SpecialWeaponFX;
 
-	//敌人击中音效
-	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
-	USoundBase* HitSound;
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|Weapon")
+	TSoftObjectPtr<UStaticMesh> WeaponStaticMesh;
+
+	// 敌人骨骼网格体
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
+	TSoftObjectPtr<USkeletalMesh> EnemySkeletalMesh;
 };

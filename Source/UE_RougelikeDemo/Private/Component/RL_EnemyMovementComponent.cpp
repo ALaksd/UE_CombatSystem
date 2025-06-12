@@ -22,7 +22,14 @@ void URL_EnemyMovementComponent::InitializeComponent()
 		AActor* OwnerActor = GetOwner();
 		USkeletalMeshComponent* CharacterMesh = OwnerActor->FindComponentByClass<USkeletalMeshComponent>();
 
-		const UStaticMesh* WeaponMeshAsset = GetEnemyConfig() ? GetEnemyConfig()->WeaponSeletakMesh : nullptr;
+		//设置骨骼网格体和动画蓝图
+		if (EnemyConfig && EnemyConfig->LoadEnemySkeletalMesh() && EnemyConfig->EnemyAnimInstanceClass)
+		{
+			CharacterMesh->SetSkeletalMesh(EnemyConfig->LoadEnemySkeletalMesh());
+			CharacterMesh->SetAnimInstanceClass(EnemyConfig->EnemyAnimInstanceClass);
+		}
+
+		const UStaticMesh* WeaponMeshAsset = GetEnemyConfig() ? GetEnemyConfig()->LoadWeaponStaticMesh() : nullptr;
 		if (WeaponMeshAsset)
 		{
 			// 创建静态网格体组件
@@ -42,12 +49,6 @@ void URL_EnemyMovementComponent::InitializeComponent()
 					WeaponMeshComponent->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
 				}
 			}
-		}
-		//设置骨骼网格体和动画蓝图
-		if (EnemyConfig && EnemyConfig->EnemySkeletalMesh && EnemyConfig->EnemyAnimInstanceClass)
-		{
-			CharacterMesh->SetSkeletalMesh(EnemyConfig->EnemySkeletalMesh);
-			CharacterMesh->SetAnimInstanceClass(EnemyConfig->EnemyAnimInstanceClass);
 		}
 	}
 }
