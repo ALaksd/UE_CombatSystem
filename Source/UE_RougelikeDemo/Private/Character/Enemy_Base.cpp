@@ -239,14 +239,14 @@ void AEnemy_Base::SetSpeicalWeaponEffect_Implementation() const
 {
 	if (EnemyMovementComponent)
 	{
-		WeaponNiagaraComponent->SetAsset(EnemyMovementComponent->GetEnemyConfig()->SpecialWeaponFX);
+		WeaponNiagaraComponent->SetAsset(EnemyMovementComponent->GetEnemyConfig()->LoadSpecialWeaponFX());
 	}
 }
 
 
 UNiagaraSystem* AEnemy_Base::GetHitEffect_Implementation()
 {
-	return EnemyMovementComponent->GetEnemyConfig()->HitFX;
+	return EnemyMovementComponent->GetEnemyConfig()->LoadHitFX();
 }
 
 USoundBase* AEnemy_Base::GetHitSound_Implementation()

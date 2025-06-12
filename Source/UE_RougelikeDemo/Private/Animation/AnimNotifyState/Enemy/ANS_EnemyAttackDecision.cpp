@@ -45,7 +45,7 @@ void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAn
 	URL_EnemyConfig* EnemyConfig = URL_AbilitySystemLibrary::GetEnemyConfig(OwnerActor);
 	if (EnemyConfig)
 	{
-		UNiagaraSystem* NiagaraEffect = SourceASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("EnemyState.HalfLife")) ? EnemyConfig->SpecialWeaponTrail : EnemyConfig->DefaultWeaponTrail;
+		UNiagaraSystem* NiagaraEffect = SourceASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("EnemyState.HalfLife")) ? EnemyConfig->LoadSpecialWeaponTrail() : EnemyConfig->LoadDefaultWeaponTrail();
 		
 		//创建并附加 Niagara 特效到插槽
 		if (NiagaraEffect && MeshComp)
