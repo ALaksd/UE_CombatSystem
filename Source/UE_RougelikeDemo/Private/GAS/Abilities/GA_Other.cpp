@@ -7,6 +7,7 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Animation/AnimationNotify/AN_OtherAbility.h"
+#include "Component/CloseCombatComponent.h"
 #include "Data/Enums.h"
 #include "GameFramework/Character.h"
 

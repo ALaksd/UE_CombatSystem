@@ -28,6 +28,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Data")
 	E_SkillType SkillType;
 
+	// 火焰附魔的持续时间
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Data")
+	float ActiveTime = 1;
+	
 	// 触发的通知
 	FOnSkill OnSkill;
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;

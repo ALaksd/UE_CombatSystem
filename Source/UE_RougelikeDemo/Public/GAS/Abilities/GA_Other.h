@@ -11,6 +11,8 @@ enum class E_SkillType : uint8;
  *	通用技能GA
  *	播放动画然后监听动画通知
  *	根据通知返回的E_SkillType来应用相应的Effect
+ *
+ *	暂时仅用与火焰附魔技能
  */
 UCLASS()
 class UE_ROUGELIKEDEMO_API UGA_Other : public UGA_Base

@@ -46,6 +46,7 @@ public:
 	void StartCombat(float StaminaReduce,float ResilienceReduce) const;
 	void EndCombat() const;
 
+	void EnableFireRant(float ActiveTime) const;
 private:
 	UFUNCTION()
 	void SwitchWeapon(URLInventoryItemInstance* NewWeapo,FInheritedTagContainer Tags);
