@@ -70,7 +70,7 @@ struct FRangeDamageParams
 
 	// 环形的半径
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
-	float CircleRadius = 0.f;
+	float CircleRadius = 50.f;
 
 	//球形伤害检测范围
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Damage")
