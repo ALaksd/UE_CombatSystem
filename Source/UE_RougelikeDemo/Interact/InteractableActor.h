@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "InteractableInterface.h"
+#include "InteractionDataAsset.h"
 #include "GameFramework/Actor.h"
 #include "InteractableActor.generated.h"
 
@@ -25,9 +26,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interact")
 	UInteractionDataAsset* InteractionData;
 
+	// 是否为触碰式触发
+	UPROPERTY(EditDefaultsOnly)
+	bool IsTrigger;
+
 	// Overlap 回调
 	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
+	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 						AActor* OtherActor,
 						UPrimitiveComponent* OtherComp,
 						int32 OtherBodyIndex,
@@ -35,7 +40,7 @@ public:
 						const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent,
+	virtual  void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent,
 					  AActor* OtherActor,
 					  UPrimitiveComponent* OtherComp,
 					  int32 OtherBodyIndex);
@@ -48,4 +53,9 @@ public:
 
 	// 实现交互接口
 	virtual void Interact_Implementation(AActor* Interactor) override;
+
+	FText GetInteractHintText() const
+	{
+		return InteractionData ? InteractionData->InteractPrompt : FText::GetEmpty();
+	}
 };
