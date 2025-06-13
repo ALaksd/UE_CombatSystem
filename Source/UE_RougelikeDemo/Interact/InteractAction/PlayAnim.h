@@ -13,5 +13,13 @@ UCLASS()
 class UE_ROUGELIKEDEMO_API UPlayAnim : public UInteractActionBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<USkeletalMeshComponent*, UAnimSequence*> SkeletalToAnimMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<USkeletalMeshComponent*, UAnimMontage*> SkeletalToMontageMap;
+
+	virtual void Execute(AActor* Interactor, AActor* InteractedTarget) override;
 };

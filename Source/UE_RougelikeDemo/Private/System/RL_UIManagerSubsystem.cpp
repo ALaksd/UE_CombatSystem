@@ -248,7 +248,20 @@ void URL_UIManagerSubsystem::ResetUI()
 			{
 				InputSubsystem->RemoveMappingContext(LoadedContext);
 			}
+			if (const UInputMappingContext* LoadedDefaultContext = DefaultContext.LoadSynchronous())
+			{
+				InputSubsystem->AddMappingContext(LoadedDefaultContext, 0);
+			}
+
+			if (const UInputMappingContext* LoadedMoveContext = MoveContext.LoadSynchronous())
+			{
+				InputSubsystem->AddMappingContext(LoadedMoveContext, 0);
+
+			}
 		}
+
+		//恢复时间膨胀
+		UGameplayStatics::SetGlobalTimeDilation(this, 1.f);
 
 		// 设置为游戏模式
 		FInputModeGameOnly InputMode;

@@ -7,7 +7,7 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Component/RL_MovementComponent.h"
 #include "UE_RougelikeDemo/InventorySystem/InventoryComponent/RLInventoryComponent_Equipment.h"
-#include "UE_RougelikeDemo\InventorySystem\RLInventoryItemInstance.h"
+#include "UE_RougelikeDemo/InventorySystem/RLInventoryItemInstance.h"
 
 UGA_HealthBottle::UGA_HealthBottle()
 {

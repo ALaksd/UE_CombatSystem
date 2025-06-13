@@ -45,7 +45,10 @@ public:
 
 	void SetStack(int32 InitialQuantity = 1);
 
-	void ResetStack();
+	//血瓶专属
+	void ResetHealthBottle();
+	void UpgradeHealthBottle();
+	//end
 
 	/** 物品实例同样也需要GameplayTags去判断类别和属性,没有用到 */
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
@@ -72,6 +75,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Inventory")
 	int32 CurrentStack = 1;
 
+	//最大堆叠数量
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Inventory")
+	int32 MaxStack = 1;
 
 	//可动态修改的fragments
 	UPROPERTY()

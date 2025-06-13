@@ -46,7 +46,7 @@ void UBonfireAction::Execute(AActor* Interactor, AActor* InteractedTarget)
 				//设置传送点
 				if (URL_SavePointSubsystem* SavePointSubsystem = GameInstance->GetSubsystem<URL_SavePointSubsystem>())
 				{
-					SavePointSubsystem->SetCurrentSavaPoint(GetFName());
+					SavePointSubsystem->SetCurrentSavaPoint(InteractedTarget->GetFName());
 				}
 
 			}
