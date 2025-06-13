@@ -218,6 +218,6 @@ protected:
 	TSoftObjectPtr<UStaticMesh> WeaponStaticMesh;
 
 	// 敌人骨骼网格体
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy") 
 	TSoftObjectPtr<USkeletalMesh> EnemySkeletalMesh;
 };
