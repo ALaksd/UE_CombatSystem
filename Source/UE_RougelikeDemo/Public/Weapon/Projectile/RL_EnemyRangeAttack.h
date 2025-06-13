@@ -19,6 +19,7 @@ class UE_ROUGELIKEDEMO_API ARL_EnemyRangeAttack : public AActor
 
 public:
 	ARL_EnemyRangeAttack();
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -54,14 +55,46 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Damage")
 	EDetectionShapeType DamageDetectionType = EDetectionShapeType::Sphere;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	bool bPersistentDamageDetection = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	float DetectionInterval = 0.1f; // 每隔多久检测一次
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool bMoveForward = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool bRotateAroundCenter = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float MoveSpeed = 800.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float RotateSpeedDegPerSec = 90.f;
+
 	// 攻击者
 	UPROPERTY()
 	AActor* Ingisitor = nullptr;
 
+	UPROPERTY()
+	FVector CenterPoint; // 圆周中心点
+
+	UPROPERTY()
+	float CurrentAngleDeg = 0.f; // 当前旋转角度
+
+	FTimerHandle DamageTimerHandle;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* NSComp;
+
 	void InitAttack(FRangeDamageParams& InRangeDamageParams);
 	void StartAttack();
+	void PerformDamageDetection();
 	void EndAttack();
 
 private:
 	TArray<AActor*> AlreadyHitActors; // 已命中的目标
+
+	bool bStart;
 };

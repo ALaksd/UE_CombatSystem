@@ -8,11 +8,40 @@
 #include <Interface/RL_PlayerInterface.h>
 #include "AbilitySystemComponent.h"
 #include <AbilitySystemBlueprintLibrary.h>
+#include "NiagaraComponent.h"
 
 // Sets default values
 ARL_EnemyRangeAttack::ARL_EnemyRangeAttack()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+
+	NSComp = CreateDefaultSubobject<UNiagaraComponent>("NSComp");
+	NSComp->SetupAttachment(GetRootComponent());
+}
+
+void ARL_EnemyRangeAttack::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bStart)
+	{
+		// 圆周运动
+		if (bRotateAroundCenter)
+		{
+			CurrentAngleDeg += RotateSpeedDegPerSec * DeltaTime;
+			float AngleRad = FMath::DegreesToRadians(CurrentAngleDeg);
+
+			FVector Offset = FVector(FMath::Cos(AngleRad), FMath::Sin(AngleRad), 0.f) * (GetActorLocation() - CenterPoint).Size();
+			SetActorLocation(CenterPoint + Offset);
+		}
+
+		// 向前移动
+		if (bMoveForward)
+		{
+			AddActorWorldOffset(GetActorForwardVector() * MoveSpeed * DeltaTime, true);
+		}
+	}
+	
 }
 
 void ARL_EnemyRangeAttack::BeginPlay()
@@ -44,70 +73,56 @@ void ARL_EnemyRangeAttack::InitAttack(FRangeDamageParams& InRangeDamageParams)
 	SphereRadius = InRangeDamageParams.SphereRadius;
 	RectangleParams = InRangeDamageParams.RectangleParams;
 	DamageDetectionType = InRangeDamageParams.DamageDetectionType;
+	bPersistentDamageDetection = InRangeDamageParams.bPersistentDamageDetection;
+	DetectionInterval = InRangeDamageParams.DetectionInterval;
+	bMoveForward = InRangeDamageParams.bEnableForwardMove;
+	bRotateAroundCenter = InRangeDamageParams.bEnableCircularMove;
+	MoveSpeed = InRangeDamageParams.Speed;
+	RotateSpeedDegPerSec = InRangeDamageParams.RotateSpeed;
 	Ingisitor = InRangeDamageParams.Ingisitor;
 }
 
 void ARL_EnemyRangeAttack::StartAttack()
 {
-	// 添加Tag
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Ingisitor);
 	if (ASC)
 	{
 		ASC->AddLooseGameplayTag(DamageParams.DamageTypeTag, 1);
 	}
 
-	const FVector Center = GetActorLocation(); // 中心点
-
-	if (NumEffects > 1)
+	if (NSComp && NiagaraEffect)
 	{
-		for (int32 i = 0; i < NumEffects; ++i)
-		{
-			// 1️⃣ 计算角度
-			float AngleDeg = (360.f / NumEffects) * i;
-			float AngleRad = FMath::DegreesToRadians(AngleDeg);
+		NSComp->SetAsset(NiagaraEffect);
+		NSComp->Activate(true);
+	}
 
-			// 2️⃣ 计算位置
-			FVector Offset = FVector(FMath::Cos(AngleRad), FMath::Sin(AngleRad), 0.f) * CircleRadius;
-			FVector EffectLocation = Center + Offset;
+	bStart = true;
 
-			// 3️⃣ 可选：根据偏移方向旋转特效
-			FVector Direction = Offset.GetSafeNormal();
-			FRotator EffectRotation = Direction.Rotation();
-
-			// 4️⃣ 生成特效
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-				GetWorld(),
-				NiagaraEffect,
-				EffectLocation,
-				EffectRotation,
-				FVector(1.f),
-				true,
-				true,
-				ENCPoolMethod::None,
-				true
-			);
-		}
+	if (bPersistentDamageDetection)
+	{
+		// 启动定时检测
+		GetWorld()->GetTimerManager().SetTimer(
+			DamageTimerHandle,
+			this,
+			&ARL_EnemyRangeAttack::PerformDamageDetection,
+			DetectionInterval,
+			true // 循环
+		);
 	}
 	else
 	{
-		// 4️⃣ 生成特效
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			GetWorld(),
-			NiagaraEffect,
-			GetActorLocation(),
-			GetActorRotation(),
-			FVector(1.f),
-			true,
-			true,
-			ENCPoolMethod::None,
-			true
-		);
+		// 保留一次性检测作为回退方案
+		PerformDamageDetection();
 	}
+}
 
-	// 🟢 原有的伤害检测逻辑保持不变
+
+void ARL_EnemyRangeAttack::PerformDamageDetection()
+{
 	TArray<FHitResult> Hits;
 	TArray<AActor*> ActorsToIgnore;
 	ActorsToIgnore.Add(Ingisitor);
+	AlreadyHitActors.Empty();
 
 	URL_AbilitySystemLibrary::GetLivePlayersInArea(
 		Ingisitor,
@@ -116,29 +131,29 @@ void ARL_EnemyRangeAttack::StartAttack()
 		GetActorLocation(),
 		RectangleParams,
 		SphereRadius,
-		FRotator::ZeroRotator,
+		GetActorRotation(),
 		DamageDetectionType,
 		true,
-		2.f,
-		FColor::Emerald
+		0.f,
+		FColor::Orange
 	);
 
 	for (const FHitResult& Hit : Hits)
 	{
-		if (Hit.GetActor() && !AlreadyHitActors.Contains(Hit.GetActor()))
+		AActor* HitActor = Hit.GetActor();
+		if (HitActor && !AlreadyHitActors.Contains(HitActor))
 		{
 			URL_AbilitySystemLibrary::ApplyEnemyDamage(
 				Ingisitor,
-				Hit.GetActor(),
+				HitActor,
 				Hit.ImpactPoint,
 				Hit.ImpactNormal,
 				DamageParams
 			);
-			AlreadyHitActors.Add(Hit.GetActor());
+			AlreadyHitActors.Add(HitActor);
 		}
 	}
 }
-
 
 void ARL_EnemyRangeAttack::EndAttack()
 {
@@ -147,7 +162,12 @@ void ARL_EnemyRangeAttack::EndAttack()
 	{
 		ASC->RemoveLooseGameplayTag(DamageParams.DamageTypeTag, 1);
 	}
+	if (NSComp)
+	{
+		NSComp->Deactivate();   
+	}
 
+	GetWorld()->GetTimerManager().ClearTimer(DamageTimerHandle);
 	Destroy();
 }
 

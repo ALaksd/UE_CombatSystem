@@ -3,6 +3,7 @@
 
 #include "GAS/Abilities/GA_Dodge.h"
 
+#include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Animation/RL_AnimInstanceBase.h"
 #include "Component/RL_MovementComponent.h"
@@ -16,6 +17,7 @@ UGA_Dodge::UGA_Dodge()
 void UGA_Dodge::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	ActorInfo->AbilitySystemComponent->SetTagMapCount(FGameplayTag::RequestGameplayTag("State.Invincible"), 0);
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
