@@ -9,6 +9,7 @@
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryComponent.h"
 #include "RL_MovementComponent.generated.h"
 
+class UInteractComponent;
 class URLInventoryComponent_Equipment;
 struct FRLInventoryItemSlotHandle;
 class AInteractable_Base;
@@ -116,6 +117,9 @@ public:
 	TObjectPtr<URLInventoryComponent_Equipment> Backpack;
 
 	UPROPERTY()
+	TObjectPtr<UInteractComponent> InteractComp;
+
+	UPROPERTY()
 	TArray<FRLInventoryItemSlotHandle> Slots;
 	
 	FOnSwitchItem OnSwitchItem;
@@ -185,16 +189,6 @@ public:
 	// 角色移动组件
 	UPROPERTY()
 	UCharacterMovementComponent* characterMovement;
-
-	/***--------------------交互相关---------------------***/
-	
-	// 进入物品可拾取回调
-	void AddItemCanPickup(AItem_Pickup* ItemToPickup_T);
-	// 退出物品可拾取范围回调函数
-	void RemoveItemCanPickup(AItem_Pickup* ItemToPickup_T);
-
-	void AddInteractableActor(AInteractable_Base* InteractableActor_T);
-	void RemoveInteractableActor();
 	
 	//更新角色移动状态
 	UFUNCTION(BlueprintCallable)
@@ -212,11 +206,6 @@ public:
 	void FindLockOnTarget();
 	
 private:
-	UPROPERTY()
-	TArray<AItem_Pickup*> ItemsCanPickup;
-	UPROPERTY()
-	AItem_Pickup* ItemToPickup;
-	void UpdateItemToPickup();
 	// 计算两个向量间的夹角,返回角度
 	float CalculateAngleBetweenVectors(const FVector& VectorA, const FVector& VectorB);
 

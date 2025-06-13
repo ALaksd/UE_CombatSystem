@@ -16,7 +16,5 @@ class UE_ROUGELIKEDEMO_API UInteractActionBase : public UObject
 
 public:
 	/** 执行交互行为 */
-	UFUNCTION(BlueprintNativeEvent, Category = "Interact")
-	void Execute(AActor* Interactor, AActor* InteractedTarget);
-	virtual void Execute_Implementation(AActor* Interactor, AActor* InteractedTarget);
+	virtual void Execute(AActor* Interactor, AActor* InteractedTarget);
 };

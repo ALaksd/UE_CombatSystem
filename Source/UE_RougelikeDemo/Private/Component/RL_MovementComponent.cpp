@@ -20,6 +20,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Player/RL_PlayerState.h"
 #include "UE_RougelikeDemo/UE_RougelikeDemo.h"
+#include "UE_RougelikeDemo/Interact/InteractComponent.h"
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryComponent.h"
 #include "UE_RougelikeDemo/InventorySystem/RLInventoryItemDefinition.h"
 #include "UE_RougelikeDemo/InventorySystem/InventoryComponent/RLInventoryComponent_Equipment.h"
@@ -99,6 +100,8 @@ void URL_MovementComponent::BeginPlay()
 		CurrentUse = Slots[0];
 		UseIndex = 0;
 	}
+
+	InteractComp = ownerCharacter->FindComponentByClass<UInteractComponent>();
 }
 
 void URL_MovementComponent::Move(const FInputActionValue& Value)
@@ -161,30 +164,8 @@ void URL_MovementComponent::UpdateMovementState(EMovementState State)
 
 void URL_MovementComponent::Collect(const FInputActionValue& Value)
 {
-	if (ItemToPickup)
-	{
-		// 物品加入背包
-		ARL_PlayerState* PlayerState = Cast<ARL_PlayerState>(UGameplayStatics::GetPlayerState(GetWorld(),0));
-
-		//这里先暂时加入装备背包
-		URLInventoryComponent* BackpComponent = Cast<URLInventoryComponent>(PlayerState->FindComponentByClass(URLInventoryComponent::StaticClass()));
-		//URLInventoryComponent_Equipment* EquipComponent = PlayerState->FindComponentByClass<URLInventoryComponent_Equipment>();
-
-		if (BackpComponent)
-		{
-			BackpComponent->LootItem(ItemToPickup->ItemInstance);
-			// 销毁地上的物品
-			ItemToPickup->Destroy();
-		}
-	}
-	else
-	{
-		if (InteractableActor)
-		{
-			InteractableActor->TryInteract();
-			ownerCharacter->GetMovementComponent()->Velocity = FVector::ZeroVector;
-		}
-	}
+	InteractComp->TryInteract();
+	InteractComp->InteractWidgetInstance->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void URL_MovementComponent::Execute(const FInputActionValue& Value)
@@ -299,62 +280,9 @@ void URL_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	UpdateLockOnRotation(DeltaTime);
-	
-	UpdateItemToPickup();
 
 	// 当前敌人是否可处决
 	UpdateEnemyExecute();
-}
-
-void URL_MovementComponent::AddItemCanPickup(AItem_Pickup* ItemToPickup_T)
-{
-	ItemsCanPickup.Add(ItemToPickup_T);
-}
-
-void URL_MovementComponent::RemoveItemCanPickup(AItem_Pickup* ItemToPickup_T)
-{
-	ItemsCanPickup.Remove(ItemToPickup_T);
-}
-
-void URL_MovementComponent::UpdateItemToPickup()
-{
-	if (ItemsCanPickup.Num()>0)
-	{
-		// 计算角色正前方40度范围内距离角色最近的一个可拾取物品
-		FVector ForwardVector = ownerCharacter->GetActorForwardVector();
-		for (AItem_Pickup* Item : ItemsCanPickup)
-		{
-			// 物品与玩家之间的向量
-			FVector Dir = Item->GetActorLocation()-ownerCharacter->GetActorLocation();
-			Dir.Z=0;
-			ForwardVector.Z=0;
-			
-			float Angle = CalculateAngleBetweenVectors(ForwardVector,Dir);
-			if (Angle<40)
-			{
-				// 计算离玩家最近的Actor
-				if (ItemToPickup)
-				{
-					// 当前可拾取物品与玩家之间的向量 
-					FVector Dis = ItemToPickup->GetActorLocation()-ownerCharacter->GetActorLocation();
-					if (Dis.Length()>Dir.Length())
-					{
-						ItemToPickup=Item;
-					}
-				}
-				else
-					ItemToPickup=Item;
-			}
-		}
-
-		// TODO:将可拾取物品相关信息显示
-		// if (ItemToPickup)
-		// 	;
-	}
-	else
-	{
-		ItemToPickup=nullptr;
-	}
 }
 
 float URL_MovementComponent::CalculateAngleBetweenVectors(const FVector& VectorA, const FVector& VectorB)
@@ -376,16 +304,6 @@ float URL_MovementComponent::CalculateAngleBetweenVectors(const FVector& VectorA
 	float AngleDegrees = FMath::RadiansToDegrees(AngleRadians);
 
 	return AngleDegrees;
-}
-
-void URL_MovementComponent::AddInteractableActor(AInteractable_Base* InteractableActor_T)
-{
-	InteractableActor=InteractableActor_T;
-}
-
-void URL_MovementComponent::RemoveInteractableActor()
-{
-	InteractableActor=nullptr;
 }
 
 void URL_MovementComponent::DisableAllInput()
@@ -604,7 +522,7 @@ void URL_MovementComponent::UpdateLockOnRotation(float DeltaTime)
 	}
 
 	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(ownerCharacter->GetActorLocation(), CurrentTarget->GetActorLocation());
-	FRotator TargetRotation(0.f, LookAtRotation.Yaw, 0.f);
+	FRotator TargetRotation(LookAtRotation.Pitch, LookAtRotation.Yaw, 0.f);
 
 	if (CurrentMovementState != EMovementState::Running)
 	{

@@ -1,10 +1,9 @@
-
-
 #include "InteractableActor.h"
 
 #include "InteractActionBase.h"
 #include "InteractComponent.h"
 #include "InteractionDataAsset.h"
+#include "Character/RL_BaseCharacter.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
 
@@ -24,8 +23,13 @@ AInteractableActor::AInteractableActor()
 void AInteractableActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (ACharacter* Player = Cast<ACharacter>(OtherActor))
+	if (ARL_BaseCharacter* Player = Cast<ARL_BaseCharacter>(OtherActor))
 	{
+		if (IsTrigger)
+		{
+			Interact_Implementation(Player);
+			return;
+		}
 		if (UInteractComponent* InteractComp = Player->FindComponentByClass<UInteractComponent>())
 		{
 			InteractComp->RegisterInteractable(this);
@@ -36,8 +40,12 @@ void AInteractableActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 void AInteractableActor::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (ACharacter* Player = Cast<ACharacter>(OtherActor))
+	if (ARL_BaseCharacter* Player = Cast<ARL_BaseCharacter>(OtherActor))
 	{
+		if (IsTrigger)
+		{
+			return;
+		}
 		if (UInteractComponent* InteractComp = Player->FindComponentByClass<UInteractComponent>())
 		{
 			InteractComp->UnregisterInteractable(this);

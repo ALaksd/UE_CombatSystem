@@ -3,7 +3,7 @@
 
 #include "InteractActionBase.h"
 
-void UInteractActionBase::Execute_Implementation(AActor* Interactor, AActor* InteractedTarget)
+void UInteractActionBase::Execute(AActor* Interactor, AActor* InteractedTarget)
 {
 	
 }

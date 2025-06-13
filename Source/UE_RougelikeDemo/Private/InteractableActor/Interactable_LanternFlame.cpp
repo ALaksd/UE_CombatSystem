@@ -23,12 +23,9 @@
 AInteractable_LanternFlame::AInteractable_LanternFlame()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
-	SphereCom = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
-	SetRootComponent(SphereCom);
-
+	
 	StaticMeshCom = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
-	StaticMeshCom->SetupAttachment(SphereCom);
+	StaticMeshCom->SetupAttachment(InteractCollision);
 
 	Box = CreateDefaultSubobject<UBoxComponent>("Box");
 	Box->SetupAttachment(GetRootComponent());
@@ -37,53 +34,6 @@ AInteractable_LanternFlame::AInteractable_LanternFlame()
 	Box->SetCollisionObjectType(ECC_WorldStatic);
 	Box->SetCollisionResponseToAllChannels(ECR_Ignore); // 对所有通道响应为 Overlap
 	Box->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	
-}
-
-void AInteractable_LanternFlame::TryInteract()
-{
-	//如果已经激活则显示UI
-	if (bIsActive)
-	{
-		if (ARL_HUD* RLHUD = Cast<ARL_HUD>(PlayerController->GetHUD()))
-		{
-			if (URL_LanternFlameController* LanternFlameWidgetController = RLHUD->GetLanternFlameWidgetController())
-			{
-				// 初始化数据
-				LanternFlameWidgetController->Initialize(SkillList);
-
-				UGameInstance* GameInstance = GetWorld()->GetGameInstance();
-				if (GameInstance)
-				{
-					if (URL_UIManagerSubsystem* UIManager = GameInstance->GetSubsystem<URL_UIManagerSubsystem>())
-					{
-						WBP_SavePoint = UIManager->AddNewWidget(WBP_SavePointClass, UGameplayStatics::GetPlayerController(this, 0));
-					}
-				}
-
-				// 初始化UI
-				WBP_SavePoint->SetWidgetController(LanternFlameWidgetController);
-				LanternFlameWidgetController->BroadcastInitialValue();
-				InitPointName();
-
-				
-				// 回复理智
-				if (URL_SanitySubsystem* SanitySubsystem = GameInstance->GetSubsystem<URL_SanitySubsystem>())
-					SanitySubsystem->RestoreSanityToMax();
-
-				//设置传送点
-				if (URL_SavePointSubsystem* SavePointSubsystem = GameInstance->GetSubsystem<URL_SavePointSubsystem>())
-				{
-					SavePointSubsystem->SetCurrentSavaPoint(GetFName());
-				}
-
-			}
-		}
-	}
-	else //没有激活则激活
-	{
-		ActivatePoint();
-	}
 	
 }
 
@@ -145,29 +95,8 @@ void AInteractable_LanternFlame::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SphereCom->OnComponentBeginOverlap.AddDynamic(this,&AInteractable_LanternFlame::OnComBeginOverlap);
-	SphereCom->OnComponentEndOverlap.AddDynamic(this,&AInteractable_LanternFlame::OnComEndOverlap);
-
 	PlayerController=Cast<ARL_BasePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(),0));
 
 	Box->OnComponentBeginOverlap.AddDynamic(this, &AInteractable_LanternFlame::OnBoxOverlap);
 
-}
-
-void AInteractable_LanternFlame::OnComBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-	bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (ARL_BaseCharacter* Player = Cast<ARL_BaseCharacter>(OtherActor))
-	{
-		Player->FindComponentByClass<URL_MovementComponent>()->AddInteractableActor(this);
-	}
-}
-
-void AInteractable_LanternFlame::OnComEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (ARL_BaseCharacter* Player = Cast<ARL_BaseCharacter>(OtherActor))
-	{
-		Player->FindComponentByClass<URL_MovementComponent>()->RemoveInteractableActor();
-	}
 }

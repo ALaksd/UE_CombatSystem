@@ -7,6 +7,8 @@
 #include "InteractComponent.generated.h"
 
 
+class UTextBlock;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_ROUGELIKEDEMO_API UInteractComponent : public UActorComponent
 {
@@ -23,6 +25,16 @@ public:
 	void RegisterInteractable(AActor* InteractableActor);
 	void UnregisterInteractable(AActor* InteractableActor);
 
+	// UUserWidget 派生类
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> InteractWidgetClass;
+
+	UPROPERTY()
+	UUserWidget* InteractWidgetInstance;
+	
+	UPROPERTY()
+	UTextBlock* InteractTextBlock;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -34,8 +46,7 @@ protected:
 	AActor* GetBestInteractable() const;
 
 	// 显示/隐藏交互提示（可蓝图扩展）
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnInteractTargetChanged(AActor* NewTarget);
+	void OnInteractTargetChanged(AActor* InteractableActor);
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

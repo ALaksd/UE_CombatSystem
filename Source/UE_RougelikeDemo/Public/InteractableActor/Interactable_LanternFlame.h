@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InteractableActor/Interactable_Base.h"
+#include "UE_RougelikeDemo/Interact/InteractableActor.h"
 #include "Interactable_LanternFlame.generated.h"
 
 class ARL_BasePlayerController;
@@ -18,20 +19,17 @@ class ARL_EnemySpawnPoint;
 
 //DECLARE_DELEGATE_OneParam()
 UCLASS()
-class UE_ROUGELIKEDEMO_API AInteractable_LanternFlame : public AInteractable_Base
+class UE_ROUGELIKEDEMO_API AInteractable_LanternFlame : public AInteractableActor
 {
 	GENERATED_BODY()
 
 public:
 	AInteractable_LanternFlame();
-
-	UPROPERTY(EditDefaultsOnly,Category="LanternFlame|Components")
-	TObjectPtr<USphereComponent> SphereCom;
 	UPROPERTY(EditDefaultsOnly,Category="LanternFlame|Components")
 	TObjectPtr<UStaticMeshComponent> StaticMeshCom;
 
 	// 交互回调,由输入处触发
-	virtual void TryInteract() override;
+	//virtual void TryInteract() override;
 
 	UPROPERTY(EditDefaultsOnly,Category="LanternFlame|Datas")
 	TSubclassOf<URL_UserWidget> WBP_SavePointClass;
@@ -46,36 +44,6 @@ public:
 	void InitPointName();
 
 	void ResetEnemySpawn();
-	
-protected:
-	void ActivatePoint();
-
-
-	//蓝图实现事件，在ActivatePoint里调用，用于设置激活特效等以及弹出UI等
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnPointActivaete();
-
-	/** 敌人生成 */
-	UFUNCTION()
-	virtual void OnBoxOverlap(UPrimitiveComponent* OverlapedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UBoxComponent> Box;
-
-	UPROPERTY(EditAnywhere,Category = "LanternFlame|Enemy")
-	TArray<ARL_EnemySpawnPoint*> SpawnPoints;
-
-	//是否已生成敌人，传送后应该重置
-	UPROPERTY(BlueprintReadWrite)
-	bool bSpawned = false;
-
-private:
-	virtual void BeginPlay() override;
-
-	UFUNCTION()
-	void OnComBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
-	UFUNCTION()
-	void OnComEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UPROPERTY(EditDefaultsOnly,Category="LanternFlame|Datas")
 	TObjectPtr<UDataTable> SkillList;
@@ -86,4 +54,28 @@ private:
 	//是否激活
 	bool bIsActive;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UBoxComponent> Box;
+
+	UPROPERTY(EditAnywhere,Category = "LanternFlame|Enemy")
+	TArray<ARL_EnemySpawnPoint*> SpawnPoints;
+
+	void ActivatePoint();
+protected:
+	//蓝图实现事件，在ActivatePoint里调用，用于设置激活特效等以及弹出UI等
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPointActivaete();
+
+	/** 敌人生成 */
+	UFUNCTION()
+	virtual void OnBoxOverlap(UPrimitiveComponent* OverlapedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+
+	//是否已生成敌人，传送后应该重置
+	UPROPERTY(BlueprintReadWrite)
+	bool bSpawned = false;
+
+private:
+	virtual void BeginPlay() override;
+	
 };

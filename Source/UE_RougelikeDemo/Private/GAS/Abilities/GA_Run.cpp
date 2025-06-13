@@ -14,26 +14,15 @@ UGA_Run::UGA_Run()
 void UGA_Run::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                               const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	if (CommitAbility(Handle, ActorInfo, ActivationInfo))
-	{
-		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-		ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->UpdateMovementState(EMovementState::Running);
-		ActorInfo->AvatarActor->FindComponentByClass<UCharacterMovementComponent>()->bOrientRotationToMovement = true; // 是否朝向移动方向
-		ActorInfo->AvatarActor->FindComponentByClass<UCharacterMovementComponent>()->bUseControllerDesiredRotation = false;
-
-		UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
-		FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
-		FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(GE_RunCost, 1.f, EffectContextHandle);
-		ActiveRunConstHandle = ASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
-	}
-		
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->UpdateMovementState(EMovementState::Running);
+	ActorInfo->AvatarActor->FindComponentByClass<UCharacterMovementComponent>()->bOrientRotationToMovement = true; // 是否朝向移动方向
+	ActorInfo->AvatarActor->FindComponentByClass<UCharacterMovementComponent>()->bUseControllerDesiredRotation = false;
 }
 
 void UGA_Run::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
-	ASC->RemoveActiveGameplayEffect(ActiveRunConstHandle);
 	ActorInfo->AvatarActor->FindComponentByClass<URL_MovementComponent>()->UpdateMovementState(EMovementState::Jogging);
 	if (ActorInfo->AvatarActor->Tags.Contains(FName("IsLocking")))
 	{
