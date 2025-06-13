@@ -163,6 +163,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
 	int32 SoulCount;
 
+	//敌人视觉感知范围
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy|AI")
+	float SightRadius = 2000.f;
+
+	//敌人追踪玩家范围
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy|AI")
+	float MaxTarceDistance = 2000.f;
+
 	//敌人击中音效
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
 	TObjectPtr<USoundBase> HitSound;

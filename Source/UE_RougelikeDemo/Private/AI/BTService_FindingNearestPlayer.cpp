@@ -9,6 +9,7 @@
 #include "Character/Enemy_Base.h"
 #include "Interface/RL_EnemyInterface.h"
 #include <System/RL_SanitySubsystem.h>
+#include <GAS/RL_AbilitySystemLibrary.h>
 
 void UBTService_FindingNearestPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
@@ -49,6 +50,16 @@ void UBTService_FindingNearestPlayer::TickNode(UBehaviorTreeComponent& OwnerComp
 
 	// 距离限制检测
 	bool bIsTargetValid = false;
+	if (MaxTrackingDistance <= 0.1f)
+	{
+		URL_EnemyConfig* EnemyConfig = URL_AbilitySystemLibrary::GetEnemyConfig(OwningPawn);
+		if (EnemyConfig)
+		{
+			MaxTrackingDistance = EnemyConfig->MaxTarceDistance;
+		}
+	}
+
+
 	if (ClosestActor && ClosestDistance <= MaxTrackingDistance)
 	{
 		// 设置焦点到目标
@@ -87,11 +98,19 @@ void UBTService_FindingNearestPlayer::TickNode(UBehaviorTreeComponent& OwnerComp
 		if (AEnemy_Base* Enemy = Cast<AEnemy_Base>(OwningPawn))
 			Enemy->bIsFindPlayer = false;
 		
+		UBTFunctionLibrary::SetBlackboardValueAsBool(this, bFindPlayerSelector, false);
+
+		//设置血条消失
+		if (OwningPawn->Implements<URL_EnemyInterface>())
+		{
+			IRL_EnemyInterface::Execute_SetHealthBarVisible(OwningPawn, false);
+		}
+
+
 	}
 
 	// 更新黑板键值
 	UBTFunctionLibrary::SetBlackboardValueAsObject(this, TargetToFollowSelector, ClosestActor);
 	UBTFunctionLibrary::SetBlackboardValueAsFloat(this, DistanceToTargetSelector, ClosestDistance);
-	UBTFunctionLibrary::SetBlackboardValueAsBool(this, IsTargetValidSelector, bIsTargetValid);
 	IRL_EnemyInterface::Execute_SetCombatTarget(OwningPawn, ClosestActor);
 }

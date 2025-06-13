@@ -92,8 +92,29 @@ struct FRangeDamageParams
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	float LifeTime = 1.0f;
 
-	UPROPERTY()
-	FVector SpawnLocation;
+	//是否向前移动
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bEnableForwardMove = false;
+	
+	//是否圆周运动
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bEnableCircularMove = false;
+
+	//向前移动速度
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Speed = 800.f;
+
+	//角速度
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float RotateSpeed = 90.f;
+
+	//是否持续伤害
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	bool bPersistentDamageDetection = false;
+
+	// 每隔多久检测一次
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	float DetectionInterval = 0.1f;
 
 	//伤害造成者
 	UPROPERTY()

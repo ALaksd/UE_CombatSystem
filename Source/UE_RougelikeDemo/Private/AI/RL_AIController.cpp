@@ -9,6 +9,7 @@
 #include "Perception/AISense_Hearing.h"
 #include "Perception/AIPerceptionSystem.h"
 #include <Interface/RL_EnemyInterface.h>
+#include <GAS/RL_AbilitySystemLibrary.h>
 
 
 ARL_AIController::ARL_AIController()
@@ -49,6 +50,17 @@ ARL_AIController::ARL_AIController()
 	AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ARL_AIController::OnPerceptionUpdated);
 }
 
+void ARL_AIController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	URL_EnemyConfig* EnemyConfig = URL_AbilitySystemLibrary::GetEnemyConfig(InPawn);
+	if (EnemyConfig)
+	{
+		SightRadius = EnemyConfig->SightRadius;
+	}
+}
+
 
 void ARL_AIController::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
@@ -64,13 +76,4 @@ void ARL_AIController::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 			IRL_EnemyInterface::Execute_SetHealthBarVisible(GetPawn(),true);
 		}
 	}
-	//else
-	//{
-	//		// 丢失感知（例如离开视野）
-	//	UObject* CurrentTarget = GetBlackboardComponent()->GetValueAsObject(FName("TargetToFollow"));
-	//	if (CurrentTarget == Actor)
-	//	{
-	//		GetBlackboardComponent()->SetValueAsBool(FName("bFindTarget"), false);
-	//	}
-	//}
 }
