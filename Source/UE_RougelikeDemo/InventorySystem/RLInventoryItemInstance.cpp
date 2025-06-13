@@ -57,9 +57,16 @@ void URLInventoryItemInstance::SetStack(int32 InitialQuantity)
 	CurrentStack = FMath::Clamp(InitialQuantity, 1, GetMaxStack());
 }
 
-void URLInventoryItemInstance::ResetStack()
+void URLInventoryItemInstance::ResetHealthBottle()
 {
-	CurrentStack = ItemDefinition->InitialStack;;
+	CurrentStack = MaxStack;
+}
+
+void URLInventoryItemInstance::UpgradeHealthBottle()
+{
+	CurrentStack++;
+	MaxStack++;
+	MaxStack = FMath::Min(ItemDefinition->MaxStack, MaxStack);
 }
 
 void URLInventoryItemInstance::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
@@ -74,6 +81,7 @@ void URLInventoryItemInstance::SetItemDefinition(URLInventoryItemDefinition* InD
 {
 	ItemDefinition = InDefinition;
 	CurrentStack = InDefinition->InitialStack;
+	MaxStack = ItemDefinition->InitialStack;
 }
 
 int32 URLInventoryItemInstance::GetInitialStack()

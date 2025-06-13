@@ -165,7 +165,11 @@ void URL_MovementComponent::UpdateMovementState(EMovementState State)
 void URL_MovementComponent::Collect(const FInputActionValue& Value)
 {
 	InteractComp->TryInteract();
-	InteractComp->InteractWidgetInstance->SetVisibility(ESlateVisibility::Hidden);
+	if (InteractComp->InteractWidgetInstance)
+	{
+		InteractComp->InteractWidgetInstance->SetVisibility(ESlateVisibility::Hidden);
+
+	}
 }
 
 void URL_MovementComponent::Execute(const FInputActionValue& Value)
