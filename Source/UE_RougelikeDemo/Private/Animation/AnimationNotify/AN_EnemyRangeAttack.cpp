@@ -18,10 +18,12 @@ void UAN_EnemyRangeAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 	if (!World || !OwnerActor) return;
 
 	const FVector Center = MeshComp->GetSocketLocation(SocketName);
+	
 
 	if (RangeDamageParams.NumEffects <= 1)
 	{
 		FTransform SpawnTransform(OwnerActor->GetActorForwardVector().Rotation(), Center);
+		RangeDamageParams.Ingisitor = OwnerActor;
 
 		auto AttackActor = World->SpawnActorDeferred<ARL_EnemyRangeAttack>(
 			AttackActorClass,
