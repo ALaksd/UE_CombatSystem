@@ -167,8 +167,7 @@ void URL_MovementComponent::Collect(const FInputActionValue& Value)
 	InteractComp->TryInteract();
 	if (InteractComp->InteractWidgetInstance)
 	{
-		InteractComp->InteractWidgetInstance->SetVisibility(ESlateVisibility::Hidden);
-
+		InteractComp->InteractWidgetInstance->SetVisibility(ESlateVisibility::Hidden);	
 	}
 }
 
