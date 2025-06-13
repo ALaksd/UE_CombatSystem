@@ -25,6 +25,8 @@ public:
 	bool bFocus = true;
 protected:
 
+	void OnPossess(APawn* InPawn) override;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UBehaviorTreeComponent> BehaviorTreeComponent;
 

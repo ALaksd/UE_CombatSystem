@@ -15,12 +15,11 @@ class UE_ROUGELIKEDEMO_API UGA_AttackBase : public UGA_Base
 {
 	GENERATED_BODY()
 public:
-
 	UGA_AttackBase();
-
+	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-
+	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Attack")
 	TObjectPtr<UAnimMontage> AttackMontage;
 

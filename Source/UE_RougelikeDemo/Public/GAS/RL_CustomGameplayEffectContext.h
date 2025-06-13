@@ -45,9 +45,11 @@ struct FRLGameplayEffectContext :public FGameplayEffectContext
 public:
 	FORCEINLINE FVector GetKnockBackImpulse() const { return KnockBackImpulse; }
 	FORCEINLINE FName GetHitBoneName() const { return HitBoneName; }
+	FORCEINLINE TSharedPtr<FGameplayTag> GetDamageType() const { return DamageType; }
 
 	FORCEINLINE void SetKnockBackImpulse(FVector& InKnockBackImpulse) { KnockBackImpulse = InKnockBackImpulse; }
 	FORCEINLINE void SetHitBoneName(FName& InHitBoneName) { HitBoneName = InHitBoneName; }
+	FORCEINLINE void SetDamageType(TSharedPtr<FGameplayTag> InDamageType) { DamageType = InDamageType; }
 
 	/** Returns the actual struct used for serialization, subclasses must override this! */
 	virtual UScriptStruct* GetScriptStruct() const
@@ -76,6 +78,8 @@ protected:
 
 	UPROPERTY()
 	FName HitBoneName = FName();
+
+	TSharedPtr<FGameplayTag> DamageType;
 };
 
 template<>

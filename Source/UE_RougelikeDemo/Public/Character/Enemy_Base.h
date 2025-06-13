@@ -80,6 +80,8 @@ public:
 	FORCEINLINE virtual bool isDead_Implementation() const override {return bDead;}
 	virtual void KnockBack_Implementation(const FVector& KonckBackImpulse) override;
 	virtual void ShowDamageText_Implementation(float Damage) override;
+	virtual UNiagaraSystem* GetHitEffect_Implementation() override;
+	virtual USoundBase* GetHitSound_Implementation() override;
 	/** End ComvatInterface */
 
 	/** EnemyInterface */
@@ -88,8 +90,9 @@ public:
 	virtual void SetHealthBarVisible_Implementation(bool bVisible) const override;
 	virtual void SetLockTarget_Implementation(bool bInLock) override;
 	virtual void SetLockUIRed_Implementation(bool bInRedLock) override;
-	virtual void SetHitShake_Implementation(FName BoneName, FVector ShakeDirection, float Magnitude);
-	virtual UAS_Enemy* GetEnemyAttributeSet_Implementation() const;
+	virtual void SetHitShake_Implementation(FName BoneName, FVector ShakeDirection, float Magnitude) override;
+	virtual UAS_Enemy* GetEnemyAttributeSet_Implementation() const override;
+	virtual void SetSpeicalWeaponEffect_Implementation() const override;
 	/** End EnemyInterface */
 
 	/*-------------------------破防状态相关-------------------------*/
@@ -137,6 +140,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
 	float GuardBrokenTime;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Attribute | State")
+	USoundBase* GuardBrokenSound;
+
 	// 体力减少回复时间
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | State")
 	float StaminaReduceTime;
@@ -179,11 +185,17 @@ protected:
 	TObjectPtr<UStaticMeshComponent> WeaponStaticMeshComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	TObjectPtr<UNiagaraComponent> WeaponNiagaraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	TObjectPtr<URL_EnemyMovementComponent> EnemyMovementComponent;
 	
 	/** UI */
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> HealthBar;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> LockUIWidgetComponnet;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnHealthChanged;
@@ -191,11 +203,19 @@ protected:
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnMaxHealthChanged;
 
+	//体力条，破防
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnMaxStaminaChanged;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnStaminaChanged;
+
+	//韧性条，蹒跚
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxResilienceChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnResilienceChanged;
 
 	/** Hit */
 

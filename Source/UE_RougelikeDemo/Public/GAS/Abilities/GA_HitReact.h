@@ -26,8 +26,6 @@ protected:
 	TSubclassOf<UGameplayEffect> HitReactEffectClass;
 
 private:
-	UPROPERTY()
-	FActiveGameplayEffectHandle ActiveHitReact;
 
 	UFUNCTION()
 	void OnMontageCompleted();

@@ -31,6 +31,9 @@ public:
 	UPROPERTY(EditAnywhere,Category="Attribute")
 	FGameplayTag Tag;
 
+	UPROPERTY(EditAnywhere, Category = "Attribute")
+	FName ArrowSpawnSocket;
+
 	// 火球生成位置,旋转
 	UPROPERTY(EditAnywhere,Category="Attribute | Fireball")
 	TArray<FFirebalLocation> Locations;

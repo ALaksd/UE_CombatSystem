@@ -12,32 +12,63 @@ void UAN_EnemyRangeAttack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 
 	if (!MeshComp || !AttackActorClass) return;
 
-	FVector SpawnLoc = MeshComp->GetSocketLocation(SocketName);
-	FRotator SpawnRot = MeshComp->GetSocketRotation(SocketName);
-
-	FTransform SpawnTransform(SpawnRot, SpawnLoc);
-
 	AActor* OwnerActor = MeshComp->GetOwner();
 	UWorld* World = MeshComp->GetWorld();
 
-	if (World)
+	if (!World || !OwnerActor) return;
+
+	const FVector Center = MeshComp->GetSocketLocation(SocketName);
+
+	if (RangeDamageParams.NumEffects <= 1)
 	{
-		// 延迟生成（用于初始化前设置参数）
+		FTransform SpawnTransform(OwnerActor->GetActorForwardVector().Rotation(), Center);
+
 		auto AttackActor = World->SpawnActorDeferred<ARL_EnemyRangeAttack>(
 			AttackActorClass,
 			SpawnTransform,
 			OwnerActor,
 			nullptr,
-			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+			ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
 		);
 
 		if (AttackActor)
 		{
-			// 你可以在这里设置变量、传递数据等
-			AttackActor->InitAttack(SpawnLoc, NiagaraEffect,SphereRadius,DamageParams,OwnerActor);
-
-			// 正式完成生成
+			AttackActor->InitAttack(RangeDamageParams);
 			UGameplayStatics::FinishSpawningActor(AttackActor, SpawnTransform);
+		}
+	}
+	else
+	{
+		for (int32 i = 0; i < RangeDamageParams.NumEffects; ++i)
+		{
+			float AngleDeg = (360.f / RangeDamageParams.NumEffects) * i;
+			float AngleRad = FMath::DegreesToRadians(AngleDeg);
+
+			FVector Offset = FVector(FMath::Cos(AngleRad), FMath::Sin(AngleRad), 0.f) * RangeDamageParams.CircleRadius;
+			FVector SpawnLoc = Center + Offset;
+			FRotator SpawnRot = Offset.GetSafeNormal().Rotation();
+
+			FTransform SpawnTransform(SpawnRot, SpawnLoc);
+			RangeDamageParams.Ingisitor = OwnerActor;
+
+			auto AttackActor = World->SpawnActorDeferred<ARL_EnemyRangeAttack>(
+				AttackActorClass,
+				SpawnTransform,
+				OwnerActor,
+				nullptr,
+				ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
+			);
+			if (AttackActor)
+			{
+				AttackActor->InitAttack(RangeDamageParams);
+
+				if (RangeDamageParams.bEnableCircularMove)
+				{
+					AttackActor->CenterPoint = Center; // 旋转中心为出生点
+					AttackActor->CurrentAngleDeg = AngleDeg;
+				}
+				UGameplayStatics::FinishSpawningActor(AttackActor, SpawnTransform);
+			}
 		}
 	}
 }

@@ -5,6 +5,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AbilitySystemComponent.h"
 #include "AIController.h"
+#include <AbilitySystemBlueprintLibrary.h>
 
 void UBTService_PowerSkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaTime)
 {
@@ -37,6 +38,7 @@ void UBTService_PowerSkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, 
 		}
 	}
 
+
 	if (PowerfulSkills.Num() > 0)
 	{
    		PowerfulSkills.Sort([](const FEnemySkills& A, const FEnemySkills& B) {
@@ -46,7 +48,6 @@ void UBTService_PowerSkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, 
 		// 如果有可用技能，选择第一个（优先级最高的）
 		const FEnemySkills& SelectedSkill = PowerfulSkills[0];
 		FString String = *SelectedSkill.AbilityTag.ToString();
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, String);
 		OwnerComp.GetBlackboardComponent()->SetValueAsName(SelectedPowerSkillKey.SelectedKeyName, SelectedSkill.AbilityTag.GetTagName());
 	}
 
@@ -54,11 +55,15 @@ void UBTService_PowerSkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, 
 
 bool UBTService_PowerSkillDecision::CheckSkillCondition(const FEnemySkills& Skill, AAIController* AIController)
 {
+	UAbilitySystemComponent* OwnerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(AIController->GetPawn());
+
 	bool bPower = Skill.bIsPowerfulAttack;
+	bool bOwnerTagsMatch = Skill.RequiredOwnerTags.IsEmpty() || (OwnerASC && OwnerASC->HasAllMatchingGameplayTags(Skill.RequiredOwnerTags));
 	bool bNotCoolDown = !GetAbilitySystem(AIController->GetPawn())->HasMatchingGameplayTag(
 		FGameplayTag::RequestGameplayTag(FName(FString::Printf(TEXT("Cooldown.%s"), *Skill.AbilityTag.ToString())))
 	);
-	return bPower && bNotCoolDown;
+
+	return bPower && bNotCoolDown && bOwnerTagsMatch;
 }
 
 UAbilitySystemComponent* UBTService_PowerSkillDecision::GetAbilitySystem(APawn* Pawn) const

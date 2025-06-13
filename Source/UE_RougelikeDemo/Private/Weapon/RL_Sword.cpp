@@ -14,6 +14,7 @@
 #include <RL_CharacterSelectionWidget.cpp>
 
 #include "GAS/AS/AS_Enemy.h"
+#include <AbilitySystemBlueprintLibrary.h>
 
 
 ARL_Sword::ARL_Sword()
@@ -23,6 +24,12 @@ ARL_Sword::ARL_Sword()
 
 	TrailComponent = CreateDefaultSubobject<UNiagaraComponent>("TrailComponent");
 	TrailComponent->SetupAttachment(Mesh);
+	
+	FireTrailComponent = CreateDefaultSubobject<UNiagaraComponent>("FireTrailComponent");
+	FireTrailComponent->SetupAttachment(Mesh);
+	
+	FireRantComponent = CreateDefaultSubobject<UNiagaraComponent>("FireRantComponent");
+	FireRantComponent->SetupAttachment(Mesh);
 }
 
 void ARL_Sword::Tick(float DeltaTime)
@@ -84,6 +91,16 @@ void ARL_Sword::Tick(float DeltaTime)
 								CueParams.Normal = OutHits[j].ImpactNormal;  //击中法向
 								CueParams.PhysicalMaterial = OutHits[j].PhysMaterial;  //击中物理材质
 								CueParams.NormalizedMagnitude = DamageMultiplier;  //击中强度,根据武器的倍率来计算
+
+								//如果是处决，强度*5倍
+								if (UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor))
+								{
+									if (ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("EnemyState.Execute")))
+									{
+										CueParams.NormalizedMagnitude *= 5.f;
+									}
+								}
+								
 
 								IAbilitySystemInterface* TargetAbilityStystemInterface = Cast<IAbilitySystemInterface>(HitActor);
 								if (TargetAbilityStystemInterface)
@@ -172,10 +189,14 @@ void ARL_Sword::StartTrailEffect()
 	{
 		TrailComponent->Activate(true);
 	}
-	if (AttackSound)
+	if (FireTrailComponent&&bIsFireRant)
 	{
-		UGameplayStatics::PlaySoundAtLocation(WeaponOwner, AttackSound, WeaponOwner->GetActorLocation());
+		FireTrailComponent->Activate(true);
 	}
+	//if (AttackSound)
+	//{
+	//	UGameplayStatics::PlaySoundAtLocation(WeaponOwner, AttackSound, WeaponOwner->GetActorLocation());
+	//}
 }
 
 void ARL_Sword::StopTrailEffect()
@@ -183,6 +204,28 @@ void ARL_Sword::StopTrailEffect()
 	if (TrailComponent)
 	{
 		TrailComponent->Deactivate();
+	}
+	if (FireTrailComponent&&bIsFireRant)
+	{
+		FireTrailComponent->Deactivate();
+	}
+}
+
+void ARL_Sword::EnableFireRant(float ActiveTime)
+{
+	if (FireRantComponent && !bIsFireRant)
+	{
+		bIsFireRant=true;
+		FireRantComponent->Activate(true);
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle,[this]()
+			{
+				if (FireRantComponent)
+				{
+					bIsFireRant=false;
+					FireRantComponent->Activate(false);
+				}
+			},ActiveTime,false);
 	}
 }
 

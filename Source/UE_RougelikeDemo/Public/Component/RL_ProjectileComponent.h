@@ -17,6 +17,9 @@ class UE_ROUGELIKEDEMO_API URL_ProjectileComponent : public URL_WeaponCompoment
 public:	
 	URL_ProjectileComponent();
 
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Settings")
+	bool bUseStaticMesh = false;
+	
 	// 拉弓
 	void PullBow(float Damage,FGameplayTag DamageTag,AActor* Target);
 
@@ -48,6 +51,8 @@ private:
 
 	template <typename  T>
 	T* SpawnWeapon(TSubclassOf<T> SpawnClass);
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	
 };

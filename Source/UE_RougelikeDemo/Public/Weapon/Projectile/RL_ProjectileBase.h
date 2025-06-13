@@ -48,23 +48,23 @@ protected:
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | Base")
 	float LifeTime;
 
-	// 发射物移动速度
+	// // 发射物移动速度
 	UPROPERTY(EditDefaultsOnly,Category="Attribute | Base")
 	float MoveSpeed;
 		
-	// 发射物初始移动速度
-	UPROPERTY(EditDefaultsOnly,Category="Attribute | Base")
-	float InitSpeed;
+	// // 发射物初始移动速度
+	// UPROPERTY(EditDefaultsOnly,Category="Attribute | Base")
+	// float InitSpeed;
 	
 	// 发射物最大移动速度
-	UPROPERTY(EditDefaultsOnly,Category="Attribute | Base")
-	float MaxSpeed;
+	// UPROPERTY(EditDefaultsOnly,Category="Attribute | Base")
+	// float MaxSpeed;
 
 	// 发射物伤害
-	UPROPERTY(EditDefaultsOnly,Category="Attribute | Damage")
+	//UPROPERTY(EditDefaultsOnly,Category="Attribute | Damage")
 	float Damage;
 
-	UPROPERTY(EditDefaultsOnly,Category="Attribute | Damage")
+	//UPROPERTY(EditDefaultsOnly,Category="Attribute | Damage")
 	FGameplayTag DamageTag;
 
 	// 要攻击的character的Tag
@@ -75,6 +75,9 @@ protected:
 	UFUNCTION()
 	virtual void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
+	//抛射物击中后产生的物理效果
+	UFUNCTION()
+	virtual void OnProjectileHit(UPrimitiveComponent* HitComponent, const FHitResult& HitResult);
 	
 private:
 	virtual void BeginPlay() override;

@@ -65,4 +65,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 
 	void SwitchWeaponTypeForAnim(E_WeaponType InWeaponType);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UNiagaraSystem* GetHitEffect();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	USoundBase* GetHitSound();
 };

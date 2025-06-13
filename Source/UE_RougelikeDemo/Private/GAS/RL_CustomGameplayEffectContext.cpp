@@ -42,9 +42,13 @@ bool FRLGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bool
 		{
 			RepBits |= 1 << 8;
 		}
+		if (DamageType->IsValid())
+		{
+			RepBits |= 1 << 9;
+		}
 	}
 
-	Ar.SerializeBits(&RepBits, 20);
+	Ar.SerializeBits(&RepBits, 9);
 
 	if (RepBits & (1 << 0))
 	{
@@ -99,6 +103,17 @@ bool FRLGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bool
 		HitBoneName = FName(*BoneString);
 	}
 
+	if (RepBits & (1 << 13))
+	{
+		if (Ar.IsLoading())
+		{
+			if (!DamageType.IsValid())
+			{
+				DamageType = TSharedPtr<FGameplayTag>(new FGameplayTag());
+			}
+		}
+		DamageType->NetSerialize(Ar, Map, bOutSuccess);
+	}
 
 	if (Ar.IsLoading())
 	{

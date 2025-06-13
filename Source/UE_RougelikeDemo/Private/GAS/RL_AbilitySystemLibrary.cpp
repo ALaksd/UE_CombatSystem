@@ -237,6 +237,19 @@ FName URL_AbilitySystemLibrary::GetHitBoneName(const FGameplayEffectContextHandl
 	return FName();
 }
 
+FGameplayTag URL_AbilitySystemLibrary::GetDamageTypeTag(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FRLGameplayEffectContext* RPGEffectContext = static_cast<const FRLGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		if (RPGEffectContext->GetDamageType().IsValid())
+		{
+			return *RPGEffectContext->GetDamageType();
+		}
+
+	}
+	return FGameplayTag();
+}
+
 void URL_AbilitySystemLibrary::SetKonckBackImpulse(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FVector InKonckBackImpulse)
 {
 	if (FRLGameplayEffectContext* RPGEffectContext = static_cast<FRLGameplayEffectContext*>(EffectContextHandle.Get()))
@@ -250,6 +263,15 @@ void URL_AbilitySystemLibrary::SetHitBoneName(UPARAM(ref)FGameplayEffectContextH
 	if (FRLGameplayEffectContext* RPGEffectContext = static_cast<FRLGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
 		RPGEffectContext->SetHitBoneName(InHitBoneName);
+	}
+}
+
+void URL_AbilitySystemLibrary::SetDamageTypeTag(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FGameplayTag DamageTypeTag)
+{
+	if (FRLGameplayEffectContext* RPGEffectContext = static_cast<FRLGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		const TSharedPtr<FGameplayTag> DamageType = MakeShared<FGameplayTag>(DamageTypeTag);
+		RPGEffectContext->SetDamageType(DamageType);
 	}
 }
 
@@ -341,7 +363,7 @@ void URL_AbilitySystemLibrary::ApplyEnemyDamage(AActor* OwnerActor, AActor* Targ
 
 	// 执行GameplayCue, 受击反馈
 	FGameplayCueParameters CueParams;
-	CueParams.Instigator = TargetActor; // 击中者，就是玩家
+	CueParams.Instigator = OwnerActor; // 造成伤害的Actor
 	CueParams.Location = HitLocation; // 击中位置
 	CueParams.Normal = HitNormal;  // 击中法向
 	CueParams.NormalizedMagnitude = IntensityMultiplier;
@@ -373,15 +395,18 @@ bool URL_AbilitySystemLibrary::HandleParry(AActor* OwnerActor, AActor* TargetAct
 	const FGameplayTag ParryTag = FGameplayTag::RequestGameplayTag("State.BounceBack");
 	const FGameplayTag ParryContinuousTag = FGameplayTag::RequestGameplayTag("State.BounceBack.Continuous");
 	const FGameplayTag RedDamageTag = FGameplayTag::RequestGameplayTag("damage.Red");
+	const FGameplayTag RangeDamageTag = FGameplayTag::RequestGameplayTag("damage.Range");
 
 	// 检查玩家是否有弹反Tag
 	bool bPlayerHasParry = TargetASC->HasMatchingGameplayTag(ParryTag);
 	bool bPlayerHasContinuous = TargetASC->HasMatchingGameplayTag(ParryContinuousTag);
 
-	// 检查敌人是否有红光攻击Tag
-	bool bEnemyRedAttack = SourceASC->HasMatchingGameplayTag(RedDamageTag);
+	// 检查伤害类型
+	bool bEnemyRedAttack = DamageParams.DamageTypeTag.MatchesTagExact(RedDamageTag);
+	bool bEnemyRangeAttack = DamageParams.DamageTypeTag.MatchesTagExact(RangeDamageTag);
 
-	bool bCanParry = (bPlayerHasParry || bPlayerHasContinuous) && bEnemyRedAttack;
+	//弹反条件，玩家有弹反或者持续弹反Tag并且敌人是红光攻击或者远程攻击
+	bool bCanParry = (bPlayerHasParry || bPlayerHasContinuous) && (bEnemyRedAttack || bEnemyRangeAttack);
 
 	if (bCanParry)
 	{
@@ -391,47 +416,54 @@ bool URL_AbilitySystemLibrary::HandleParry(AActor* OwnerActor, AActor* TargetAct
 		ParryCueParams.Instigator = OwnerActor; // 击中者，敌人
 		ParryCueParams.Location = HitLocation; // 击中位置
 		ParryCueParams.Normal = HitNormal;  // 击中法向
+		ParryCueParams.NormalizedMagnitude = GetEnemyConfig(OwnerActor)->HitThreshold; //弹反阈值时间
+		ParryCueParams.RawMagnitude = DamageParams.KnockDistance; //当前击退值
 		TargetASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Parry"), ParryCueParams);
 
-		// 2. 减少属性
-		UAS_Enemy* AS;
-		if (OwnerActor->Implements<URL_EnemyInterface>())
+		//只有近战红光攻击才弹射
+		if (bEnemyRedAttack)
 		{
-			AS = IRL_EnemyInterface::Execute_GetEnemyAttributeSet(OwnerActor);
-			if (AS)
+			// 2. 减少属性
+			UAS_Enemy* AS;
+			if (OwnerActor->Implements<URL_EnemyInterface>())
 			{
-				ApplyChangeAttributeEffect(
-					SourceASC,
-					AS->GetStaminaAttribute(),
-					-DamageParams.BreakingValue
-				);
-			}
-		}
-
-		// 3. 敌人播放弹反受击动画
-		if (DamageParams.KnockDistance >= GetEnemyConfig(OwnerActor)->HitThreshold)
-		{
-			if (ACharacter* EnemyCharacter = Cast<ACharacter>(OwnerActor))
-			{
-				UAnimInstance* AnimInstance = EnemyCharacter->GetMesh()->GetAnimInstance();
-				UAnimMontage* ParryHitMontage = GetEnemyConfig(OwnerActor)->ParryHitMontage;
-				if (AnimInstance && ParryHitMontage)
+				AS = IRL_EnemyInterface::Execute_GetEnemyAttributeSet(OwnerActor);
+				if (AS)
 				{
-					AnimInstance->StopAllMontages(0.1f);
-					AnimInstance->Montage_Play(ParryHitMontage);
+					ApplyChangeAttributeEffect(
+						SourceASC,
+						AS->GetStaminaAttribute(),
+						-DamageParams.BreakingValue
+					);
 				}
 			}
 
-			FGameplayTag EnemyGuardBrokenTag = FGameplayTag::RequestGameplayTag("EnemyState.ParryHit");
-			SourceASC->AddLooseGameplayTag(EnemyGuardBrokenTag);
-
-			FTimerHandle TimerHandle;
-			OwnerActor->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [SourceASC, EnemyGuardBrokenTag]()
+			// 3. 敌人播放弹反受击动画
+			if (DamageParams.KnockDistance >= GetEnemyConfig(OwnerActor)->HitThreshold)
+			{
+				if (ACharacter* EnemyCharacter = Cast<ACharacter>(OwnerActor))
 				{
-					SourceASC->RemoveLooseGameplayTag(EnemyGuardBrokenTag);
-				}, 1.0f, false);
-		}
+					UAnimInstance* AnimInstance = EnemyCharacter->GetMesh()->GetAnimInstance();
+					UAnimMontage* ParryHitMontage = GetEnemyConfig(OwnerActor)->ParryHitMontage;
+					if (AnimInstance && ParryHitMontage)
+					{
+						AnimInstance->StopAllMontages(0.1f);
+						AnimInstance->Montage_Play(ParryHitMontage);
+					}
+				}
 
+				FGameplayTag EnemyGuardBrokenTag = FGameplayTag::RequestGameplayTag("EnemyState.ParryHit");
+				SourceASC->AddLooseGameplayTag(EnemyGuardBrokenTag);
+
+				FTimerHandle TimerHandle;
+				OwnerActor->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [SourceASC, EnemyGuardBrokenTag]()
+					{
+						SourceASC->RemoveLooseGameplayTag(EnemyGuardBrokenTag);
+					}, 1.0f, false);
+			}
+
+		}
+	
 		// 4. 玩家后退
 		if (TargetActor->Implements<URL_CombatInterface>())
 		{

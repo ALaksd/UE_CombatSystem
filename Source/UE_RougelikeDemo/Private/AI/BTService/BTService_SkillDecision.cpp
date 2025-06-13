@@ -36,6 +36,19 @@ void UBTService_SkillDecision::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		Blackboard->SetValueAsBool(bParry.SelectedKeyName, false);
 	}
 
+	//半血状态判断
+	bool bHasHalfLifeTag = ASC && ASC->HasMatchingGameplayTag(HalfLifeTag);
+
+	//半血时激活一次技能
+	if (bHasHalfLifeTag)
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(bHalfLife.SelectedKeyName, true);
+	}
+	else
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(bHalfLife.SelectedKeyName, false);
+
+	}
 
 	//玩家位置信息更新
 	AActor* Player = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(Target.SelectedKeyName));

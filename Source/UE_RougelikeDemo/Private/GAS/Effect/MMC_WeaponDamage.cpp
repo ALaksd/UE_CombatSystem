@@ -40,12 +40,6 @@ float UMMC_WeaponDamage::CalculateBaseMagnitude_Implementation(const FGameplayEf
 	GetCapturedAttributeMagnitude(SkillMultiplierDef, Spec, EvaluateParameters, SkillMultiplier);
 	GetCapturedAttributeMagnitude(BuffDamageDef, Spec, EvaluateParameters, BuffDamage);
 
-	// 获取武器等级
-	//ICombatInterface* TargetCombatInterface = Cast<ICombatInterface>(TargetASC->GetAvatarActor());
-	//const int32 WeaponLevel = TargetCombatInterface ? TargetCombatInterface->GetWeaponLevel() : 1;
-
-	//  计算最终伤害
-	//const float BaseWeaponDamage = YourWeaponDamageCurve->GetFloatValue(WeaponLevel);
 	return WeaponDamage * SkillMultiplier + BuffDamage;	
 }
 

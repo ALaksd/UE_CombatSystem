@@ -42,29 +42,40 @@ void ARL_Bow::FireProjectile(bool bIsOneFire)
 {
 }
 
-void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag,AActor* Target)
- {
+void ARL_Bow::SpawnArrow(float Damage, FGameplayTag DamageTag, AActor* Target)
+{
+	// 获取插槽的位置信息
 	FVector SocketLocation = SkeletalMeshComponent->GetSocketLocation(SpawnSocke);
-	FRotator SocketRotation = SkeletalMeshComponent->GetSocketRotation(SpawnSocke);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s"), *SocketRotation.ToString()));
-	
-	SocketRotation.Yaw += 90;
-	FTransform SpawnTransform =FTransform(); //FTransform(SocketRotation,SocketLocation,FVector(1,1,1));
+
+	// 获取插槽的旋转信息
+	FRotator SocketRotation;
+
+	// 如果有目标，计算箭矢的方向
+	FVector Direction = FVector::ZeroVector;
+	if (Target)
+	{
+		Direction = (Target->GetActorLocation() - SocketLocation).GetSafeNormal();
+		// 计算箭矢应朝向目标的旋转
+		SocketRotation = Direction.Rotation();
+	}
+
+	// 设置箭矢的生成位置和旋转
+	FTransform SpawnTransform(SocketRotation, SocketLocation);
 
 	// 生成箭矢
-	Arrow = GetWorld()->SpawnActor<ARL_ProjectileBase>(ArrowClass,SpawnTransform);
-	Arrow->TargetActor=Target;
-	Arrow->SetWeaponOwner(WeaponOwner);
+	Arrow = GetWorld()->SpawnActor<ARL_ProjectileBase>(ArrowClass, SpawnTransform);
+	if (Arrow)
+	{
+		Arrow->TargetActor = Target;
+		Arrow->SetWeaponOwner(WeaponOwner);
 
-	//Arrow->SetActorRotation(SocketRotation);
-	
-	// 将箭矢绑到弓弦上
-	EAttachmentRule LocationRules = EAttachmentRule::KeepRelative;
-	EAttachmentRule RotationRules = EAttachmentRule::KeepWorld;
-	EAttachmentRule ScaleRules = EAttachmentRule::KeepWorld;
-	FAttachmentTransformRules Rules = FAttachmentTransformRules(LocationRules,RotationRules,ScaleRules,false);
-	Arrow->AttachToComponent(GetMesh(),Rules,SpawnSocke);
-	
+		// 将箭矢绑到弓弦上
+		EAttachmentRule LocationRules = EAttachmentRule::KeepWorld;
+		EAttachmentRule RotationRules = EAttachmentRule::KeepRelative;
+		EAttachmentRule ScaleRules = EAttachmentRule::KeepWorld;
+		FAttachmentTransformRules Rules = FAttachmentTransformRules(LocationRules, RotationRules, ScaleRules, false);
+		Arrow->AttachToComponent(GetMesh(), Rules, SpawnSocke);
+	}
 }
 
 void ARL_Bow::SpawnArrow(float Damage,FGameplayTag DamageTag,TArray<FFirebalLocation> Locations ,AActor* Target)

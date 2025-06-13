@@ -88,4 +88,5 @@ private:
 
 	// 攻击检测范围
 	FTransform SocketTrans;
+
 };

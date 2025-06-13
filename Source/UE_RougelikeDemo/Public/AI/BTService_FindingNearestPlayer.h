@@ -25,8 +25,7 @@ protected:
 	FBlackboardKeySelector DistanceToTargetSelector;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FBlackboardKeySelector IsTargetValidSelector;
+	FBlackboardKeySelector bFindPlayerSelector;
 
-	UPROPERTY(BlueprintReadOnly,EditAnywhere)
-	float MaxTrackingDistance = 1500.f;
+	float MaxTrackingDistance = 0.f;
 };

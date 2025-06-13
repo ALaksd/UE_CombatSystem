@@ -17,20 +17,15 @@ class UE_ROUGELIKEDEMO_API UAN_EnemyRangeAttack : public UAnimNotify
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, Category = "Attack|Effect")
-	UNiagaraSystem* NiagaraEffect;
+	UPROPERTY(EditAnywhere)
+	FRangeDamageParams RangeDamageParams;
 
-	UPROPERTY(EditAnywhere, Category = "Attack|Location")
+	UPROPERTY(EditAnywhere)
 	FName SocketName;
-
-	UPROPERTY(EditAnywhere, Category = "Attack|Location")
-	float SphereRadius = 100.f;
-
-	UPROPERTY(EditAnywhere, Category = "Attack|Damage")
-	FDamageParams DamageParams;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> AttackActorClass;
 
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
+
 };

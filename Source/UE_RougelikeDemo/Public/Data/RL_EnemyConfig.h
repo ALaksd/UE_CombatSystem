@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include <Abilities/GameplayAbility.h>
+#include "NiagaraSystem.h"
 #include "RL_EnemyConfig.generated.h"
 
+class UGA_EnemyAbilityBase;
 
 USTRUCT(BlueprintType)
 struct FEnemySkillAnimation
@@ -20,6 +22,10 @@ struct FEnemySkillAnimation
 	/** 允许的状态（清醒/混沌） */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	FGameplayTagContainer AllowedStates;
+
+	/** 特定条件解锁技能 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTagContainer RequiredOwnerTags; 
 
 	/** 动画选中权重 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
@@ -58,6 +64,9 @@ struct FEnemySkills
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
 	bool bIsPowerfulAttack = false;
 
+	/** 特定条件解锁强力技能 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Skill", meta = (EditCondition = "bIsPowerfulAttack == true"))
+	FGameplayTagContainer RequiredOwnerTags;
 
 	/** 攻击范围 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill")
@@ -131,10 +140,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|AnimMontage")
 	TObjectPtr<UAnimMontage> ParryHitMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Enemy|Weapon")
-	TObjectPtr<UStaticMesh> WeaponSeletakMesh;
-
-
 	//敌人手持武器插槽
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy|Weapon")
 	FName WeaponAttachSocket = "WeaponSocket";
@@ -150,10 +155,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")
 	int32 EnemyLevel = 1;
 
-	// 敌人骨骼网格体
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
-	TObjectPtr<USkeletalMesh> EnemySkeletalMesh;
-
 	// 敌人动画蓝图
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
 	TSubclassOf<UAnimInstance> EnemyAnimInstanceClass;
@@ -161,4 +162,70 @@ public:
 	//敌人死后掉落的魂量
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
 	int32 SoulCount;
+
+	//敌人视觉感知范围
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy|AI")
+	float SightRadius = 2000.f;
+
+	//敌人追踪玩家范围
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy|AI")
+	float MaxTarceDistance = 2000.f;
+
+	//敌人击中音效
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
+	TObjectPtr<USoundBase> HitSound;
+
+	UFUNCTION(BlueprintCallable)
+	UNiagaraSystem* LoadHitFX() const {
+		return HitFX.LoadSynchronous();
+	}
+
+	UFUNCTION(BlueprintCallable)
+	UNiagaraSystem* LoadDefaultWeaponTrail() const {
+		return DefaultWeaponTrail.LoadSynchronous();
+	}
+
+	UFUNCTION(BlueprintCallable)
+	UNiagaraSystem* LoadSpecialWeaponTrail() const {
+		return SpecialWeaponTrail.LoadSynchronous();
+	}
+
+	UFUNCTION(BlueprintCallable)
+	UNiagaraSystem* LoadSpecialWeaponFX() const {
+		return SpecialWeaponFX.LoadSynchronous();
+	}
+
+	UFUNCTION(BlueprintCallable)
+	UStaticMesh* LoadWeaponStaticMesh() const {
+		return WeaponStaticMesh.LoadSynchronous();
+	}
+
+	UFUNCTION(BlueprintCallable)
+	USkeletalMesh* LoadEnemySkeletalMesh() const {
+		return EnemySkeletalMesh.LoadSynchronous();
+	}
+
+protected:
+	//敌人击中特效
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
+	TSoftObjectPtr<UNiagaraSystem> HitFX;
+
+	//默认攻击拖尾
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
+	TSoftObjectPtr<UNiagaraSystem> DefaultWeaponTrail;
+
+	//特殊攻击拖尾，主要用于附魔攻击等
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
+	TSoftObjectPtr<UNiagaraSystem> SpecialWeaponTrail;
+
+	//特殊攻击武器特效，主要用于附魔攻击等
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|VFX")
+	TSoftObjectPtr<UNiagaraSystem>SpecialWeaponFX;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy|Weapon")
+	TSoftObjectPtr<UStaticMesh> WeaponStaticMesh;
+
+	// 敌人骨骼网格体
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy") 
+	TSoftObjectPtr<USkeletalMesh> EnemySkeletalMesh;
 };

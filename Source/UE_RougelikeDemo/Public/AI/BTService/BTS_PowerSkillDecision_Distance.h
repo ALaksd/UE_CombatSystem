@@ -20,4 +20,5 @@ public:
 protected:
 
 	virtual bool CheckSkillCondition(const FEnemySkills& Skill, AAIController* AIController);
+
 };

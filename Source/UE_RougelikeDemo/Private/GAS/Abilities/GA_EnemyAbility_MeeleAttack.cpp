@@ -66,6 +66,7 @@
 	{
 		URL_SanitySubsystem* SanitySubsystem = UGameInstance::GetSubsystem<URL_SanitySubsystem>(GetWorld()->GetGameInstance());
 		E_SanityState CurrentSanityState = E_SanityState::Sane; // 默认状态
+		UAbilitySystemComponent* OwnerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 
 		if (SanitySubsystem)
 		{
@@ -90,14 +91,15 @@
 		TArray<FEnemySkillAnimation> ValidAnims;
 		for (const auto& Anim : Anims)
 		{
-			// 允许的状态为空表示全部允许
-			if (Anim.AllowedStates.IsEmpty() || Anim.AllowedStates.HasTagExact(StateTag))
+			bool bSanityMatch = Anim.AllowedStates.IsEmpty() || Anim.AllowedStates.HasTagExact(StateTag);
+			bool bOwnerTagsMatch = Anim.RequiredOwnerTags.IsEmpty() || (OwnerASC && OwnerASC->HasAllMatchingGameplayTags(Anim.RequiredOwnerTags));
+
+			if (bSanityMatch && bOwnerTagsMatch)
 			{
 				if (Anim.Montage != EnemyMove->GetLastUsedMontage())
 				{
 					ValidAnims.Add(Anim);
 				}
-				
 			}
 		}
 

@@ -51,6 +51,76 @@ struct FDamageParams
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float RestoreSanity;
 };
+
+USTRUCT(BlueprintType)
+struct FRangeDamageParams
+{
+	GENERATED_BODY()
+
+	//生成特效
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Effect")
+	UNiagaraSystem* NiagaraEffect;
+
+	//等待StartTime生成
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Effect")
+	float StartTime = 0.f;
+	// 生成数量
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	int32 NumEffects = 1;
+
+	// 环形的半径
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	float CircleRadius = 50.f;
+
+	//球形伤害检测范围
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Damage")
+	float SphereRadius = 100.f;
+
+	//矩形伤害检测范围
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	FVector RectangleParams = FVector(100.f);
+
+	//检测类型
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	EDetectionShapeType DamageDetectionType = EDetectionShapeType::Sphere;
+
+	//伤害参数
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	FDamageParams DamageParams;
+
+	//伤害判定持续时间
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	float LifeTime = 1.0f;
+
+	//是否向前移动
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bEnableForwardMove = false;
+	
+	//是否圆周运动
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bEnableCircularMove = false;
+
+	//向前移动速度
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Speed = 800.f;
+
+	//角速度
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float RotateSpeed = 90.f;
+
+	//是否持续伤害
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	bool bPersistentDamageDetection = false;
+
+	// 每隔多久检测一次
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	float DetectionInterval = 0.1f;
+
+	//伤害造成者
+	UPROPERTY()
+	AActor* Ingisitor;
+};
+
 /**
  * 
  */
@@ -93,11 +163,18 @@ public:
 
 	static FName GetHitBoneName(const FGameplayEffectContextHandle& EffectContextHandle);
 
+	UFUNCTION(BlueprintPure, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
+
+	static FGameplayTag GetDamageTypeTag(const FGameplayEffectContextHandle& EffectContextHandle);
+
 	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
 	static void SetKonckBackImpulse(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FVector InKonckBackImpulse);
 
 	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
 	static void SetHitBoneName(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FName InHitBoneName);
+
+	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
+	static void SetDamageTypeTag(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, FGameplayTag DamageTypeTag);
 
 	//动态添加持续GE,增加Tag
 	UFUNCTION(BlueprintCallable, Category = "RPGAbilitySystemLibrary|GamepalyEffect")
