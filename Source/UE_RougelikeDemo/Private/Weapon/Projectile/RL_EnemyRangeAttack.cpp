@@ -122,7 +122,7 @@ void ARL_EnemyRangeAttack::PerformDamageDetection()
 	TArray<FHitResult> Hits;
 	TArray<AActor*> ActorsToIgnore;
 	ActorsToIgnore.Add(Ingisitor);
-	AlreadyHitActors.Empty();
+	//AlreadyHitActors.Empty();
 
 	URL_AbilitySystemLibrary::GetLivePlayersInArea(
 		Ingisitor,
