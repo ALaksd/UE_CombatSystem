@@ -96,7 +96,7 @@ void URLInventorySubsystem::ResetHealthBottle()
 			URLInventoryItemInstance* ItemInstance = InventoryCom->GetItemInstanceInSlot(InventorySlotHandle);
 			if (ItemInstance)
 			{
-				ItemInstance->ResetStack();
+				ItemInstance->ResetHealthBottle();
 				InventoryCom->OnItemSlotUpdate.Broadcast(InventoryCom, InventorySlotHandle, ItemInstance, ItemInstance);
 			}
 	

@@ -82,7 +82,7 @@ void AInteractable_LanternFlame::ActivatePoint()
 		NewData.LanternFlamePtr = this;
 
 		SaveSystem->RegisterSavePoint(NewData);
-		SaveSystem->SetCurrentSavaPoint(GetFName());
+		SaveSystem->SetCurrentSavaPoint(NewData.PointID);
 	}
 
 	OnPointActivaete();
