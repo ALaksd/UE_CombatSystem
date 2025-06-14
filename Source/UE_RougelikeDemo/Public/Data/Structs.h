@@ -26,20 +26,20 @@ public:
 	
 	// 技能名字
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName SkillName;
+	FName SkillName = FName();
 	// 技能Icon
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UTexture2D> Icon;
+	TObjectPtr<UTexture2D> Icon = nullptr;
 	
 	// 技能属性
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString SkillAttribute;
+	FString SkillAttribute = FString();
 	// 技能描述
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString Description;
+	FString Description = FString();
 	// 技能GA
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<URLInventoryItemDefinition> SkillDefinition;
+	TObjectPtr<URLInventoryItemDefinition> SkillDefinition = nullptr;
 	
 };
 
@@ -52,11 +52,11 @@ public:
 	
 	// 火球生成位置	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector Location;
+	FVector Location = FVector();
 
 	// 火球生成旋转
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FRotator Rotation;
+	FRotator Rotation = FRotator();
 };
 
 USTRUCT(BlueprintType,Blueprintable)
@@ -67,13 +67,13 @@ struct FSkillIcon : public FTableRowBase
 public:
 	// 武器Tag
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTag WeaponTag;
+	FGameplayTag WeaponTag = FGameplayTag();
 	// 技能1Icon
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UTexture2D> Skill_1;
+	TObjectPtr<UTexture2D> Skill_1 = nullptr;
 	// 技能2Icon
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UTexture2D> Skill_2;
+	TObjectPtr<UTexture2D> Skill_2 = nullptr;
 };
 
 USTRUCT(BlueprintType,Blueprintable)
@@ -84,11 +84,11 @@ struct F_CameraLocation : public FTableRowBase
 public:
 	//  位置类型
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	E_CameraLocation CameraLocation;
+	E_CameraLocation CameraLocation = E_CameraLocation::Normal;
 	// 偏移
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector Offset;
+	FVector Offset = FVector();
 	// 弹簧臂长度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BomLength;
+	float BomLength = 0.f;
 };

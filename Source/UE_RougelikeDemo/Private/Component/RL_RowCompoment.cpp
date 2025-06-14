@@ -15,10 +15,10 @@ void URL_RowCompoment::BeginPlay()
 	InitialRotaion = AttachCharacter->GetCharacterMovement()->RotationRate;
 	AimRotaion = FRotator(0, 1000,0);
 
-	if (BaseWeapon)
-	{
-		Bow = Cast<ARL_Bow>(BaseWeapon);
-	}
+	//if (BaseWeapon)
+	//{
+	//	Bow = Cast<ARL_Bow>(BaseWeapon);
+	//}
 }
 
 //开始瞄准并生成弓箭

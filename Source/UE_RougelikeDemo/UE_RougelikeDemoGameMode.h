@@ -21,7 +21,7 @@ struct FItemSpawnData : public FTableRowBase
 
 	// 生成位置
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Spawning")
-	FVector SpawnLocation;
+	FVector SpawnLocation = FVector();
 };
 
 UCLASS(minimalapi)

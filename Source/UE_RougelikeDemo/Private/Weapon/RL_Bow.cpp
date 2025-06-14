@@ -94,17 +94,9 @@ void ARL_Bow::FireProjectile(FVector AimLocation)
 void ARL_Bow::PullBowStart()
 {
 	BowState = EBowState::Draw;
-	if (BowDrawSound && GetWorld())
-	{
-		SoundToPlay = UGameplayStatics::SpawnSoundAtLocation(this,BowDrawSound, GetActorLocation());
-	}
 }
 
 void ARL_Bow::PullBowEnd()
 {
 	BowState = EBowState::Idle;
-	if (SoundToPlay)
-	{
-		SoundToPlay->Stop();
-	}
 }
