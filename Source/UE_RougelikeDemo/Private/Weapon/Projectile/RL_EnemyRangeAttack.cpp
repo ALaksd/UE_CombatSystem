@@ -133,7 +133,7 @@ void ARL_EnemyRangeAttack::PerformDamageDetection()
 		SphereRadius,
 		GetActorRotation(),
 		DamageDetectionType,
-		true,
+		false,
 		0.f,
 		FColor::Orange
 	);

@@ -88,13 +88,6 @@ void UANS_EnemyAttackDecision::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnim
 		SourceASC->RemoveLooseGameplayTag(DamageTypeTag);
 		SourceASC->SetTagMapCount(DamageTypeTag, 0);
 	}
-
-	//if (AttachedNiagaraComp)
-	//{
-	//	AttachedNiagaraComp->Deactivate();     // 优雅地停止
-	//	AttachedNiagaraComp->DestroyComponent(); // 硬性清理（可选）
-	//	AttachedNiagaraComp = nullptr;
-	//}
 }
 
 void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* MeshComp, FVector& Center, FRotator& Rotation)
@@ -114,7 +107,7 @@ void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* Mesh
 		SphereRadius,
 		Rotation,
 		DetectionShape,
-		true,
+		false,
 		0.f,
 		FColor::Emerald
 	);
