@@ -22,6 +22,6 @@ public class UE_RougelikeDemo : ModuleRules
 			"GameplayAbilities",
             "AIModule",
         });
-		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "GameplayTasks", "LevelSequence" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "GameplayTasks", "LevelSequence", "MovieScene" });
 	}
 }

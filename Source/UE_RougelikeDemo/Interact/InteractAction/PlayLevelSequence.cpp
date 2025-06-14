@@ -15,21 +15,21 @@ void UPlayLevelSequence::Execute(AActor* Interactor, AActor* InteractedTarget)
 		return;
 	}
 
-	//FMovieSceneSequencePlaybackSettings PlaybackSettings;
-	//PlaybackSettings.bAutoPlay = true;
-	//
-	//ULevelSequencePlayer* SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(
-	//	Interactor->GetWorld(), SequenceToPlay, PlaybackSettings, OutActor
-	//);
+	FMovieSceneSequencePlaybackSettings PlaybackSettings;
+	PlaybackSettings.bAutoPlay = true;
+	
+	ULevelSequencePlayer* SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(
+		Interactor->GetWorld(), SequenceToPlay, PlaybackSettings, OutActor
+	);
 
-	//SequencePlayer->OnFinished.AddDynamic(this, &UPlayLevelSequence::OnSequenceFinished);
-	//
-	//if (SequencePlayer)
-	//{
-	//	SequencePlayer->Play();
-	//}
+	SequencePlayer->OnFinished.AddDynamic(this, &UPlayLevelSequence::OnSequenceFinished);
+	
+	if (SequencePlayer)
+	{
+		SequencePlayer->Play();
+	}
 
-	//InteractedTarget->Destroy();
+	InteractedTarget->Destroy();
 }
 
 // 然后在你的回调中：
