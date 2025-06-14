@@ -26,7 +26,7 @@ void UPlayLevelSequence::Execute(AActor* Interactor, AActor* InteractedTarget)
 	
 	if (SequencePlayer)
 	{
-		SequencePlayer->Play();
+		//SequencePlayer->Play();
 	}
 
 	InteractedTarget->Destroy();

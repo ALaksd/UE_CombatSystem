@@ -57,28 +57,34 @@ void AEnemy_Base::Execute(bool bIsForward)
 	// 处决时退出破防状态
 	GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
 
+	// 回复体力
+	FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina, 1, AbilitySystemComponent->MakeEffectContext());
+	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+
 	float Time;
 	if (bIsForward)
 	{
 		Time = PlayAnimMontage(EnemyMovementComponent->GetEnemyConfig()->Aim_Execute_F);
+		Time -= 1;
 	}
 	else
 	{
 		Time = PlayAnimMontage(EnemyMovementComponent->GetEnemyConfig()->Aim_Execute_B);
+		Time -= 1;
 	}
 
-	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, [this]()
-		{
-			bIsGuardBroken = false;
-			RemoveTag(FName("EnemyState.Execute"));
+	//FTimerHandle TimerHandle;
+	//GetWorldTimerManager().SetTimer(TimerHandle, [this]()
+	//	{
+	//		bIsGuardBroken = false;
+	//		RemoveTag(FName("EnemyState.Execute"));
 
-			// 回复体力
-			FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina, 1, AbilitySystemComponent->MakeEffectContext());
-			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+	//		// 回复体力
+	//		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina, 1, AbilitySystemComponent->MakeEffectContext());
+	//		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
 
-			bIsExecuting = false;
-		}, Time, false);
+	//		bIsExecuting = false;
+	//	}, Time, false);
 
 	SetLockUIRed_Implementation(false);
 }
