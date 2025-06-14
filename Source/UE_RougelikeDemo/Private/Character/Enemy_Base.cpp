@@ -224,6 +224,7 @@ void AEnemy_Base::SetLockTarget_Implementation(bool bInLock)
 void AEnemy_Base::SetLockUIRed_Implementation(bool bInRedLock)
 {
 	bRedLock = bInRedLock;
+	OnRedLock.Broadcast(bRedLock);
 }
 
 void AEnemy_Base::SetHitShake_Implementation(FName BoneName, FVector ShakeDirection, float Magnitude)
@@ -295,6 +296,7 @@ void AEnemy_Base::GuardBroken()
 	//受到的伤害增加（受到的伤害*1.2)		1
 	//并能被处决							1
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
+	SetLockUIRed_Implementation(true);
 
 	if (AbilitySystemComponent)
 	{
@@ -311,6 +313,7 @@ void AEnemy_Base::GuardBroken()
 
 				//移除Tag
 				RemoveTag(FName("EnemyState.GuardBroken"));
+				SetLockUIRed_Implementation(false);
 			}, GuardBrokenTime, false);
 	}
 	
