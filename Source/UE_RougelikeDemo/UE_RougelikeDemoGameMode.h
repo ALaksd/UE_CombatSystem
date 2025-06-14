@@ -55,6 +55,8 @@ private:
 
 	// 获取库存子系统
 	URLInventorySubsystem* GetInventorySubsystem() const;
+
+	int32 num = 0;
 };
 
 

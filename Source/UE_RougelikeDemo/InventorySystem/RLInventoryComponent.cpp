@@ -102,7 +102,9 @@ bool URLInventoryComponent::PlaceItemSlot(URLInventoryItemInstance* Item, const 
 	FRLInventoryItemSlot& Slot = GetItemSlot(ItemHandle);
 
 	// 原有放置逻辑（空槽或不可堆叠物品）
-	if (IsValid(Slot.ItemInstance) || !IsValid(Item)) return false;
+	if (Slot.ItemInstance != nullptr || !Item) return false;
+
+	UE_LOG(LogTemp, Display, TEXT("拾取物品: %s"), *Item->GetName());
 
 	URLInventoryItemInstance* PreItem = Slot.ItemInstance;
 	Slot.ItemInstance = Item;
