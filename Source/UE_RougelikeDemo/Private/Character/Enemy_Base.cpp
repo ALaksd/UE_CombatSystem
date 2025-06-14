@@ -211,7 +211,8 @@ void AEnemy_Base::SetCombatTarget_Implementation(AActor* InCombatTarget)
 
 void AEnemy_Base::SetHealthBarVisible_Implementation(bool bVisible) const
 {
-	HealthBar->SetVisibility(bVisible);
+	if (HealthBar)
+		HealthBar->SetVisibility(bVisible);
 }
 
 void AEnemy_Base::SetLockTarget_Implementation(bool bInLock)
@@ -282,6 +283,8 @@ void AEnemy_Base::ResilienceReduceCallBack()
 
 void AEnemy_Base::GuardBroken()
 {
+	
+	
 	AddTag(FName("EnemyState.GuardBroken"));
 	bIsGuardBroken=true;
 	if (GuardBrokenSound)
@@ -298,6 +301,8 @@ void AEnemy_Base::GuardBroken()
 		GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
 		GetWorldTimerManager().SetTimer(GuardBrokenTimer, [this]()
 			{
+				if (this==nullptr || AbilitySystemComponent == nullptr) return ;
+			
 				bIsGuardBroken = false;
 
 				// 回复体力
