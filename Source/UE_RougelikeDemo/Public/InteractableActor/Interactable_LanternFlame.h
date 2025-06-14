@@ -28,6 +28,21 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category="LanternFlame|Components")
 	TObjectPtr<UStaticMeshComponent> StaticMeshCom;
 
+	UPROPERTY(EditDefaultsOnly,Category="LanternFlame|Components")
+	TObjectPtr<USkeletalMeshComponent> SKM1;
+
+	UPROPERTY(EditDefaultsOnly,Category="LanternFlame|Components")
+	TObjectPtr<USkeletalMeshComponent> SKM2;
+
+	UPROPERTY(EditDefaultsOnly,Category="LanternFlame|Components")
+	TObjectPtr<USkeletalMeshComponent> SKM3;
+
+	UPROPERTY(EditDefaultsOnly,Category="LanternFlame|Components")
+	TObjectPtr<USkeletalMeshComponent> SKM4;
+
+	UPROPERTY(EditDefaultsOnly,Category="LanternFlame|Components")
+	TObjectPtr<USkeletalMeshComponent> DIZUO;
+
 	// 交互回调,由输入处触发
 	//virtual void TryInteract() override;
 
@@ -60,6 +75,12 @@ public:
 	UPROPERTY(EditAnywhere,Category = "LanternFlame|Enemy")
 	TArray<ARL_EnemySpawnPoint*> SpawnPoints;
 
+	UPROPERTY()
+	TMap<USkeletalMeshComponent*, UAnimSequence*> SkeletalToAnimMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UAnimSequence*> Anims;
+	
 	void ActivatePoint();
 protected:
 	//蓝图实现事件，在ActivatePoint里调用，用于设置激活特效等以及弹出UI等

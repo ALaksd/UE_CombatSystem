@@ -87,5 +87,9 @@ void AInteractableLiftActor::HandleTimelineProgressDown(float Value)
 
 void AInteractableLiftActor::OnTimelineFinished()
 {
-	InteractCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+	{
+		InteractCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}, Time, false);
 }

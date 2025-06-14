@@ -27,6 +27,21 @@ AInteractable_LanternFlame::AInteractable_LanternFlame()
 	StaticMeshCom = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	StaticMeshCom->SetupAttachment(InteractCollision);
 
+	SKM1 = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SKM1"));
+	SKM1->SetupAttachment(StaticMeshCom);
+
+	SKM2 = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SKM2"));
+	SKM2->SetupAttachment(StaticMeshCom);
+
+	SKM3 = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SKM3"));
+	SKM3->SetupAttachment(StaticMeshCom);
+
+	SKM4 = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SKM4"));
+	SKM4->SetupAttachment(StaticMeshCom);
+
+	DIZUO = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("DIZUO"));
+	DIZUO->SetupAttachment(StaticMeshCom);
+
 	Box = CreateDefaultSubobject<UBoxComponent>("Box");
 	Box->SetupAttachment(GetRootComponent());
 
@@ -98,5 +113,11 @@ void AInteractable_LanternFlame::BeginPlay()
 	PlayerController=Cast<ARL_BasePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(),0));
 
 	Box->OnComponentBeginOverlap.AddDynamic(this, &AInteractable_LanternFlame::OnBoxOverlap);
+
+	SkeletalToAnimMap.Add(SKM1, Anims[0]);
+	SkeletalToAnimMap.Add(SKM2, Anims[1]);
+	SkeletalToAnimMap.Add(SKM3, Anims[2]);
+	SkeletalToAnimMap.Add(SKM4, Anims[3]);
+	SkeletalToAnimMap.Add(DIZUO, Anims[4]);
 
 }

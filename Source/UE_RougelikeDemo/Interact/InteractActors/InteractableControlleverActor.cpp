@@ -19,7 +19,7 @@ void AInteractableControlleverActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (Lift->IsUp == IsUp)
+	if (Lift && Lift->IsUp == IsUp)
 	{
 		InteractCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}

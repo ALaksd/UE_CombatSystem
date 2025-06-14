@@ -21,7 +21,7 @@ public:
 	
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* NPCMesh;
 	
 	// 对话内容

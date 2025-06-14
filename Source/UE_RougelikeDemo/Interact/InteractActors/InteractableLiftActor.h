@@ -29,6 +29,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool IsUp;
 
+	UPROPERTY(EditAnywhere)
+	float Time;
+
 protected:
 	
 	UPROPERTY(VisibleAnywhere)

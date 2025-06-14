@@ -30,10 +30,10 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	UAnimSequence* PullAnim;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	AInteractableLiftActor* Lift;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	bool IsUp;
 
 	UPROPERTY(EditDefaultsOnly)
