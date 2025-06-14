@@ -41,7 +41,7 @@ struct FEquipWeapon
 {
 	GENERATED_BODY()
 	UPROPERTY()
-	URLInventoryItemInstance* ItemInstance;
+	URLInventoryItemInstance* ItemInstance = nullptr;
 	
 	FRLInventoryItemSlotHandle Handle;
 

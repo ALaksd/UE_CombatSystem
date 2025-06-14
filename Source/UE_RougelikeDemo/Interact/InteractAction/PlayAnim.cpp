@@ -3,21 +3,13 @@
 
 #include "PlayAnim.h"
 
+#include "InteractableActor/Interactable_LanternFlame.h"
+
 void UPlayAnim::Execute(AActor* Interactor, AActor* InteractedTarget)
 {
-	if (SkeletalToAnimMap.IsEmpty())
+	if (Cast<AInteractable_LanternFlame>(InteractedTarget))
 	{
-		for (const TPair<USkeletalMeshComponent*, UAnimMontage*>& Pair : SkeletalToMontageMap)
-		{
-			USkeletalMeshComponent* Mesh = Pair.Key;
-			UAnimMontage* Anim = Pair.Value;
-			UAnimInstance* AnimInstance = Mesh->GetAnimInstance();
-			AnimInstance->Montage_Play(Anim, 1.0f);
-		}
-	}
-	else
-	{
-		for (const TPair<USkeletalMeshComponent*, UAnimSequence*>& Pair : SkeletalToAnimMap)
+		for (const TPair<USkeletalMeshComponent*, UAnimSequence*>& Pair : Cast<AInteractable_LanternFlame>(InteractedTarget)->SkeletalToAnimMap)
 		{
 			USkeletalMeshComponent* Mesh = Pair.Key;
 			UAnimSequence* Anim = Pair.Value;

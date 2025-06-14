@@ -55,5 +55,11 @@ void UBonfireAction::Execute(AActor* Interactor, AActor* InteractedTarget)
 	else //没有激活则激活
 	{
 		LanternFlame->ActivatePoint();
+		for (const TPair<USkeletalMeshComponent*, UAnimSequence*>& Pair : Cast<AInteractable_LanternFlame>(InteractedTarget)->SkeletalToAnimMap)
+		{
+			USkeletalMeshComponent* Mesh = Pair.Key;
+			UAnimSequence* Anim = Pair.Value;
+			Mesh->PlayAnimation(Anim, false);
+		}
 	}
 }

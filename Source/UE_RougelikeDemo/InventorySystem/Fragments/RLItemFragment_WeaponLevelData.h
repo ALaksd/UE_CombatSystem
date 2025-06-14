@@ -19,13 +19,13 @@ struct FWeaponLevelData : public FTableRowBase
 	float BaseDamage = 10.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 NeededFragment;  //强化所需要的碎片
+	int32 NeededFragment = 0;  //强化所需要的碎片
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	FGameplayTag FragmentTag = FGameplayTag();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 NeededCurrency;  //强化所需要的钱
+	int32 NeededCurrency = 0;  //强化所需要的钱
 };
 
 /**

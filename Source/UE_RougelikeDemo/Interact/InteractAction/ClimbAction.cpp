@@ -13,7 +13,7 @@ void UClimbAction::Execute(AActor* Interactor, AActor* InteractedTarget)
 		UCharacterMovementComponent* MovementComponent = Character->GetCharacterMovement();
 
 		MovementComponent->SetMovementMode(MOVE_Flying);
-		//Character->bUseControllerRotationYaw = false;
 		MovementComponent->bOrientRotationToMovement = false;
+		
 	}
 }

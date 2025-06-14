@@ -44,7 +44,7 @@ public:
 	ACharacter* GetWeaponOwner(){return Cast<ACharacter>(WeaponOwner);};
 	
 	UPROPERTY()
-	AActor* WeaponOwner;
+	AActor* WeaponOwner = nullptr;
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Attribute")
 	bool bIsPull;
@@ -64,10 +64,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetMesh(){return SkeletalMeshComponent;}
 protected:
-	// UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Components")
-	// TObjectPtr<UCapsuleComponent> CapsuleComponent;
-	
-
 
 	// 箭矢
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Arrow")
@@ -82,14 +78,8 @@ protected:
 	/// @param AimLocation 目标位置
 	void FireProjectile(FVector AimLocation);
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Audio")
-	USoundCue* BowDrawSound;
-
-
 	E_WeaponType WeaponType;
-	
-	UPROPERTY()
-	UAudioComponent* SoundToPlay;
+
 
 private:
 	UPROPERTY(EditDefaultsOnly,Category="Components")
