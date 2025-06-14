@@ -57,28 +57,34 @@ void AEnemy_Base::Execute(bool bIsForward)
 	// 处决时退出破防状态
 	GetWorldTimerManager().ClearTimer(GuardBrokenTimer);
 
+	// 回复体力
+	FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina, 1, AbilitySystemComponent->MakeEffectContext());
+	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+
 	float Time;
 	if (bIsForward)
 	{
 		Time = PlayAnimMontage(EnemyMovementComponent->GetEnemyConfig()->Aim_Execute_F);
+		Time -= 1;
 	}
 	else
 	{
 		Time = PlayAnimMontage(EnemyMovementComponent->GetEnemyConfig()->Aim_Execute_B);
+		Time -= 1;
 	}
 
-	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, [this]()
-		{
-			bIsGuardBroken = false;
-			RemoveTag(FName("EnemyState.Execute"));
+	//FTimerHandle TimerHandle;
+	//GetWorldTimerManager().SetTimer(TimerHandle, [this]()
+	//	{
+	//		bIsGuardBroken = false;
+	//		RemoveTag(FName("EnemyState.Execute"));
 
-			// 回复体力
-			FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina, 1, AbilitySystemComponent->MakeEffectContext());
-			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+	//		// 回复体力
+	//		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina, 1, AbilitySystemComponent->MakeEffectContext());
+	//		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
 
-			bIsExecuting = false;
-		}, Time, false);
+	//		bIsExecuting = false;
+	//	}, Time, false);
 
 	SetLockUIRed_Implementation(false);
 }
@@ -224,6 +230,7 @@ void AEnemy_Base::SetLockTarget_Implementation(bool bInLock)
 void AEnemy_Base::SetLockUIRed_Implementation(bool bInRedLock)
 {
 	bRedLock = bInRedLock;
+	OnRedLock.Broadcast(bRedLock);
 }
 
 void AEnemy_Base::SetHitShake_Implementation(FName BoneName, FVector ShakeDirection, float Magnitude)
@@ -295,6 +302,7 @@ void AEnemy_Base::GuardBroken()
 	//受到的伤害增加（受到的伤害*1.2)		1
 	//并能被处决							1
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
+	SetLockUIRed_Implementation(true);
 
 	if (AbilitySystemComponent)
 	{
@@ -311,6 +319,7 @@ void AEnemy_Base::GuardBroken()
 
 				//移除Tag
 				RemoveTag(FName("EnemyState.GuardBroken"));
+				SetLockUIRed_Implementation(false);
 			}, GuardBrokenTime, false);
 	}
 	

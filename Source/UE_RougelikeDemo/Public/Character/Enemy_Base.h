@@ -23,6 +23,7 @@ class UNiagaraComponent;
 class UAS_Enemy;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLock, bool, bLock);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRedLock, bool, bRedLock);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDamageChaned, float, Damage);
 
 UCLASS()
@@ -123,6 +124,9 @@ public:
 	/** 锁定 */
 	UPROPERTY(BlueprintAssignable)
 	FOnLock OnLock;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRedLock OnRedLock;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnDamageChaned OnDamageChanged;
