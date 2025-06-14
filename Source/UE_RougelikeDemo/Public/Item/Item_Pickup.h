@@ -20,7 +20,8 @@ public:
 	AItem_Pickup();
 
 	//背包需要的数据
-	URLInventoryItemInstance* ItemInstance;
+	UPROPERTY()
+	TObjectPtr<URLInventoryItemInstance> ItemInstance;
 	
 	void SetIdldEffect(UParticleSystem* InEffect) { IdleEffect = InEffect;}
 protected:

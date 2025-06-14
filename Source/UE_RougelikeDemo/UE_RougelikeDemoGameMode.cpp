@@ -73,8 +73,10 @@ void AUE_RougelikeDemoGameMode::SpawnAllItemsFromDataTable()
 			// 加载完成后生成所有物品
 			for (FItemSpawnData* Row : AllRows)
 			{
+				num++;
 				if (Row && Row->ItemDefinition.IsValid())
 				{
+					
 					SpawnSingleItem(Row->ItemDefinition, Row->SpawnLocation);
 				}
 			}
@@ -94,6 +96,9 @@ void AUE_RougelikeDemoGameMode::SpawnSingleItem(TSoftObjectPtr<URLInventoryItemD
 
 		if (ItemDef.IsValid())
 		{
+			// 直接获取并打印物品名称
+			FString ItemName = ItemDef->GetName();
+			UE_LOG(LogTemp, Display, TEXT("生成物品: %d,%s"), num,*ItemName);
 			InventorySubsystem->SpawnItemActorFromDefinition(ItemDef.Get(), Location);
 		}
 		else

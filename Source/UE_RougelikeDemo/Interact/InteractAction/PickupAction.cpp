@@ -17,7 +17,6 @@ void UPickupAction::Execute(AActor* Interactor, AActor* InteractedTarget)
 
 		//这里先暂时加入装备背包
 		URLInventoryComponent* BackpComponent = Cast<URLInventoryComponent>(PlayerState->FindComponentByClass(URLInventoryComponent::StaticClass()));
-		//URLInventoryComponent_Equipment* EquipComponent = PlayerState->FindComponentByClass<URLInventoryComponent_Equipment>();
 
 		AItem_Pickup* Item = Cast<AItem_Pickup>(InteractedTarget);
 		
