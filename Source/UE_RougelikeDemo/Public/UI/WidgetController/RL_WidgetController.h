@@ -59,7 +59,7 @@ public:
 	virtual void UnbindAllDelegate();
 
 	UFUNCTION(BlueprintCallable)
-	inline UASC_Base* GetPlayerASC() const;
+	UASC_Base* GetPlayerASC() const;
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
 	TObjectPtr<APlayerController> PlayerController;
@@ -74,8 +74,8 @@ protected:
 	TObjectPtr<UAttributeSet> AttributeSet;
 
 	UFUNCTION(BlueprintCallable)
-	inline UAS_Player* GetPlayerAS() const;
+	UAS_Player* GetPlayerAS() const;
 
 	UFUNCTION(BlueprintCallable)
-	inline ARL_PlayerState* GetPlayerState() const;
+	ARL_PlayerState* GetPlayerState() const;
 };

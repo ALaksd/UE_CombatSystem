@@ -33,23 +33,23 @@ struct FDamageParams
 
 	//伤害值
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Damage;
+	float Damage = 0.f;
 
 	//击退距离
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float KnockDistance;
+	float KnockDistance = 0.f;
 
 	//减少理智值
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ReduceSanity;
+	float ReduceSanity = 0.f;
 
 	//弹反成功敌人减少的体力条
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BreakingValue;
+	float BreakingValue= 0.f;
 
 	//弹反成功恢复理智值
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float RestoreSanity;
+	float RestoreSanity = 0.f;
 };
 
 USTRUCT(BlueprintType)
@@ -59,7 +59,7 @@ struct FRangeDamageParams
 
 	//生成特效
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Effect")
-	UNiagaraSystem* NiagaraEffect;
+	UNiagaraSystem* NiagaraEffect = nullptr;
 
 	//等待StartTime生成
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Effect")
@@ -118,7 +118,7 @@ struct FRangeDamageParams
 
 	//伤害造成者
 	UPROPERTY()
-	AActor* Ingisitor;
+	AActor* Ingisitor = nullptr;
 };
 
 /**

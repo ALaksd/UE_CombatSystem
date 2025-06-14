@@ -34,7 +34,7 @@ UAS_Player* URL_WidgetController::GetPlayerAS() const
 	return PlayerAttributeSet;
 }
 
-inline ARL_PlayerState* URL_WidgetController::GetPlayerState() const
+ARL_PlayerState* URL_WidgetController::GetPlayerState() const
 {
 	ARL_PlayerState* RLPlayerState = CastChecked<ARL_PlayerState>(PlayerState);
 	return RLPlayerState;

@@ -16,24 +16,24 @@ struct FSavePointData
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite)
-	FName PointID;
+	FName PointID = FName();
 
 	UPROPERTY(BlueprintReadWrite)
-	FText DisplayName;
+	FText DisplayName = FText();
 
 	UPROPERTY(BlueprintReadWrite)
-	bool bActive;
+	bool bActive = false;
 
 	UPROPERTY(BlueprintReadWrite)
-	FVector Location;
+	FVector Location = FVector();
 
 	UPROPERTY(BlueprintReadWrite)
-	FRotator Rotation;
+	FRotator Rotation = FRotator();
 
 	UPROPERTY(BlueprintReadWrite)
-	FName MapName;
+	FName MapName = FName();
 
-	TObjectPtr<class AInteractable_LanternFlame> LanternFlamePtr;
+	TObjectPtr<class AInteractable_LanternFlame> LanternFlamePtr = nullptr;
 };
  
 UCLASS()
