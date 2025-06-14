@@ -106,19 +106,32 @@ void URL_MovementComponent::BeginPlay()
 
 void URL_MovementComponent::Move(const FInputActionValue& Value)
 {
-	if (!ownerCharacter && !playerController && !bAccecptInput) return;
-	
+	if (!ownerCharacter || !playerController || !bAccecptInput) return;
+
 	FVector2D MovementVector = Value.Get<FVector2D>();
-	
+
+	// 获取控制器朝向
 	const FRotator ControlRotation = playerController->GetControlRotation();
 	const FRotator YawRotation(0, ControlRotation.Yaw, 0);
-	
+
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	
+
+	// 移动（地面或飞行都支持 X/Y）
 	ownerCharacter->AddMovementInput(ForwardDirection, MovementVector.Y);
 	ownerCharacter->AddMovementInput(RightDirection, MovementVector.X);
+
+	// 飞行模式下支持上升（Z 轴）
+	if (ownerCharacter->GetCharacterMovement()->IsFlying())
+	{
+		float VerticalInput = MovementVector.Y; // 举例使用 Y 控制上升
+		FVector UpDirection = FVector::UpVector;
+
+		// 自定义行为：按住W向上，S向下（根据你需要可以反转）
+		ownerCharacter->AddMovementInput(UpDirection, VerticalInput);
+	}
 }
+
 
 void URL_MovementComponent::Look(const FInputActionValue& Value)
 {

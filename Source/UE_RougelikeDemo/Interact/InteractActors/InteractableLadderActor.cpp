@@ -15,7 +15,7 @@ void AInteractableLadderActor::OnOverlapEnd(UPrimitiveComponent* OverlappedCompo
 		UCharacterMovementComponent* MovementComponent = Player->GetCharacterMovement();
 
 		MovementComponent->SetMovementMode(MOVE_Walking);
-		//Player->bUseControllerRotationYaw = true;
 		MovementComponent->bOrientRotationToMovement = true;
+
 	}
 }
