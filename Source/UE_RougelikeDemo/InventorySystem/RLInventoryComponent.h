@@ -32,7 +32,7 @@ public:
 	}
 
 	UPROPERTY(BlueprintReadWrite,VisibleInstanceOnly,Category = "Inventory")
-	URLInventoryItemInstance* ItemInstance;	//ItemInstance指针，指向物品实例
+	TObjectPtr<URLInventoryItemInstance> ItemInstance;	//ItemInstance指针，指向物品实例
 
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = "Inventory")
 	int32 SlotId;	//SlotId为插槽的编号，一个背包内每个插槽的Id都是唯一的
