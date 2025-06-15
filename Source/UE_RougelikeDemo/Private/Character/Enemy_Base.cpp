@@ -65,26 +65,20 @@ void AEnemy_Base::Execute(bool bIsForward)
 	if (bIsForward)
 	{
 		Time = PlayAnimMontage(EnemyMovementComponent->GetEnemyConfig()->Aim_Execute_F);
-		Time -= 1;
 	}
 	else
 	{
 		Time = PlayAnimMontage(EnemyMovementComponent->GetEnemyConfig()->Aim_Execute_B);
-		Time -= 1;
 	}
 
-	//FTimerHandle TimerHandle;
-	//GetWorldTimerManager().SetTimer(TimerHandle, [this]()
-	//	{
-	//		bIsGuardBroken = false;
-	//		RemoveTag(FName("EnemyState.Execute"));
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, [this]()
+		{
+			bIsGuardBroken = false;
+			RemoveTag(FName("EnemyState.Execute"));
 
-	//		// 回复体力
-	//		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina, 1, AbilitySystemComponent->MakeEffectContext());
-	//		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
-
-	//		bIsExecuting = false;
-	//	}, Time, false);
+			bIsExecuting = false;
+		}, Time, false);
 
 	SetLockUIRed_Implementation(false);
 }
@@ -230,7 +224,7 @@ void AEnemy_Base::SetLockTarget_Implementation(bool bInLock)
 void AEnemy_Base::SetLockUIRed_Implementation(bool bInRedLock)
 {
 	bRedLock = bInRedLock;
-	OnRedLock.Broadcast(bRedLock);
+	OnRedLock.Broadcast(bLock);
 }
 
 void AEnemy_Base::SetHitShake_Implementation(FName BoneName, FVector ShakeDirection, float Magnitude)
