@@ -243,6 +243,7 @@ void ARL_BaseCharacter::ReStart()
 		MovementComponent->EnableAllInput();
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		bIsDead = false;
+		OnDead();
 
 		SavePointSubSystem->TravelToCurrentPoint();
 	
