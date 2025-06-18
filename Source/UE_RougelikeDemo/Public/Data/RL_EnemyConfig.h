@@ -152,9 +152,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")
 	FString EnemyName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")
-	int32 EnemyLevel = 1;
-
 	// 敌人动画蓝图
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy")
 	TSubclassOf<UAnimInstance> EnemyAnimInstanceClass;

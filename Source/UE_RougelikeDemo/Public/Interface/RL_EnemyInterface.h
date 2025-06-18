@@ -51,4 +51,10 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetSpeicalWeaponEffect() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	int32 GetEnemyLevel() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetEnemyLevel(int32 InLevel);
 };

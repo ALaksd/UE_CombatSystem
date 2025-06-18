@@ -11,6 +11,7 @@ ARL_EnemySpawnPoint::ARL_EnemySpawnPoint()
 	PatrolSpline->SetupAttachment(GetRootComponent());
 }
 
+
 void ARL_EnemySpawnPoint::SpawnEnemy()
 {
 	FActorSpawnParameters SpawnParam;
@@ -28,7 +29,7 @@ void ARL_EnemySpawnPoint::SpawnEnemy()
 
 	// 传递样条组件
 	CurrentSpawndEnemy->InitializePatrol(PatrolSpline);
-
+	CurrentSpawndEnemy->SetEnemyLevel(EnemyLevel);
 	CurrentSpawndEnemy->FinishSpawning(SpawnTransform);
 	CurrentSpawndEnemy->SpawnDefaultController();
 }

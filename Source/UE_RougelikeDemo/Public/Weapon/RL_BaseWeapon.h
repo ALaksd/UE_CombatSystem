@@ -29,6 +29,8 @@ public:
 
   	FORCEINLINE AActor* GetWeaponOwner() const { return WeaponOwner; }
 	FORCEINLINE void SetWeaponOwner(AActor* InOwner) { WeaponOwner = InOwner; }
+
+	UFUNCTION()
 	void SetWeaponLevel(int32 NewLevel);
 	UAbilitySystemComponent* GetWeaponASC() { return WeaponASC; }
 	UAS_Weapon* GetWeaponAS() { return WeaponAttribute; }
@@ -43,10 +45,10 @@ public:
 
 	 // 实现接口方法
 	virtual URLInventoryItemInstance* GetItemInstance_Implementation() const override { return ItemInstance; }
-	virtual void SetItemInstance_Implementation(URLInventoryItemInstance* NewInstance) override { ItemInstance = NewInstance; }
+	virtual void SetItemInstance_Implementation(URLInventoryItemInstance* NewInstance) override;
 
 protected:
-	
+
 
 	//要执行的碰撞检测对象
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Attack Collision")

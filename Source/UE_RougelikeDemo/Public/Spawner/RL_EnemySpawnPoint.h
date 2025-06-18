@@ -22,6 +22,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")
 	TSubclassOf<AEnemy_Base> EnemyClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")
+	int32 EnemyLevel = 1;
 	
 	UFUNCTION(BlueprintCallable)
 	void SpawnEnemy();
