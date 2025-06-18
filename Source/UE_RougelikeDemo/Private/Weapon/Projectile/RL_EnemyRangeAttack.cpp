@@ -9,6 +9,7 @@
 #include "AbilitySystemComponent.h"
 #include <AbilitySystemBlueprintLibrary.h>
 #include "NiagaraComponent.h"
+#include <Interface/RL_EnemyInterface.h>
 
 // Sets default values
 ARL_EnemyRangeAttack::ARL_EnemyRangeAttack()
@@ -80,6 +81,17 @@ void ARL_EnemyRangeAttack::InitAttack(FRangeDamageParams& InRangeDamageParams)
 	MoveSpeed = InRangeDamageParams.Speed;
 	RotateSpeedDegPerSec = InRangeDamageParams.RotateSpeed;
 	Ingisitor = InRangeDamageParams.Ingisitor;
+
+	//敌人等级加成
+	if (GetOwner()->Implements<URL_EnemyInterface>())
+	{
+		int32 EnemyLevel = IRL_EnemyInterface::Execute_GetEnemyLevel(GetOwner());
+		if (EnemyLevel > 1)
+		{
+			DamageParams.Damage *= EnemyLevel;
+		}
+
+	}
 }
 
 void ARL_EnemyRangeAttack::StartAttack()

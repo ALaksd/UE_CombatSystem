@@ -121,7 +121,12 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor, FVector HitLocat
 	//敌人等级加成
 	if (OwnerActor->Implements<URL_EnemyInterface>())
 	{
-		DamageParams.Damage *= IRL_EnemyInterface::Execute_GetEnemyLevel(OwnerActor);
+		int32 EnemyLevel = IRL_EnemyInterface::Execute_GetEnemyLevel(OwnerActor);
+		if (EnemyLevel > 1)
+		{
+			DamageParams.Damage *= EnemyLevel;
+		}
+		
 	}
 
 	// 使用工具函数处理伤害
