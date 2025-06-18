@@ -32,6 +32,20 @@ ARL_BaseWeapon::ARL_BaseWeapon()
 	WeaponAttribute = CreateDefaultSubobject<UAS_Weapon>(TEXT("AttributeSet"));
 }
 
+void ARL_BaseWeapon::SetItemInstance_Implementation(URLInventoryItemInstance* NewInstance)
+{
+	ItemInstance = NewInstance;
+	if (ItemInstance)
+	{
+		const URLItemFragment_EquipDynamicData* DynamicFragment = ItemInstance->FindFragmentByClass<URLItemFragment_EquipDynamicData>();
+		if (DynamicFragment)
+		{
+			DynamicFragment->OnWeaponUpgrade.AddDynamic(this, &ARL_BaseWeapon::SetWeaponLevel);
+		}
+	}
+	
+}
+
 
 void ARL_BaseWeapon::SetWeaponLevel(int32 NewLevel)
 {
@@ -67,3 +81,4 @@ void ARL_BaseWeapon::SetWeaponLevel(int32 NewLevel)
 		WeaponASC->ApplyGameplayEffectToSelf(GE, 1.0f, Context);
 	}
 }
+

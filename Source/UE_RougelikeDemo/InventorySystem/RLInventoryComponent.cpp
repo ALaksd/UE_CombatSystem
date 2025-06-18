@@ -104,8 +104,6 @@ bool URLInventoryComponent::PlaceItemSlot(URLInventoryItemInstance* Item, const 
 	// 原有放置逻辑（空槽或不可堆叠物品）
 	if (Slot.ItemInstance != nullptr || !Item) return false;
 
-	UE_LOG(LogTemp, Display, TEXT("拾取物品: %s"), *Item->GetName());
-
 	URLInventoryItemInstance* PreItem = Slot.ItemInstance;
 	Slot.ItemInstance = Item;
 	// 正确赋值SlotTags，这里暂时不会用CombindTags
@@ -117,8 +115,6 @@ bool URLInventoryComponent::PlaceItemSlot(URLInventoryItemInstance* Item, const 
 	{
 		Slot.SlotTags.Reset(); // 没有ItemDefinition则清空
 	}
-
-
 
 	// 更新对应的句柄标签
 	for (auto& Handle : AllSlotHandles)
