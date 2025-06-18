@@ -100,7 +100,13 @@ public:
 	// 初始属性
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Attributes")
 	TSubclassOf<UGameplayEffect> PrimariAttribute;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Attributes")
+	TSubclassOf<UGameplayEffect> AttributeByLevel;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Attributes")
+	TSubclassOf<UGameplayEffect> VitalAttribute;
+	
 	// 混沌状态下韧性变化
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Attributes")
 	float ResilienceMultiplicitive = 1.0f;

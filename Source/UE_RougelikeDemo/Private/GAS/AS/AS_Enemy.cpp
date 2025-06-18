@@ -4,6 +4,8 @@
 #include "GAS/AS/AS_Enemy.h"
 
 #include <string>
+#include "GameplayEffectExtension.h"
+
 
 #include "Character/Enemy_Base.h"
 
@@ -11,8 +13,17 @@ void UAS_Enemy::PreAttributeBaseChange(const FGameplayAttribute& Attribute, floa
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue);
 
-	// if (Attribute == GetResilienceAttribute())
-	// 	NewValue = FMath::Clamp(NewValue,0.f,GetMaxResilience());
+	// 体力
+	if (Attribute == GetStaminaAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue,0.f,GetMaxStamina());
+	}
+	
+	// 韧性
+	if (Attribute == GetResilienceAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue,0.f,GetMaxResilience());
+	}
 	
 }
 
@@ -37,6 +48,17 @@ void UAS_Enemy::PreAttributeChange(const FGameplayAttribute& Attribute, float& N
 void UAS_Enemy::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
+
+	// if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
+	// {
+	// 	SetStamina(FMath::Clamp(Data.EvaluatedData.Magnitude,0.f,GetMaxStamina()));
+	// }
+	//
+	// // 韧性
+	// if (Data.EvaluatedData.Attribute == GetResilienceAttribute())
+	// {
+	// 	SetResilience(FMath::Clamp(Data.EvaluatedData.Magnitude,0.f,GetMaxResilience()));
+	// }
 }
 
 void UAS_Enemy::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
