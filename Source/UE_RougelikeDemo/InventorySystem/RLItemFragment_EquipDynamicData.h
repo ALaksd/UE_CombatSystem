@@ -21,7 +21,7 @@ public:
 	void AddLevel() const;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnWeaponUpgrade OnWeaponUpgrade;
+	mutable FOnWeaponUpgrade OnWeaponUpgrade;
 	//暂时只有等级
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level")
 	mutable int32 CurrentLevel = 0;

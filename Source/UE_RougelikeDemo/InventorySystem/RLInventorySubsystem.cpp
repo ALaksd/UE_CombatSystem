@@ -13,6 +13,7 @@
 #include <Kismet/GameplayStatics.h>
 #include "GameFramework/Character.h"
 #include "UE_RougelikeDemo/InventorySystem/InventoryComponent/RLInventoryComponent_Equipment.h"
+#include "Fragments/RLItemFragment_Attached.h"
 
 
 URLInventoryItemInstance* URLInventorySubsystem::GenerateItemInstance(URLInventoryItemDefinition* ItemDefinition)
@@ -116,6 +117,7 @@ bool URLInventorySubsystem::UpgradeWeapon(URLInventoryItemInstance* WeaponInstan
 	// 获取等级Fragment
 	const URLItemFragment_WeaponLevelData* LevelFragment = WeaponInstance->FindFragmentByClass<URLItemFragment_WeaponLevelData>();
 	const URLItemFragment_EquipDynamicData* DynamicFragment = WeaponInstance->FindFragmentByClass<URLItemFragment_EquipDynamicData>();
+
 	if (LevelFragment && DynamicFragment)
 	{
 		//获取相关数据

@@ -68,6 +68,7 @@ void ARL_Bow::SpawnArrow(float Damage, FGameplayTag DamageTag, AActor* Target)
 	{
 		Arrow->TargetActor = Target;
 		Arrow->SetWeaponOwner(WeaponOwner);
+		Arrow->InitProjectile(Damage, DamageTag);
 
 		// 将箭矢绑到弓弦上
 		EAttachmentRule LocationRules = EAttachmentRule::KeepWorld;
