@@ -44,6 +44,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
 
+
 	// 存储状态相关的标签(暂时只放破防与蹒跚状态)
 	FGameplayTagContainer StateTags;
 

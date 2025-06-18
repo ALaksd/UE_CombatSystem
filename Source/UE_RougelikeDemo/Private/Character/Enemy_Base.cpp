@@ -44,7 +44,8 @@ AEnemy_Base::AEnemy_Base()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
-	
+
+	EnemyLevel=1;
 }
 
 void AEnemy_Base::Execute(bool bIsForward)
@@ -460,6 +461,10 @@ void AEnemy_Base::InitializeAttribute()
 	{
 		FGameplayEffectSpecHandle GameplayEffect = AbilitySystemComponent->MakeOutgoingSpec(EnemyMovementComponent->GetEnemyConfig()->PrimariAttribute,1,AbilitySystemComponent->MakeEffectContext());
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*GameplayEffect.Data.Get());
+		FGameplayEffectSpecHandle AttributeLevel = AbilitySystemComponent->MakeOutgoingSpec(EnemyMovementComponent->GetEnemyConfig()->AttributeByLevel,EnemyLevel,AbilitySystemComponent->MakeEffectContext());
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*AttributeLevel.Data.Get());
+		FGameplayEffectSpecHandle VitalAttribute = AbilitySystemComponent->MakeOutgoingSpec(EnemyMovementComponent->GetEnemyConfig()->VitalAttribute,1,AbilitySystemComponent->MakeEffectContext());
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*VitalAttribute.Data.Get());
 	}
 }
 

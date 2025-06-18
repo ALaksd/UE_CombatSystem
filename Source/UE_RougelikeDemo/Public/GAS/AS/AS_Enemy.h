@@ -42,7 +42,7 @@ public:
 	
 protected:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
-
+	
 	//属性修改前调用
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)override;
 	//属性修改后调用
