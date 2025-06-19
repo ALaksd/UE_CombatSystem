@@ -20,7 +20,7 @@ class UE_ROUGELIKEDEMO_API ARL_Sword : public ARL_BaseWeapon
 public:
 	ARL_Sword();
 
-	void StartCombat(float StaminaReduce_T,float ResilienceReduce_T);
+	void StartCombat(float StaminaReduce_T,float ResilienceReduce_T, float SanityRestore_T);
 	void EndCombat();
 
 	//刀光特效
@@ -79,7 +79,7 @@ protected:
 
 	//单次攻击恢复的信理智值，会乘以武器当前的攻击倍率
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Attack")
-	float RestoreSanity = 5.f;
+	float RestoreSanityValue = 0.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon|Sound")
 	USoundBase* AttackSound;

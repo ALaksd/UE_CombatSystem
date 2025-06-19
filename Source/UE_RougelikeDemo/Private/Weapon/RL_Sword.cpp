@@ -157,17 +157,18 @@ void ARL_Sword::RestoreAttachResourceAndSanity(float DamageMultiplier)
 	URL_SanitySubsystem* SanitySubsystem = GetGameInstance()->GetSubsystem<URL_SanitySubsystem>();
 	if (SanitySubsystem)
 	{
-		SanitySubsystem->RestoreSanity(5.f * DamageMultiplier);
+		SanitySubsystem->RestoreSanity(RestoreSanityValue * DamageMultiplier);
 	}
 
 }
 
 
-void ARL_Sword::StartCombat(float StaminaReduce_T,float ResilienceReduce_T)
+void ARL_Sword::StartCombat(float StaminaReduce_T,float ResilienceReduce_T, float SanityRestore_T)
 {
 	bCombat = true;
 	StaminaReduce=StaminaReduce_T;
 	ResilienceReduce=ResilienceReduce_T;
+	RestoreSanityValue = SanityRestore_T;
 	
 	//创建GameplayEffect
 	DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffect,WeaponLevel,WeaponASC->MakeEffectContext());
