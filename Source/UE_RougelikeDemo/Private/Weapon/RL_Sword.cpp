@@ -112,7 +112,7 @@ void ARL_Sword::Tick(float DeltaTime)
 									TargetASC->ApplyGameplayEffectToSelf(ReduceGE,1,Context);
 								}
 
-								RestoreAttachResourceAndSanity(DamageMultiplier);
+								RestoreAttachResourceAndSanity();
 
 
 								DamageSpecHandle = WeaponASC->MakeOutgoingSpec(DamageEffect, WeaponLevel, Context);
@@ -151,13 +151,13 @@ UGameplayEffect* ARL_Sword::CreateReduceGE(float Stamina,float Resilience)
 }
 
 
-void ARL_Sword::RestoreAttachResourceAndSanity(float DamageMultiplier)
+void ARL_Sword::RestoreAttachResourceAndSanity()
 {
 	//恢复理智
 	URL_SanitySubsystem* SanitySubsystem = GetGameInstance()->GetSubsystem<URL_SanitySubsystem>();
 	if (SanitySubsystem)
 	{
-		SanitySubsystem->RestoreSanity(RestoreSanityValue * DamageMultiplier);
+		SanitySubsystem->RestoreSanity(RestoreSanityValue);
 	}
 
 }

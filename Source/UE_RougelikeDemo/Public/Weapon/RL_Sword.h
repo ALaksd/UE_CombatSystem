@@ -34,7 +34,7 @@ public:
 	void EnableFireRant(float ActiveTime);
 
 protected:
-	void RestoreAttachResourceAndSanity(float DamageMultiplier);
+	void RestoreAttachResourceAndSanity();
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	UNiagaraComponent* TrailComponent;
