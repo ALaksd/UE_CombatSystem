@@ -23,6 +23,7 @@ class UNiagaraComponent;
 class UAS_Enemy;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLock, bool, bLock);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRedLock, bool, bRedLock);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDamageChaned, float, Damage);
 
 UCLASS()
@@ -42,6 +43,7 @@ private:
 	//属性
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
+
 
 	// 存储状态相关的标签(暂时只放破防与蹒跚状态)
 	FGameplayTagContainer StateTags;
@@ -67,6 +69,9 @@ public:
 	virtual void TakeDamage(const FGameplayEffectSpecHandle& DamageHandle) const override;
 	
 	inline  virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override {return AbilitySystemComponent;}
+	int32 GetEnemyLevel() const { return EnemyLevel; }
+	void SetEnemyLevel(int32 InLevel) {EnemyLevel = InLevel; }
+
 
 	/** CombatInterface */
 	virtual UAnimMontage* GetHitReactMotange_Implementation() override;
@@ -93,6 +98,8 @@ public:
 	virtual void SetHitShake_Implementation(FName BoneName, FVector ShakeDirection, float Magnitude) override;
 	virtual UAS_Enemy* GetEnemyAttributeSet_Implementation() const override;
 	virtual void SetSpeicalWeaponEffect_Implementation() const override;
+	FORCEINLINE  virtual int32 GetEnemyLevel_Implementation() const override { return EnemyLevel; }
+	FORCEINLINE virtual void SetEnemyLevel_Implementation(int32 InLevel) override { EnemyLevel = InLevel; }
 	/** End EnemyInterface */
 
 	/*-------------------------破防状态相关-------------------------*/
@@ -125,9 +132,15 @@ public:
 	FOnLock OnLock;
 
 	UPROPERTY(BlueprintAssignable)
+	FOnRedLock OnRedLock;
+
+	UPROPERTY(BlueprintAssignable)
 	FOnDamageChaned OnDamageChanged;
 	
 protected:
+	/*------------------------ 敌人等级 -------------------------*/
+	UPROPERTY(BlueprintReadOnly)
+	int32 EnemyLevel;
 	// 处决用
 	bool bIsExecuting = false;
 

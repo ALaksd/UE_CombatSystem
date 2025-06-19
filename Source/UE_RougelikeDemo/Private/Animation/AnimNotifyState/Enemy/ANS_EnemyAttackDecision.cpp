@@ -13,6 +13,7 @@
 #include <AbilitySystemInterface.h>
 #include "Engine/OverlapResult.h"
 #include <Kismet/GameplayStatics.h>
+#include <Interface/RL_EnemyInterface.h>
 
 UANS_EnemyAttackDecision::UANS_EnemyAttackDecision()
 {
@@ -39,27 +40,6 @@ void UANS_EnemyAttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAn
 	{
 		UGameplayStatics::PlaySoundAtLocation(OwnerActor, AttackSound, OwnerActor->GetActorLocation());
 	}
-
-	//URL_EnemyConfig* EnemyConfig = URL_AbilitySystemLibrary::GetEnemyConfig(OwnerActor);
-	//if (EnemyConfig)
-	//{
-	//	UNiagaraSystem* NiagaraEffect = SourceASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("EnemyState.HalfLife")) ? EnemyConfig->LoadSpecialWeaponTrail() : EnemyConfig->LoadDefaultWeaponTrail();
-	//	
-	//	//创建并附加 Niagara 特效到插槽
-	//	if (NiagaraEffect && MeshComp)
-	//	{
-	//		AttachedNiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(
-	//			NiagaraEffect,
-	//			MeshComp,
-	//			FXAttachSocketName,         // 插槽名，例如 "hand_r"
-	//			FVector::ZeroVector,      // 位置偏移
-	//			FRotator::ZeroRotator,    // 旋转偏移
-	//			EAttachLocation::SnapToTarget,
-	//			true,                     // bAutoDestroy
-	//			true                      // bAutoActivate
-	//		);
-	//	}
-	//}
 	
 }
 
@@ -88,13 +68,6 @@ void UANS_EnemyAttackDecision::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnim
 		SourceASC->RemoveLooseGameplayTag(DamageTypeTag);
 		SourceASC->SetTagMapCount(DamageTypeTag, 0);
 	}
-
-	//if (AttachedNiagaraComp)
-	//{
-	//	AttachedNiagaraComp->Deactivate();     // 优雅地停止
-	//	AttachedNiagaraComp->DestroyComponent(); // 硬性清理（可选）
-	//	AttachedNiagaraComp = nullptr;
-	//}
 }
 
 void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* MeshComp, FVector& Center, FRotator& Rotation)
@@ -114,7 +87,7 @@ void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* Mesh
 		SphereRadius,
 		Rotation,
 		DetectionShape,
-		true,
+		false,
 		0.f,
 		FColor::Emerald
 	);
@@ -144,6 +117,17 @@ void UANS_EnemyAttackDecision::CauseDamage(AActor* TargetActor, FVector HitLocat
 	DamageParams.ReduceSanity = ReduceSantiy;
 	DamageParams.BreakingValue = Breakingvalue;
 	DamageParams.RestoreSanity = RestoreSanity;
+	
+	//敌人等级加成
+	if (OwnerActor->Implements<URL_EnemyInterface>())
+	{
+		int32 EnemyLevel = IRL_EnemyInterface::Execute_GetEnemyLevel(OwnerActor);
+		if (EnemyLevel > 1)
+		{
+			DamageParams.Damage *= EnemyLevel;
+		}
+		
+	}
 
 	// 使用工具函数处理伤害
 	URL_AbilitySystemLibrary::ApplyEnemyDamage(

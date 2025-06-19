@@ -30,7 +30,7 @@ ARL_Sword::ARL_Sword()
 	
 	FireRantComponent = CreateDefaultSubobject<UNiagaraComponent>("FireRantComponent");
 	FireRantComponent->SetupAttachment(Mesh);
-}
+} 
 
 void ARL_Sword::Tick(float DeltaTime)
 {

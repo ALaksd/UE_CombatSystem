@@ -44,7 +44,8 @@ AEnemy_Base::AEnemy_Base()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
-	
+
+	EnemyLevel=1;
 }
 
 void AEnemy_Base::Execute(bool bIsForward)
@@ -65,26 +66,20 @@ void AEnemy_Base::Execute(bool bIsForward)
 	if (bIsForward)
 	{
 		Time = PlayAnimMontage(EnemyMovementComponent->GetEnemyConfig()->Aim_Execute_F);
-		Time -= 1;
 	}
 	else
 	{
 		Time = PlayAnimMontage(EnemyMovementComponent->GetEnemyConfig()->Aim_Execute_B);
-		Time -= 1;
 	}
 
-	//FTimerHandle TimerHandle;
-	//GetWorldTimerManager().SetTimer(TimerHandle, [this]()
-	//	{
-	//		bIsGuardBroken = false;
-	//		RemoveTag(FName("EnemyState.Execute"));
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, [this]()
+		{
+			bIsGuardBroken = false;
+			RemoveTag(FName("EnemyState.Execute"));
 
-	//		// 回复体力
-	//		FGameplayEffectSpecHandle Handle = AbilitySystemComponent->MakeOutgoingSpec(GE_RestoreStamina, 1, AbilitySystemComponent->MakeEffectContext());
-	//		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
-
-	//		bIsExecuting = false;
-	//	}, Time, false);
+			bIsExecuting = false;
+		}, Time, false);
 
 	SetLockUIRed_Implementation(false);
 }
@@ -230,6 +225,7 @@ void AEnemy_Base::SetLockTarget_Implementation(bool bInLock)
 void AEnemy_Base::SetLockUIRed_Implementation(bool bInRedLock)
 {
 	bRedLock = bInRedLock;
+	OnRedLock.Broadcast(bLock);
 }
 
 void AEnemy_Base::SetHitShake_Implementation(FName BoneName, FVector ShakeDirection, float Magnitude)
@@ -301,6 +297,7 @@ void AEnemy_Base::GuardBroken()
 	//受到的伤害增加（受到的伤害*1.2)		1
 	//并能被处决							1
 	GetMesh()->GetAnimInstance()->StopAllMontages(0.1f);
+	SetLockUIRed_Implementation(true);
 
 	if (AbilitySystemComponent)
 	{
@@ -317,6 +314,7 @@ void AEnemy_Base::GuardBroken()
 
 				//移除Tag
 				RemoveTag(FName("EnemyState.GuardBroken"));
+				SetLockUIRed_Implementation(false);
 			}, GuardBrokenTime, false);
 	}
 	
@@ -463,6 +461,10 @@ void AEnemy_Base::InitializeAttribute()
 	{
 		FGameplayEffectSpecHandle GameplayEffect = AbilitySystemComponent->MakeOutgoingSpec(EnemyMovementComponent->GetEnemyConfig()->PrimariAttribute,1,AbilitySystemComponent->MakeEffectContext());
 		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*GameplayEffect.Data.Get());
+		FGameplayEffectSpecHandle AttributeLevel = AbilitySystemComponent->MakeOutgoingSpec(EnemyMovementComponent->GetEnemyConfig()->AttributeByLevel,EnemyLevel,AbilitySystemComponent->MakeEffectContext());
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*AttributeLevel.Data.Get());
+		FGameplayEffectSpecHandle VitalAttribute = AbilitySystemComponent->MakeOutgoingSpec(EnemyMovementComponent->GetEnemyConfig()->VitalAttribute,1,AbilitySystemComponent->MakeEffectContext());
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*VitalAttribute.Data.Get());
 	}
 }
 
