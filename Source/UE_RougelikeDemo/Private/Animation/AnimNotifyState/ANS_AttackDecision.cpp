@@ -22,7 +22,7 @@ void UANS_AttackDecision::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
 				FGameplayEffectSpecHandle Handle = SourceASC->MakeOutgoingSpec(GameEffect,1,SourceASC->MakeEffectContext());
 				SourceASC->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
 				
-				CloseCombatComponent->StartCombat( StaminaReduce, ResilienceReduce);
+				CloseCombatComponent->StartCombat( StaminaReduce, ResilienceReduce, SanityRestore);
 			}
 		}
 	}

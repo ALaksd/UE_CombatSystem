@@ -204,7 +204,7 @@ protected:
 	TObjectPtr<URL_EnemyMovementComponent> EnemyMovementComponent;
 	
 	/** UI */
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)

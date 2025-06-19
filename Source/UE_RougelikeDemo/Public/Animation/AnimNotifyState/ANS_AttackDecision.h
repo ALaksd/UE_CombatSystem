@@ -26,6 +26,10 @@ public:
 	// 韧性削减
 	UPROPERTY(EditAnywhere,Category="Reduce")
 	float ResilienceReduce;
+
+	//恢复理智值
+	UPROPERTY(EditAnywhere, Category = "Reduce")
+	float SanityRestore = 0.f;
 	
 	virtual void NotifyBegin(USkeletalMeshComponent * MeshComp, UAnimSequenceBase * Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference);
 	virtual void NotifyEnd(USkeletalMeshComponent * MeshComp, UAnimSequenceBase * Animation, const FAnimNotifyEventReference& EventReference);

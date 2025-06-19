@@ -538,7 +538,7 @@ void URL_MovementComponent::UpdateLockOnRotation(float DeltaTime)
 	}
 
 	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(ownerCharacter->GetActorLocation(), CurrentTarget->GetActorLocation());
-	FRotator TargetRotation(LookAtRotation.Pitch, LookAtRotation.Yaw, 0.f);
+	FRotator TargetRotation(0.f, LookAtRotation.Yaw, 0.f);
 
 	if (CurrentMovementState != EMovementState::Running)
 	{

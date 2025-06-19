@@ -47,9 +47,9 @@ void UCloseCombatComponent::BeginPlay()
 
 }
 
-void UCloseCombatComponent::StartCombat(float StaminaReduce,float ResilienceReduce) const
+void UCloseCombatComponent::StartCombat(float StaminaReduce, float ResilienceReduce, float SanityRestore) const
 {
-	CurrentWeapon->StartCombat(StaminaReduce, ResilienceReduce);
+	CurrentWeapon->StartCombat(StaminaReduce, ResilienceReduce,SanityRestore);
 	CurrentWeapon->StartTrailEffect();
 }
 

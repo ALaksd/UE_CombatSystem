@@ -43,7 +43,7 @@ protected:
 
 
 public:	
-	void StartCombat(float StaminaReduce,float ResilienceReduce) const;
+	void StartCombat(float StaminaReduce,float ResilienceReduce, float SanityRestore) const;
 	void EndCombat() const;
 
 	void EnableFireRant(float ActiveTime) const;

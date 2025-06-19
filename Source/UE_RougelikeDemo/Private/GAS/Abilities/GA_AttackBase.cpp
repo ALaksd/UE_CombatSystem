@@ -25,6 +25,23 @@ void UGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 {
 	if (CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
+		// 扣除理智值
+		if (bIsReduceSanity)
+		{
+			if (URL_SanitySubsystem* SanitySystem = GetWorld()->GetGameInstance()->GetSubsystem<URL_SanitySubsystem>())
+			{
+				if (SanitySystem->GetSanity() < ReduceValue)
+				{
+					EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
+					return;
+				}
+				else {
+					SanitySystem->ReduceSanity(ReduceValue);
+
+				}
+			}
+		}
+
 		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 		if (UAnimMontage* MontageToPlay = AttackMontage)
 		{
@@ -44,13 +61,6 @@ void UGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 				Task->OnBlendOut.AddDynamic(this, &UGA_AttackBase::OnMontageCompleted);
 				Task->OnInterrupted.AddDynamic(this, &UGA_AttackBase::OnMontageCompleted);
 				Task->ReadyForActivation();
-
-				// 扣除理智值
-				if (bIsReduceSanity)
-				{
-					if (URL_SanitySubsystem* SanitySystem = GetWorld()->GetGameInstance()->GetSubsystem<URL_SanitySubsystem>())
-						SanitySystem->ReduceSanity(ReduceValue);
-				}
 			}
 		}
 
