@@ -55,13 +55,15 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TSoftObjectPtr<UInputMappingContext> MoveContext;
 
-private:
+protected:
 	UPROPERTY()
 	TArray<URL_UserWidget*> WidgetStack; // UI栈
 
 	// 压入新UI到栈顶
 	URL_UserWidget* PushWidget(TSubclassOf<URL_UserWidget> WidgetClass, APlayerController* PlayerController, const FWidgetInitParams& InitParams = FWidgetInitParams());
+	
 	// 弹出栈顶UI
+	UFUNCTION(BlueprintCallable)
 	void PopWidget(APlayerController* PlayerController);
 
 	// 绑定返回键输入
