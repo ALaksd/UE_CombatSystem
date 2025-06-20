@@ -41,6 +41,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetUI();
 
+	/** InputAssets */
+// 配置需要使用的Input资源
+	UPROPERTY(BlueprintReadWrite)
+	TSoftObjectPtr<UInputAction> BackAction;
+
+	UPROPERTY(BlueprintReadWrite)
+	TSoftObjectPtr<UInputMappingContext> UIContext;
+
+	UPROPERTY(BlueprintReadWrite)
+	TSoftObjectPtr<UInputMappingContext> DefaultContext;
+
+	UPROPERTY(BlueprintReadWrite)
+	TSoftObjectPtr<UInputMappingContext> MoveContext;
 
 private:
 	UPROPERTY()
@@ -59,19 +72,4 @@ private:
 	void HandleBackAction();
 
 	TMap<APlayerController*, FInputBindingHandle> InputHandles;
-
-	
-	/** InputAssets */
-	// 配置需要使用的Input资源
-	UPROPERTY()
-	TSoftObjectPtr<UInputAction> BackAction;
-
-	UPROPERTY()
-	TSoftObjectPtr<UInputMappingContext> UIContext;
-
-	UPROPERTY()
-	TSoftObjectPtr<UInputMappingContext> DefaultContext;
-
-	UPROPERTY()
-	TSoftObjectPtr<UInputMappingContext> MoveContext;
 };

@@ -36,6 +36,10 @@ void ARL_EnemySpawnPoint::SpawnEnemy()
 
 void ARL_EnemySpawnPoint::DestroyEnemy()
 {
-	CurrentSpawndEnemy->Destroy();
-	CurrentSpawndEnemy = nullptr;
+	if (CurrentSpawndEnemy)
+	{
+		CurrentSpawndEnemy->Destroy();
+		CurrentSpawndEnemy = nullptr;
+	}
+	
 }
