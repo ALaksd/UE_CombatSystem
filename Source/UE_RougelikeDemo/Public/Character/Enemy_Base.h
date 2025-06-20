@@ -92,7 +92,7 @@ public:
 	/** EnemyInterface */
 	virtual AActor* GetCombatTarget_Implementation()const override;
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
-	virtual void SetHealthBarVisible_Implementation(bool bVisible) const override;
+	virtual void SetHealthBarVisible_Implementation(bool bVisible) override;
 	virtual void SetLockTarget_Implementation(bool bInLock) override;
 	virtual void SetLockUIRed_Implementation(bool bInRedLock) override;
 	virtual void SetHitShake_Implementation(FName BoneName, FVector ShakeDirection, float Magnitude) override;
@@ -251,6 +251,9 @@ protected:
 	/** 掉落魂，敌人基类蓝图实现 */
 	UFUNCTION(BlueprintImplementableEvent)
 	void DropSouls();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowBossHealthBar(bool bVisible);
 
 private:
 	// 理智变化回调,处理清醒与混沌状态敌人属性变化
