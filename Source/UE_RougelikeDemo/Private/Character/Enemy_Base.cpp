@@ -210,10 +210,14 @@ void AEnemy_Base::SetCombatTarget_Implementation(AActor* InCombatTarget)
 	TargetActor = InCombatTarget;
 }
 
-void AEnemy_Base::SetHealthBarVisible_Implementation(bool bVisible) const
+void AEnemy_Base::SetHealthBarVisible_Implementation(bool bVisible)
 {
 	if (HealthBar)
+	{
 		HealthBar->SetVisibility(bVisible);
+		ShowBossHealthBar(bVisible);
+	}
+		
 }
 
 void AEnemy_Base::SetLockTarget_Implementation(bool bInLock)

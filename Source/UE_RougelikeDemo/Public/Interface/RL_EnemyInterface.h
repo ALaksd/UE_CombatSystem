@@ -41,7 +41,7 @@ public:
 	UNiagaraComponent* GetRedAttackNiagaraComponent() const;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void SetHealthBarVisible(bool bVisible) const;
+	void SetHealthBarVisible(bool bVisible);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetHitShake(FName BoneName, FVector ShakeDirection, float Magnitude);
