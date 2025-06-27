@@ -41,14 +41,29 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetUI();
 
+	/** InputAssets */
+// 配置需要使用的Input资源
+	UPROPERTY(BlueprintReadWrite)
+	TSoftObjectPtr<UInputAction> BackAction;
 
-private:
+	UPROPERTY(BlueprintReadWrite)
+	TSoftObjectPtr<UInputMappingContext> UIContext;
+
+	UPROPERTY(BlueprintReadWrite)
+	TSoftObjectPtr<UInputMappingContext> DefaultContext;
+
+	UPROPERTY(BlueprintReadWrite)
+	TSoftObjectPtr<UInputMappingContext> MoveContext;
+
+protected:
 	UPROPERTY()
 	TArray<URL_UserWidget*> WidgetStack; // UI栈
 
 	// 压入新UI到栈顶
 	URL_UserWidget* PushWidget(TSubclassOf<URL_UserWidget> WidgetClass, APlayerController* PlayerController, const FWidgetInitParams& InitParams = FWidgetInitParams());
+	
 	// 弹出栈顶UI
+	UFUNCTION(BlueprintCallable)
 	void PopWidget(APlayerController* PlayerController);
 
 	// 绑定返回键输入
@@ -59,19 +74,4 @@ private:
 	void HandleBackAction();
 
 	TMap<APlayerController*, FInputBindingHandle> InputHandles;
-
-	
-	/** InputAssets */
-	// 配置需要使用的Input资源
-	UPROPERTY()
-	TSoftObjectPtr<UInputAction> BackAction;
-
-	UPROPERTY()
-	TSoftObjectPtr<UInputMappingContext> UIContext;
-
-	UPROPERTY()
-	TSoftObjectPtr<UInputMappingContext> DefaultContext;
-
-	UPROPERTY()
-	TSoftObjectPtr<UInputMappingContext> MoveContext;
 };

@@ -122,6 +122,8 @@ bool URLInventorySubsystem::UpgradeWeapon(URLInventoryItemInstance* WeaponInstan
 	{
 		//获取相关数据
 		int32 CurrentLevel = DynamicFragment->CurrentLevel;
+		if (CurrentLevel > 10) return false; 
+
 		FWeaponLevelData WeaponLevelData = LevelFragment->GetWeaponLevelData(CurrentLevel);
 		int32 NeededFragment = WeaponLevelData.NeededFragment;
 		int32 NeededSoul = WeaponLevelData.NeededCurrency;

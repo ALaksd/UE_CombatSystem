@@ -13,34 +13,34 @@
 void URL_UIManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	//文件路径
-	FSoftObjectPath BackActionPath(TEXT("/Game/RLDemo/Input/Actions/UI/IA_UI_BackAction.IA_UI_BackAction"));
-	FSoftObjectPath UIContextPath(TEXT("/Game/RLDemo/Input/IMC_UI.IMC_UI"));
-	FSoftObjectPath MoveContextPath(TEXT("/Game/RLDemo/Input/IMC_Move.IMC_Move"));
-	FSoftObjectPath DefaultContextPath(TEXT("/Game/RLDemo/Input/IMC_Default.IMC_Default"));
+	//FSoftObjectPath BackActionPath(TEXT("/Game/RLDemo/Input/Actions/UI/IA_UI_BackAction.IA_UI_BackAction"));
+	//FSoftObjectPath UIContextPath(TEXT("/Game/RLDemo/Input/IMC_UI.IMC_UI"));
+	//FSoftObjectPath MoveContextPath(TEXT("/Game/RLDemo/Input/IMC_Move.IMC_Move"));
+	//FSoftObjectPath DefaultContextPath(TEXT("/Game/RLDemo/Input/IMC_Default.IMC_Default"));
 
-	// 创建 StreamableManager
-	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
+	//// 创建 StreamableManager
+	//FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
 
-		// 异步加载多个资源
-	TArray<FSoftObjectPath> AssetsToLoad = { BackActionPath, UIContextPath ,MoveContextPath,DefaultContextPath};
-	Streamable.RequestAsyncLoad(
-		AssetsToLoad,
-		[this, BackActionPath, UIContextPath, MoveContextPath, DefaultContextPath]()
-		{
-			UInputAction* LoadedBackAction = Cast<UInputAction>(BackActionPath.ResolveObject());
-			UInputMappingContext* LoadedUIContext = Cast<UInputMappingContext>(UIContextPath.ResolveObject());
-			UInputMappingContext* LoadedDefaultContext = Cast<UInputMappingContext>(DefaultContextPath.ResolveObject());
-			UInputMappingContext* LoadedMoveContext = Cast<UInputMappingContext>(MoveContextPath.ResolveObject());
+	//	// 异步加载多个资源
+	//TArray<FSoftObjectPath> AssetsToLoad = { BackActionPath, UIContextPath ,MoveContextPath,DefaultContextPath};
+	//Streamable.RequestAsyncLoad(
+	//	AssetsToLoad,
+	//	[this, BackActionPath, UIContextPath, MoveContextPath, DefaultContextPath]()
+	//	{
+	//		UInputAction* LoadedBackAction = Cast<UInputAction>(BackActionPath.ResolveObject());
+	//		UInputMappingContext* LoadedUIContext = Cast<UInputMappingContext>(UIContextPath.ResolveObject());
+	//		UInputMappingContext* LoadedDefaultContext = Cast<UInputMappingContext>(DefaultContextPath.ResolveObject());
+	//		UInputMappingContext* LoadedMoveContext = Cast<UInputMappingContext>(MoveContextPath.ResolveObject());
 
-			if (LoadedBackAction && LoadedUIContext && LoadedDefaultContext&&LoadedMoveContext)
-			{
-				BackAction = LoadedBackAction;
-				UIContext = LoadedUIContext;
-				DefaultContext = LoadedDefaultContext;
-				MoveContext = LoadedMoveContext;
-			}
-		}
-	);
+	//		if (LoadedBackAction && LoadedUIContext && LoadedDefaultContext&&LoadedMoveContext)
+	//		{
+	//			BackAction = LoadedBackAction;
+	//			UIContext = LoadedUIContext;
+	//			DefaultContext = LoadedDefaultContext;
+	//			MoveContext = LoadedMoveContext;
+	//		}
+	//	}
+	//);
 }
 
 URL_UserWidget* URL_UIManagerSubsystem::AddNewWidget(TSubclassOf<URL_UserWidget> WidgetClass, APlayerController* PlayerController, const FWidgetInitParams InitParams)
