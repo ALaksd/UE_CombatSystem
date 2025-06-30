@@ -459,7 +459,7 @@ bool URL_AbilitySystemLibrary::HandleParry(AActor* OwnerActor, AActor* TargetAct
 				OwnerActor->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [SourceASC, EnemyGuardBrokenTag]()
 					{
 						SourceASC->RemoveLooseGameplayTag(EnemyGuardBrokenTag);
-					}, 1.0f, false);
+					}, 3.0f, false);
 			}
 
 		}
