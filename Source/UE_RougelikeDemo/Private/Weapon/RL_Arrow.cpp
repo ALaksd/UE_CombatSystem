@@ -70,6 +70,10 @@ void ARL_Arrow::OnOverlapBegin(UPrimitiveComponent* OverlapedComp, AActor* Other
 			Destroy();
 		}
 	}
+	else
+	{
+		Destroy();
+	}
 }
 
 void ARL_Arrow::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)

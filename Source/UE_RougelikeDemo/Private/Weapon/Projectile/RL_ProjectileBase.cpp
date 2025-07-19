@@ -88,7 +88,11 @@ void ARL_ProjectileBase::OnComponentBeginOverlap(UPrimitiveComponent* Overlapped
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag(AttackActorTag))
+	{
+		Destroy();
 		return;
+	}
+	
 
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
 	UAbilitySystemComponent* SourceASC = WeaponASC;
