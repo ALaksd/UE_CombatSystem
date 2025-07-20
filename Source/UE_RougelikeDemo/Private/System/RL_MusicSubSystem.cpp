@@ -24,7 +24,7 @@ void URL_MusicSubSystem::PlayBackgroundMusic(USoundBase* Music, float FadeInDura
 	if (!Music) return;
 
 	// 如果已经有音乐在播放，先停止
-	if (BackgroundAudioComponent && BackgroundAudioComponent->IsPlaying())
+   	if (BackgroundAudioComponent && BackgroundAudioComponent->IsPlaying())
 	{
 		StopBackgroundMusic(FadeInDuration);
 	}
@@ -59,7 +59,7 @@ void URL_MusicSubSystem::StopBackgroundMusic(float FadeOutDuration)
 	if (!BackgroundAudioComponent || !BackgroundAudioComponent->IsPlaying())
 		return;
 
-	if (FadeOutDuration > 0.0f)
+ 	if (FadeOutDuration > 0.0f)
 	{
 		// 应用淡出效果
 		BackgroundAudioComponent->FadeOut(FadeOutDuration, 0.0f);
