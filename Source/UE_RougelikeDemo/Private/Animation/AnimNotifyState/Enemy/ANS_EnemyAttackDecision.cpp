@@ -87,7 +87,7 @@ void UANS_EnemyAttackDecision::DetectAndApplyDamage(USkeletalMeshComponent* Mesh
 		SphereRadius,
 		Rotation,
 		DetectionShape,
-		false,
+		true,
 		0.f,
 		FColor::Emerald
 	);

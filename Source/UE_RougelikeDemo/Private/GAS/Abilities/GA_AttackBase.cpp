@@ -35,7 +35,8 @@ void UGA_AttackBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 					EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 					return;
 				}
-				else {
+				else
+				{
 					SanitySystem->ReduceSanity(ReduceValue);
 
 				}
