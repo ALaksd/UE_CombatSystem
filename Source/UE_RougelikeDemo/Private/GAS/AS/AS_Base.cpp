@@ -19,7 +19,7 @@ void UAS_Base::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DATETIMEPICKER(UAS_Base, Health);
+	//DATETIMEPICKER(UAS_Base, Health);	
 	DOREPLIFETIME_CONDITION_NOTIFY(UAS_Base, Health, COND_None, REPNOTIFY_OnChanged);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAS_Base, MaxHealth, COND_None, REPNOTIFY_OnChanged);
 }
