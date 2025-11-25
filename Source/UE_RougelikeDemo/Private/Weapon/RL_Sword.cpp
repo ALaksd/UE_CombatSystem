@@ -54,7 +54,7 @@ void ARL_Sword::Tick(float DeltaTime)
 			TArray<FHitResult> OutHits;
 			TArray<AActor*> ActorsToIgnore;
 			ActorsToIgnore.Add(WeaponOwner);
-			bool bHit = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),Start,End,15.f,ObjectTypes,false,ActorsToIgnore,DrawDebugType,OutHits,true,TraceColor,TraceHitColor,DrawTime);
+			bool bHit = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),Start,End,20.f,ObjectTypes,false,ActorsToIgnore,DrawDebugType,OutHits,true,TraceColor,TraceHitColor,DrawTime);
 			//bool bHit = GetWorld()->LineTraceMultiByChannel(OutHits, Start, End, ECC_Enemy);
 
 			if (bHit)
